@@ -1,0 +1,328 @@
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Settings, ArrowUp } from "lucide-react";
+import { getExamResult } from "@/app/actions/submitNewExam";
+
+interface Choice {
+  id: number;
+  val: string;
+}
+
+interface Question {
+  id: number;
+  question: string;
+}
+
+interface ResultItem {
+  question: Question;
+  choices: Choice[];
+  userChoice?: Choice | null;
+  correctChoice?: Choice | null;
+}
+
+interface StoredResult {
+  score: number;
+  total: number;
+  resultData: ResultItem[];
+}
+
+interface CorrectAnswerMap {
+  [key: number]: {
+    correctChoiceId: number | null;
+    correctValue: string;
+  };
+}
+
+export default function ResultPage() {
+  const params = useParams();
+  const router = useRouter();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const id =
+    typeof params?.id === "string"
+      ? params.id
+      : Array.isArray(params?.id)
+      ? params.id[0]
+      : "";
+
+  const [data, setData] = useState<StoredResult | null>(null);
+  const [correctAnswers, setCorrectAnswers] =
+    useState<CorrectAnswerMap>({});
+  const [loading, setLoading] = useState(true);
+
+  /* ================= LOAD DATA ================= */
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadData = async () => {
+      try {
+        const stored = localStorage.getItem(`result_${id}`);
+        if (!stored) {
+          setLoading(false);
+          return;
+        }
+
+        const parsed: StoredResult = JSON.parse(stored);
+        setData(parsed);
+
+  
+        const serverMap = await getExamResult(id);
+        setCorrectAnswers(serverMap);
+
+      } catch (error) {
+        console.error("Error loading result:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [id]);
+
+  /* ================= SCROLL BUTTON ================= */
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  /* ================= SCORE ================= */
+
+  const calculatedScore = useMemo(() => {
+    if (!data) return 0;
+
+    return data.resultData.filter((item) => {
+      const apiCorrect = correctAnswers[item.question.id];
+
+      const correctId =
+        apiCorrect?.correctChoiceId ??
+        item.correctChoice?.id ??
+        null;
+
+      return (
+        item.userChoice &&
+        Number(item.userChoice.id) === Number(correctId)
+      );
+    }).length;
+  }, [data, correctAnswers]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    const updated = { ...data, score: calculatedScore };
+    localStorage.setItem(
+      `result_${id}`,
+      JSON.stringify(updated)
+    );
+  }, [calculatedScore]);
+
+  /* ================= STATES ================= */
+
+  if (loading)
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#2d3fa3] text-white">
+        <Settings className="w-16 h-16 mb-4 animate-spin" />
+        <p className="text-lg font-semibold">Loading Result..</p>
+      </div>
+    );
+
+  if (!data)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Result Not Found
+      </div>
+    );
+
+  const passMark = Math.ceil(data.total * 0.6);
+  const isPass = calculatedScore >= passMark;
+  const answeredCount = data.resultData.filter(
+    (item) => item.userChoice
+  ).length;
+  const notAnsweredCount = data.total - answeredCount;
+
+  /* ================= UI ================= */
+
+  return (
+    <div className="min-h-screen bg-[#2d3fa3] py-12 px-4">
+      <div className="text-center text-white mb-8">
+        <h1 className="text-2xl font-semibold">Exam Result</h1>
+      </div>
+
+      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
+
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold">
+            Your Score : {calculatedScore} / {data.total}
+          </h2>
+
+          <p
+            className={`text-lg font-semibold mt-2 ${
+              isPass ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            Result : {isPass ? "PASS" : "FAIL"}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-center">
+          <div className="bg-blue-100 p-4 rounded-lg shadow">
+            <h3 className="font-semibold">All Questions</h3>
+            <p className="text-xl font-bold">{data.total}</p>
+          </div>
+
+          <div className="bg-green-100 p-4 rounded-lg shadow">
+            <h3 className="font-semibold">Answered</h3>
+            <p className="text-xl font-bold">{answeredCount}</p>
+          </div>
+
+          <div className="bg-red-100 p-4 rounded-lg shadow">
+            <h3 className="font-semibold">Not Answered</h3>
+            <p className="text-xl font-bold">{notAnsweredCount}</p>
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          {data.resultData.map((item, index) => {
+            const apiCorrect =
+              correctAnswers[item.question.id];
+
+            const correctId =
+              apiCorrect?.correctChoiceId ??
+              item.correctChoice?.id ??
+              null;
+
+            const correctValue =
+              apiCorrect?.correctValue ??
+              item.correctChoice?.val ??
+              "";
+
+            const isCorrect =
+              Number(item.userChoice?.id) ===
+              Number(correctId);
+
+            return (
+              <div key={index} className="border rounded-lg p-6 bg-gray-50">
+
+                <div
+                  className="font-semibold text-base mb-4"
+                  dangerouslySetInnerHTML={{
+                    __html: `${index + 1}. ${item.question.question}`,
+                  }}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                  {item.choices.map((choice) => {
+                    const correct =
+                      Number(choice.id) === Number(correctId);
+                    const user =
+                      Number(choice.id) ===
+                      Number(item.userChoice?.id);
+
+                    return (
+                      <div
+                        key={choice.id}
+                        className={`p-3 rounded border text-sm
+                          ${
+                            correct
+                              ? "bg-green-100 border-green-600"
+                              : user
+                              ? "bg-red-100 border-red-600"
+                              : "bg-white"
+                          }`}
+                        dangerouslySetInnerHTML={{
+                          __html: choice.val,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 text-sm mt-4">
+                  <div className="p-3 rounded bg-white border">
+                    <p className="font-semibold mb-1">Your Answer:</p>
+                    {item.userChoice ? (
+                      <div
+                        className={`font-medium ${
+                          isCorrect
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                        dangerouslySetInnerHTML={{
+                          __html: item.userChoice.val,
+                        }}
+                      />
+                    ) : (
+                      <span className="text-gray-500">
+                        Not Answered
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-3 rounded bg-white border">
+                    <p className="font-semibold mb-1">
+                      Correct Answer:
+                    </p>
+                    <div
+                      className="text-green-700 font-medium"
+                      dangerouslySetInnerHTML={{
+                        __html: correctValue,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4 text-sm">
+                  <span className="font-semibold">Status: </span>
+                  {item.userChoice ? (
+                    isCorrect ? (
+                      <span className="text-green-600 font-semibold">
+                        Correct
+                      </span>
+                    ) : (
+                      <span className="text-red-600 font-semibold">
+                        Wrong
+                      </span>
+                    )
+                  ) : (
+                    <span className="text-gray-600 font-semibold">
+                      Not Attempted
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {showScrollTop && (
+          <button
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 bg-blue-700 text-white p-3 rounded-full shadow-lg"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </button>
+        )}
+
+        <div className="text-center mt-10">
+          <button
+            onClick={() => router.push("/")}
+            className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800 transition"
+          >
+            Go To Home
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
