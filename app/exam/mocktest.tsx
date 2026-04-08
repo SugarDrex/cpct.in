@@ -5,7 +5,8 @@ import {  useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { CalendarDays, Clock } from "lucide-react";
 import { Settings } from "lucide-react";
-import { getOldExamsId } from "../actions/getOldExamsId";
+import { getOldExamsId } from "@/app/actions/getOldExamsId";
+ 
 
 interface Exam {
   id: number;
