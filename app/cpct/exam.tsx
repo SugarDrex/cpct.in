@@ -155,7 +155,7 @@ export default function ExamPage() {
 
                   return (
                     <div key={year} className="mb-10">
-                      <h2 className="text-3xl font-semibold text-[#1f2d3d] mb-6">
+                      <h2 className="text-3xl font-semibold mb-6">
                         CPCT Exam {year}
                       </h2>
 
