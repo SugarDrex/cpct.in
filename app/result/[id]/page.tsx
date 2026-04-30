@@ -51,7 +51,6 @@ export default function ResultPage() {
   const [correctAnswers, setCorrectAnswers] =
     useState<CorrectAnswerMap>({});
   const [loading, setLoading] = useState(true);
- 
 
   useEffect(() => {
     if (!id) return;
@@ -67,7 +66,6 @@ export default function ResultPage() {
         const parsed: StoredResult = JSON.parse(stored);
         setData(parsed);
 
-        
         const serverMap = await getSmartExamResult(id);
         setCorrectAnswers(serverMap);
 
@@ -81,8 +79,6 @@ export default function ResultPage() {
     loadData();
   }, [id]);
 
- 
-
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
@@ -95,7 +91,6 @@ export default function ResultPage() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
- 
 
   const calculatedScore = useMemo(() => {
     if (!data) return 0;
@@ -124,11 +119,10 @@ export default function ResultPage() {
       JSON.stringify(updated)
     );
   }, [calculatedScore]);
- 
 
   if (loading)
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#2d3fa3] text-white">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#2d3fa3] dark:bg-gray-900 text-white">
         <Settings className="w-16 h-16 mb-4 animate-spin" />
         <p className="text-lg font-semibold">Loading Result..</p>
       </div>
@@ -136,7 +130,7 @@ export default function ResultPage() {
 
   if (!data)
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900 dark:text-white">
         Result Not Found
       </div>
     );
@@ -148,18 +142,16 @@ export default function ResultPage() {
   ).length;
   const notAnsweredCount = data.total - answeredCount;
 
- 
-
   return (
-    <div className="min-h-screen bg-[#2d3fa3] py-12 px-4">
+    <div className="min-h-screen bg-[#2d3fa3] dark:bg-gray-900 py-12 px-4">
       <div className="text-center text-white mb-8">
         <h1 className="text-2xl font-semibold">Exam Result</h1>
       </div>
 
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
+      <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
 
         <div className="text-center mb-6">
-          <h2 className="text-xl font-semibold">
+          <h2 className="text-xl font-semibold dark:text-white">
             Your Score : {calculatedScore} / {data.total}
           </h2>
 
@@ -173,26 +165,25 @@ export default function ResultPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-center">
-          <div className="bg-blue-100 p-4 rounded-lg shadow">
-            <h3 className="font-semibold">All Questions</h3>
-            <p className="text-xl font-bold">{data.total}</p>
+          <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg shadow">
+            <h3 className="font-semibold dark:text-white">All Questions</h3>
+            <p className="text-xl font-bold dark:text-white">{data.total}</p>
           </div>
 
-          <div className="bg-green-100 p-4 rounded-lg shadow">
-            <h3 className="font-semibold">Answered</h3>
-            <p className="text-xl font-bold">{answeredCount}</p>
+          <div className="bg-green-100 dark:bg-green-900 p-4 rounded-lg shadow">
+            <h3 className="font-semibold dark:text-white">Answered</h3>
+            <p className="text-xl font-bold dark:text-white">{answeredCount}</p>
           </div>
 
-          <div className="bg-red-100 p-4 rounded-lg shadow">
-            <h3 className="font-semibold">Not Answered</h3>
-            <p className="text-xl font-bold">{notAnsweredCount}</p>
+          <div className="bg-red-100 dark:bg-red-900 p-4 rounded-lg shadow">
+            <h3 className="font-semibold dark:text-white">Not Answered</h3>
+            <p className="text-xl font-bold dark:text-white">{notAnsweredCount}</p>
           </div>
         </div>
 
         <div className="space-y-8">
           {data.resultData.map((item, index) => {
-            const apiCorrect =
-              correctAnswers[item.question.id];
+            const apiCorrect = correctAnswers[item.question.id];
 
             const correctId =
               apiCorrect?.correctChoiceId ??
@@ -209,10 +200,10 @@ export default function ResultPage() {
               Number(correctId);
 
             return (
-              <div key={index} className="border rounded-lg p-6 bg-gray-50">
+              <div key={index} className="border rounded-lg p-6 bg-gray-50 dark:bg-gray-900 dark:border-gray-700">
 
                 <div
-                  className="font-semibold text-base mb-4"
+                  className="font-semibold text-base mb-4 dark:text-white"
                   dangerouslySetInnerHTML={{
                     __html: `${index + 1}. ${item.question.question}`,
                   }}
@@ -232,10 +223,10 @@ export default function ResultPage() {
                         className={`p-3 rounded border text-sm
                           ${
                             correct
-                              ? "bg-green-100 border-green-600"
+                              ? "bg-green-100 dark:bg-green-800 border-green-600"
                               : user
-                              ? "bg-red-100 border-red-600"
-                              : "bg-white"
+                              ? "bg-red-100 dark:bg-red-800 border-red-600"
+                              : "bg-white dark:bg-gray-800 dark:border-gray-700"
                           }`}
                         dangerouslySetInnerHTML={{
                           __html: choice.val,
@@ -246,8 +237,8 @@ export default function ResultPage() {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4 text-sm mt-4">
-                  <div className="p-3 rounded bg-white border">
-                    <p className="font-semibold mb-1">Your Answer:</p>
+                  <div className="p-3 rounded bg-white dark:bg-gray-800 border dark:border-gray-700">
+                    <p className="font-semibold mb-1 dark:text-white">Your Answer:</p>
                     {item.userChoice ? (
                       <div
                         className={`font-medium ${
@@ -260,18 +251,18 @@ export default function ResultPage() {
                         }}
                       />
                     ) : (
-                      <span className="text-gray-500">
+                      <span className="text-gray-500 dark:text-gray-400">
                         Not Answered
                       </span>
                     )}
                   </div>
 
-                  <div className="p-3 rounded bg-white border">
-                    <p className="font-semibold mb-1">
+                  <div className="p-3 rounded bg-white dark:bg-gray-800 border dark:border-gray-700">
+                    <p className="font-semibold mb-1 dark:text-white">
                       Correct Answer:
                     </p>
                     <div
-                      className="text-green-700 font-medium"
+                      className="text-green-700 dark:text-green-400 font-medium"
                       dangerouslySetInnerHTML={{
                         __html: correctValue,
                       }}
@@ -280,7 +271,7 @@ export default function ResultPage() {
                 </div>
 
                 <div className="mt-4 text-sm">
-                  <span className="font-semibold">Status: </span>
+                  <span className="font-semibold dark:text-white">Status: </span>
                   {item.userChoice ? (
                     isCorrect ? (
                       <span className="text-green-600 font-semibold">
@@ -292,7 +283,7 @@ export default function ResultPage() {
                       </span>
                     )
                   ) : (
-                    <span className="text-gray-600 font-semibold">
+                    <span className="text-gray-600 dark:text-gray-400 font-semibold">
                       Not Attempted
                     </span>
                   )}
