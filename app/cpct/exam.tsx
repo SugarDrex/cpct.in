@@ -48,49 +48,32 @@ export default function ExamPage() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [newExams, setNewExams] = useState<NewExam[]>([])
   const [loading, setLoading] = useState(true)
+  const [dbError, setDbError] = useState<string | null>(null)
 
   const router = useRouter()
 
-useEffect(() => {
-  async function loadExams() {
-    try {
-      const data = await getNewExams();
-
-      if (!Array.isArray(data) && typeof data === "object") {
-        const allExams = Object.values(data).flat() as NewExam[];
-        setNewExams(allExams);
-      } else {
-        setNewExams(data as NewExam[]);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  loadExams();
-}, []);
-  /*
   useEffect(() => {
-    fetch("/api/newexams")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!Array.isArray(data) && typeof data === "object") {
-          const allExams = Object.values(data).flat() as NewExam[]
-          setNewExams(allExams)
-        } else {
-          setNewExams(data as NewExam[])
-        }
+    async function loadExams() {
+      try {
+        const data = await getNewExams();
 
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error(err)
-        setLoading(false)
-      })
-  }, [])
-*/
+        if (!Array.isArray(data) && typeof data === "object") {
+          const allExams = Object.values(data).flat() as NewExam[];
+          setNewExams(allExams);
+        } else {
+          setNewExams(data as NewExam[]);
+        }
+      } catch (err: any) {
+        console.error(err);
+        setDbError(err?.message ?? "Failed to load exams")
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadExams();
+  }, []);
+
   const monthGroups: MonthGroup[] = Array.from(
     new Map(
       newExams.map((exam) => {
@@ -117,19 +100,10 @@ useEffect(() => {
         ? `CPCT Exam ${uniqueYears[0]}`
         : `CPCT Exams ${uniqueYears.join(", ")}`
 
-
-
-/*  useEffect(() => {
-    fetch("/api/updates")
-      .then((res) => res.json())
-      .then((data) => setAnnouncements(data))
-      .catch((err) => console.error(err))
-  }, [])
-*/
-useEffect(() => {
+  useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await getAnnouncements()  
+        const data = await getAnnouncements()
         setAnnouncements(data)
       } catch (err) {
         console.error(err)
@@ -141,33 +115,21 @@ useEffect(() => {
     loadData()
   }, [])
 
-  /*
   useEffect(() => {
-    fetch("/api/exams")
-      .then((res) => res.json())
-      .then((data) => {
-        setExams2024(data.exams2024)
-        setExams2023(data.exams2023)
-        setTopics(data.topics)
-      })
-  }, [])
-*/
+    async function loadData() {
+      try {
+        const data = await getSmartExamData();
 
- useEffect(() => {
-  async function loadData() {
-    try {
-      const data = await getSmartExamData();
-
-      setExams2024(data.exams2024);
-      setExams2023(data.exams2023);
-      setTopics(data.topics);
-    } catch (err) {
-      console.error(err);
+        setExams2024(data.exams2024);
+        setExams2023(data.exams2023);
+        setTopics(data.topics);
+      } catch (err) {
+        console.error(err);
+      }
     }
-  }
 
-  loadData();
-}, []);
+    loadData(); 
+  }, []);
 
   const renderExamMonths = (exams: Exam[], yearLabel: string) => {
     if (!exams.length) return null
@@ -176,63 +138,74 @@ useEffect(() => {
       <>
         {yearLabel === "CPCT Exam 2024" && (
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-4xl font-semibold text-[#1f2d3d] mb-5">
-              {yearLabelNew}
-            </h1>
+             
 
             {loading ? (
               <p className="text-gray-500">Loading exams...</p>
+            ) : dbError ? (
+              <p className="text-red-500 text-sm">{dbError}</p>
             ) : monthGroups.length === 0 ? (
               <p className="text-gray-500">No exams available.</p>
             ) : (
-              <div className="mb-10">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {monthGroups.map((group) => {
-                    const examDate = new Date(
-                      group.year,
-                      group.month - 1
-                    )
+              <>
+                {uniqueYears.map((year) => {
+                  const monthsForYear = monthGroups.filter(
+                    (group) => group.year === year
+                  )
 
-                    const now = new Date()
-                    const thirtyDaysAgo = new Date()
-                    thirtyDaysAgo.setDate(now.getDate() - 30)
-                    const isNew = examDate >= thirtyDaysAgo
+                  return (
+                    <div key={year} className="mb-10">
+                      <h2 className="text-3xl font-semibold text-[#1f2d3d] mb-6">
+                        CPCT Exam {year}
+                      </h2>
 
-                    return (
-                      <div
-                        key={`new-${group.year}-${group.month}`}
-                        onClick={() =>
-                          router.push(
-                            `/cpct-new-exams?year=${group.year}&month=${group.month}`
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {monthsForYear.map((group) => {
+                          const examDate = new Date(group.year, group.month - 1)
+
+                          const now = new Date()
+                          const thirtyDaysAgo = new Date()
+                          thirtyDaysAgo.setDate(now.getDate() - 30)
+                          const isNew = examDate >= thirtyDaysAgo
+
+                          return (
+                            <div
+                              key={`new-${group.year}-${group.month}`}
+                              onClick={() =>
+                                router.push(
+                                  `/cpct-new-exams?year=${group.year}&month=${group.month}`
+                                )
+                              }
+                              className="cursor-pointer bg-[#cfe3ec] dark:bg-gray-800 
+                                         hover:bg-[#bcd9e6] dark:hover:bg-gray-700 
+                                         transition rounded-xl p-6 shadow-sm"
+                            >
+                              <div className="flex items-center gap-4 mb-4">
+                                <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-sm">
+                                  📅
+                                </div>
+
+                                <h4 className="text-lg font-semibold text-blue-900 dark:text-blue-400 flex items-center">
+                                  {group.monthName}
+                                  {isNew && (
+                                    <span className="ml-3 text-xs bg-red-500 text-white px-2 py-1 rounded-full">
+                                      New
+                                    </span>
+                                  )}
+                                </h4>
+                              </div>
+
+                              <p className="text-gray-900 dark:text-gray-300">
+                                {group.year}
+                              </p>
+                            </div>
                           )
-                        }
-                        className="cursor-pointer bg-[#cfe3ec] dark:bg-gray-800 
-                                   hover:bg-[#bcd9e6] dark:hover:bg-gray-700 
-                                   transition rounded-xl p-6 shadow-sm"
-                      >
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-sm">
-                            📅
-                          </div>
-
-                          <h4 className="text-lg font-semibold text-blue-900 dark:text-blue-400 flex items-center">
-                            {group.monthName}
-                            {isNew && (
-                              <span className="ml-3 text-xs bg-red-500 text-white px-2 py-1 rounded-full">
-                                New
-                              </span>
-                            )}
-                          </h4>
-                        </div>
-
-                        <p className="text-gray-900 dark:text-gray-300">
-                          {group.year}
-                        </p>
+                        })}
                       </div>
-                    )
-                  })}
-                </div>
-              </div>
+                    </div>
+                  )
+                })}
+              </>
             )}
           </div>
         )}
@@ -291,12 +264,15 @@ useEffect(() => {
               CPCT Exam
             </h1>
           </div>
+
           {renderExamMonths(exams2024, "CPCT Exam 2024")}
           {renderExamMonths(exams2023, "CPCT Exam 2023")}
+
           <div className="mt-12">
             <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-100">
               Topic Wise Paper
             </h3>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {topics.map((topic) => (
                 <Link
@@ -319,107 +295,29 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        <div className="space-y-8">
 
-          {/* Study Resources */}
+        <div className="space-y-8">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-8 transition">
             <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
               Study Resources
             </h3>
 
             <div className="space-y-4 text-blue-900 dark:text-blue-400">
-              <Link href="#takeone" className="block border-b dark:border-gray-700 pb-3 hover:text-blue-600 dark:hover:text-blue-300 transition">
-                📋  Practice Questions
+              <Link href="#takeone" className="block border-b pb-3">
+                📋 Practice Questions
               </Link>
 
-              <Link href="/cpct-notes" className="block border-b dark:border-gray-700 pb-3 hover:text-blue-600 dark:hover:text-blue-300 transition">
+              <Link href="/cpct-notes" className="block border-b pb-3">
                 ✍️ Important Notes
               </Link>
 
-              <Link href="/cpct-tips" className="block hover:text-blue-600 dark:hover:text-blue-300 transition">
+              <Link href="/cpct-tips" className="block">
                 🔖 Tips & Tricks
               </Link>
-              <div className="relative inline-block">
-                <Link
-                  href="/notes"
-                  className="block border-b dark:border-gray-700 pb-3 
-    hover:text-blue-600 dark:hover:text-blue-300 
-    transition pr-6"
-                >
-                  👉 Buy Exam sets and study materials
-                </Link>
-
-                <span className="absolute top-1 right-0 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                </span>
-              </div>
             </div>
           </div>
-
-       
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-8 transition">
-            <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
-              Latest Updates
-            </h3>
-
-            {announcements.length === 0 ? (
-              <div className="text-gray-500 dark:text-gray-400 text-sm">
-                No updates available.
-              </div>
-            ) : (
-              <div className="space-y-5">
-                {announcements.map((item) => (
-                  <div
-                    key={item.id}
-                    className="border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-xl p-5 shadow-sm hover:shadow-md transition"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <h4 className="text-base md:text-lg font-semibold text-gray-800 dark:text-white">
-                        {item.title}
-                      </h4>
-                      <span className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full">
-                        Notice
-                      </span>
-                    </div>
-
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                      {item.message}
-                    </p>
-
-                    <div className="flex flex-wrap gap-3">
-
-                
-                      {item.link && (
-                        <a
-                          href={item.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition shadow-sm"
-                        >
-                          🔗 Visit Link
-                        </a>
-                      )}
-
-                      {item.type === "pdf" && (
-                        <a
-                          href={`/api/updates/${item.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
-                        >
-                          📄 View PDF
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-        </div> </div>
+        </div>
+      </div>
     </div>
-
   )
 }
