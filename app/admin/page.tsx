@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-
+import Link from "next/link";
 type UserToken = {
   username: string;
   email: string;
@@ -12,9 +12,9 @@ type UserToken = {
 
 export default function Dashboard() {
   const [user, setUser] = useState<UserToken | null>(null);
-  const [darkMode, setDarkMode] = useState(true);
   const router = useRouter();
-
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -26,6 +26,7 @@ export default function Dashboard() {
     try {
       const decoded = jwtDecode<UserToken>(token);
 
+      // Optional: Check token expiration
       if (decoded.exp && decoded.exp * 1000 < Date.now()) {
         localStorage.removeItem("token");
         router.push("/login");
@@ -33,177 +34,153 @@ export default function Dashboard() {
       }
 
       setUser(decoded);
-    } catch {
+    } catch (error) {
+      console.error("Invalid token");
       localStorage.removeItem("token");
       router.push("/login");
     }
   }, [router]);
 
-  if (!user) return null;
+  if (!user) {
+    return null; // prevent flashing content before redirect
+  }
 
   return (
-    <div
-      className={`min-h-screen px-6 md:px-16 py-12 transition-all duration-300 ${
-        darkMode
-          ? "bg-gradient-to-br from-slate-900 to-slate-800"
-          : "bg-gray-100 text-gray-800"
-      }`}
-    >
-      {/* ================= Admin Header ================= */}
-      <div className="mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">
-          Admin Panel
-        </h1>
-        <p className={darkMode ? "text-gray-400" : "text-gray-600"}>
-          Welcome back, {user.username}
-        </p>
-      </div>
+    <div className="min-h-screen py-20 flex bg-gray-100 dark:bg-neutral-950 transition-colors duration-300">
 
-      {/* ================= User Info Cards ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      {/* Mobile Overlay */}
+      {mobileOpen && (
         <div
-          className={`p-6 rounded-xl shadow ${
-            darkMode
-              ? "bg-slate-800 border border-slate-700"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          <p className="text-sm opacity-70">Username</p>
-          <h3 className="text-lg font-semibold mt-2">
-            {user.username}
-          </h3>
-        </div>
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
-        <div
-          className={`p-6 rounded-xl shadow ${
-            darkMode
-              ? "bg-slate-800 border border-slate-700"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          <p className="text-sm opacity-70">Email</p>
-          <h3 className="text-lg font-semibold mt-2">
-            {user.email}
-          </h3>
-        </div>
 
-        <div
-          className={`p-6 rounded-xl shadow ${
-            darkMode
-              ? "bg-slate-800 border border-slate-700"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          <p className="text-sm opacity-70">Status</p>
-          <h3 className="text-lg font-semibold mt-2 text-green-500">
-            Active
-          </h3>
-        </div>
-      </div>
 
-      {/* ================= 2 Column Action Grid ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Manage Exams */}
-        <div
-          className={`p-8 rounded-2xl shadow-lg transition hover:scale-105 duration-300 ${
-            darkMode
-              ? "bg-slate-800 border border-slate-700"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          <h2 className="text-2xl font-semibold mb-3">
-            Manage Exams
-          </h2>
-          <p className={darkMode ? "text-gray-400 mb-6" : "text-gray-600 mb-6"}>
-            Add, edit or remove exam questions.
-          </p>
-          <button
-            onClick={() => router.push("/admin/newexams")}
-            className={`px-6 py-2 rounded-lg font-semibold cursor-pointer transition ${
-              darkMode
-                ? "bg-white text-black hover:bg-gray-200"
-                : "bg-black text-white hover:bg-gray-800 cursor-pointer"
-            }`}
-          >
-            Browse →
-          </button>
-        </div>
+      <div className="flex-1 flex flex-col">
 
-        {/* Upload Notes */}
-        <div
-          className={`p-8 rounded-2xl shadow-lg transition hover:scale-105 duration-300 ${
-            darkMode
-              ? "bg-slate-800 border border-slate-700"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          <h2 className="text-2xl font-semibold mb-3">
-            Upload Notes
-          </h2>
-          <p className={darkMode ? "text-gray-400 mb-6" : "text-gray-600 mb-6"}>
-            Add study materials for students.
-          </p>
-          <button
-            onClick={() => router.push("/admin/notesupload")}
-            className={`px-6 py-2 rounded-lg font-semibold cursor-pointer transition ${
-              darkMode
-                ? "bg-white text-black hover:bg-gray-200"
-                : "bg-black text-white hover:bg-gray-800"
-            }`}
-          >
-            Browse →
-          </button>
-        </div>
 
-        {/* Updates */}
-        <div
-          className={`p-8 rounded-2xl shadow-lg transition hover:scale-105 duration-300 ${
-            darkMode
-              ? "bg-slate-800 border border-slate-700"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          <h2 className="text-2xl font-semibold mb-3">
-            Latest Updates
-          </h2>
-          <p className={darkMode ? "text-gray-400 mb-6" : "text-gray-600 mb-6"}>
-            Post announcements & notifications.
-          </p>
-          <button
-            onClick={() => router.push("/admin/latestupdate")}
-            className={`px-6 py-2 rounded-lg font-semibold cursor-pointer transition ${
-              darkMode
-                ? "bg-white text-black hover:bg-gray-200"
-                : "bg-black text-white hover:bg-gray-800 cursor-pointer"
-            }`}
-          >
-            Browse →
-          </button>
-        </div>
-        <div
-          className={`p-8 rounded-2xl shadow-lg transition hover:scale-105 duration-300 ${
-            darkMode
-              ? "bg-slate-800 border border-slate-700"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          <h2 className="text-2xl font-semibold mb-3">
-       Docx to json Converter
-          </h2>
-          <p className={darkMode ? "text-gray-400 mb-6" : "text-gray-600 mb-6"}>
-          First convert your DOCX file into a JSON format Using the DOCX Converter Then Download and Save The Generated JSON File, Then Upload It Here To Add The Exam.
-          </p>
-          <button
-            onClick={() => router.push("/admin/docx")}
-            className={`px-6 py-2 rounded-lg font-semibold cursor-pointer transition ${
-              darkMode
-                ? "bg-white text-black hover:bg-gray-200"
-                : "bg-black text-white hover:bg-gray-800 cursor-pointer"
-            }`}
-          >
-            Browse →
-          </button>
-        </div>
+        <main className="p-6 md:p-10 space-y-8">
+
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-2xl p-6 border border-gray-100 dark:border-neutral-800">
+              <h3 className="text-gray-500 dark:text-gray-400 text-sm">
+                Username
+              </h3>
+              <p className="text-xl font-semibold text-gray-800 dark:text-white mt-2">
+                {user.username}
+              </p>
+            </div>
+
+            <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-2xl p-6 border border-gray-100 dark:border-neutral-800">
+              <h3 className="text-gray-500 dark:text-gray-400 text-sm">
+                Email
+              </h3>
+              <p className="text-xl font-semibold text-gray-800 dark:text-white mt-2 break-all">
+                {user.email}
+              </p>
+            </div>
+
+            <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-2xl p-6 border border-gray-100 dark:border-neutral-800">
+              <h3 className="text-gray-500 dark:text-gray-400 text-sm">
+                Status
+              </h3>
+              <p className="text-xl font-semibold text-green-500 mt-2">
+                Active
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-neutral-900 shadow-xl rounded-2xl p-10 border border-gray-100 dark:border-neutral-800 space-y-8">
+
+            {/* Notes Upload Section */}
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+
+              <div>
+                <h2 className="text-2xl font-bold">
+                  Upload Study Notes
+                </h2>
+                <p className="text-indigo-100 mt-2">
+                  Add new notes, manage uploads, and organize content professionally.
+                </p>
+              </div>
+
+              <Link
+                href="/admin/notesupload"
+                className="bg-white text-indigo-600 font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+              >
+                Upload Notes →
+              </Link>
+
+            </div>
+
+            {/* Latest Updates Section */}
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl shadow-xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+
+              <div>
+                <h2 className="text-2xl font-bold">
+                  Latest Updates
+                </h2>
+                <p className="text-emerald-100 mt-2">
+                  Check recent announcements, updates, and important notifications.
+                </p>
+              </div>
+
+              <Link
+                href="/admin/latestupdate"
+                className="bg-white text-emerald-600 font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+              >
+                Add Updates →
+              </Link>
+
+            </div>
+
+            {/* Latest Exam Section */}
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+
+              <div>
+                <h2 className="text-2xl font-bold">
+                  Latest Exams Updates
+                </h2>
+                <p className="text-emerald-100 mt-2">
+                  add latest exams and update and edit delete
+                </p>
+              </div>
+
+              <Link
+                href="/admin/newexams"
+                className="bg-white text-emerald-600 font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+              >
+                Add/Update/Remove →
+              </Link>
+
+            </div>{/* Topic Wise Exam Paper Upload */}
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+
+              <div>
+                <h2 className="text-2xl font-bold">
+                  Topic Wise Exam Papers
+                </h2>
+
+                <p className="text-orange-100 mt-2">
+                  Upload topic wise exam papers, manage categories, and organize previous year papers professionally.
+                </p>
+              </div>
+
+              <Link
+                href="/admin/topic-mcq"
+                className="bg-white text-orange-600 font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+              >
+                Upload Papers →
+              </Link>
+
+            </div>
+
+          </div>
+
+        </main>
       </div>
     </div>
   );
