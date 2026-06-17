@@ -6,6 +6,7 @@ import ExamPage from "./cpct/exam";
 import SuccessStoriesSection from "./cpct-about/review";
 import FloatingContactForm from "@/components/Chat";
 import FAQPage from "./faq/page";
+import DisclaimerBar from "@/components/DisclaimerBar";
 
 
 export default function Home() {
@@ -19,6 +20,7 @@ export default function Home() {
       <SuccessStoriesSection />
       <FAQPage />
       <FloatingContactForm />
+      <DisclaimerBar/>
     </>
   );
 } 
