@@ -839,7 +839,7 @@ export default function RootLayout({
           {/* ═════════════════════════════════════════════════════════════════ */}
           <meta name="msvalidate.01" content="C149C8E7815A485AEC7CADE07178D3EC" />
           <meta name="yandex-verification" content="YOUR_YANDEX_CODE" />
-          <meta name="verify-v1" content="YOUR_VERIFICATION_CODE" />
+           <meta name="google-site-verification" content="oU7imMI0GOYKmP0J-lGRtxKKHkiv72xvEF8B2aEeXgY" />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
           {/* ════════ MOBILE & RESPONSIVE META TAGS ════════════════════════ */}
