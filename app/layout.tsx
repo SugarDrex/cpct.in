@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -175,13 +176,7 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
       "max-snippet": -1,
     },
-    bingBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-video-preview": -1,
-      "max-snippet": -1,
-    },
+  
   },
 
   alternates: {
@@ -203,7 +198,7 @@ export const metadata: Metadata = {
       "MP's best free CPCT preparation: unlimited mock tests, topic-wise MCQ, Hindi/English typing. Trusted by 100K+ students in Bhopal, Indore, Narmadapuram, Itarsi & all Madhya Pradesh cities. Start free CPCT practice now.",
     siteName: "CPCT.IN – Best CPCT Preparation Platform",
     locale: "en_IN",
-    localeAlternate: ["hi_IN"],
+  
     images: [
       {
         url: "https://cpct.in/og-image-1200x630.jpg",
@@ -782,7 +777,7 @@ const productSchema = {
     url: "https://cpct.in",
     priceCurrency: "INR",
     price: "0",
-    priceCurrency: "INR",
+   
     availability: "https://schema.org/InStock",
     seller: {
       "@type": "Organization",
