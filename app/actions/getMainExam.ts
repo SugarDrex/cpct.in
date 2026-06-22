@@ -82,6 +82,60 @@ export async function uploadExamAction(
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+//  CREATE  — add a single question to an existing exam
+//  (this is what the "Add New Question to This Exam" form in EditExamModal calls)
+// ══════════════════════════════════════════════════════════════════════════════
+export async function addQuestionToExamAction(
+  examId  : string,
+  question: QuestionInput
+): Promise<ActionResult<{ question_id: string; question_number: number }>> {
+  try {
+    if (!examId) throw new Error('Exam ID is required.');
+    if (!question.question_en?.trim()) throw new Error('Question text is required.');
+    if (!question.options?.length)     throw new Error('At least one option is required.');
+    if (question.correct_answer === undefined || question.correct_answer === null || question.correct_answer === '')
+      throw new Error('A correct answer must be selected.');
+
+    // Figure out the next question_number for this exam (server is source of truth,
+    // so the client can always pass 0 / omit it and we compute it here).
+    let nextNumber = question.question_number;
+    if (!nextNumber) {
+      const { data: existing, error: numErr } = await supabase
+        .from('mquestions')
+        .select('question_number')
+        .eq('exam_id', examId)
+        .order('question_number', { ascending: false })
+        .limit(1);
+
+      if (numErr) throw new Error(`Failed to determine question number: ${numErr.message}`);
+      nextNumber = (existing?.[0]?.question_number ?? 0) + 1;
+    }
+
+    const { data, error } = await supabase
+      .from('mquestions')
+      .insert([{
+        exam_id         : examId,
+        question_number : nextNumber,
+        question_en     : question.question_en.trim(),
+        question_hi     : question.question_hi?.trim() || '',
+        options         : question.options,
+        correct_answer  : String(question.correct_answer),
+      }])
+      .select()
+      .single();
+
+    if (error) throw new Error(`Failed to add question: ${error.message}`);
+
+    return {
+      success : true,
+      data    : { question_id: data.id, question_number: data.question_number },
+    };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 //  READ  — fetch all exams with nested questions (descending)
 // ══════════════════════════════════════════════════════════════════════════════
 export async function fetchExamsAction(): Promise<any[]> {
