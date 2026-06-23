@@ -84,6 +84,11 @@ const C = {
   warningBg: '#fef3c7',
   info: '#3b82f6',
   infoBg: '#dbeafe',
+
+  // Emblem Gold — official seal / luxury accent
+  gold: '#9c7a2e',
+  goldLight: '#c9a14a',
+  goldBg: '#faf6ea',
 };
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -502,6 +507,14 @@ function parseDocxHtmlSmart(html: string, fileName: string): { examTitle: string
     questions : qs,
   };
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  Month names for exam-date filtering
+// ══════════════════════════════════════════════════════════════════════════════
+const MONTH_NAMES = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December',
+];
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  Professional Badge/Chip Component
@@ -1187,134 +1200,196 @@ function JsonConverterPanel({
   };
 
   return (
-    <div style={{maxWidth:950}}>
-      <div style={{display:'flex',gap:8,marginBottom:24,background:C.lightGray,borderRadius:'10px',padding:6,width:'fit-content'}}>
-        {([
-          { id:'formats', label:'Format Guide', icon:<FiInfo size={14}/> },
-          { id:'upload',  label:'Upload JSON',  icon:<FiUploadCloud size={14}/> },
-        ] as const).map(t => (
-          <button key={t.id} onClick={() => setActiveFormatTab(t.id)} style={{
-            padding:'10px 20px',border:'none',cursor:'pointer',borderRadius:'8px',
-            background: activeFormatTab===t.id ? C.primary : 'transparent',
-            color: activeFormatTab===t.id ? '#fff' : C.textMuted,
-            fontWeight:700,fontSize:'0.84rem',display:'flex',alignItems:'center',gap:8,
-            transition:'all 0.2s ease'
-          }}>
-            {t.icon}{t.label}
-          </button>
-        ))}
+    <div style={{maxWidth:1080}}>
+      {/* Document letterhead strip */}
+      <div style={{
+        display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:14,
+        padding:'16px 22px',marginBottom:22,borderRadius:'10px',
+        background:`linear-gradient(135deg, ${C.primaryDark} 0%, ${C.primary} 100%)`,
+        boxShadow:'0 4px 18px rgba(26,54,93,0.18)',position:'relative',overflow:'hidden',
+      }}>
+        <div style={{position:'absolute',inset:0,opacity:0.06,backgroundImage:`repeating-linear-gradient(135deg, #fff 0px, #fff 1px, transparent 1px, transparent 14px)`}}/>
+        <div style={{display:'flex',alignItems:'center',gap:14,position:'relative',zIndex:1}}>
+          <div style={{width:42,height:42,borderRadius:'9px',background:`linear-gradient(135deg, ${C.gold}, ${C.goldLight})`,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 3px 10px rgba(156,122,46,0.4)',flexShrink:0}}>
+            <FiCode color="#fff" size={19}/>
+          </div>
+          <div>
+            <p style={{margin:0,color:'#fff',fontWeight:800,fontSize:'0.96rem',letterSpacing:'0.01em'}}>Structured Data Converter</p>
+            <p style={{margin:'2px 0 0 0',color:'#a5c4ea',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.04em',textTransform:'uppercase'}}>Bulk Exam Intake · JSON Schema</p>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:6,background:'rgba(255,255,255,0.08)',borderRadius:'9px',padding:5,position:'relative',zIndex:1}}>
+          {([
+            { id:'formats', label:'Schema Guide', icon:<FiInfo size={13}/> },
+            { id:'upload',  label:'Submit Data',  icon:<FiUploadCloud size={13}/> },
+          ] as const).map(t => (
+            <button key={t.id} onClick={() => setActiveFormatTab(t.id)} style={{
+              padding:'8px 16px',border:'none',cursor:'pointer',borderRadius:'7px',
+              background: activeFormatTab===t.id ? `linear-gradient(135deg, ${C.gold}, ${C.goldLight})` : 'transparent',
+              color: activeFormatTab===t.id ? '#fff' : '#cdd9ea',
+              fontWeight:700,fontSize:'0.8rem',display:'flex',alignItems:'center',gap:7,
+              transition:'all 0.2s ease', whiteSpace:'nowrap',
+            }}>
+              {t.icon}{t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {activeFormatTab === 'formats' && (
-        <div>
-          <div style={{display:'flex',gap:10,marginBottom:20,flexWrap:'wrap'}}>
-            {JSON_FORMATS.map(f => (
-              <button key={f.id} onClick={() => setSelectedFormat(f.id)} style={{
-                padding:'10px 18px',border:`2px solid ${selectedFormat===f.id ? C.primary : C.gray}`,
-                borderRadius:'8px',background: selectedFormat===f.id ? C.infoBg : C.white,
-                color: selectedFormat===f.id ? C.primary : C.textDark,
-                fontWeight:700,fontSize:'0.84rem',cursor:'pointer',
-                display:'flex',alignItems:'center',gap:8,
-                transition:'all 0.2s ease'
-              }}>
-                {f.label}
-                <span style={{padding:'2px 8px',borderRadius:'5px',background:f.badgeBg,color:f.badgeColor,fontSize:'0.66rem',fontWeight:700}}>
-                  {f.badge}
-                </span>
-              </button>
-            ))}
+        <div style={{display:'grid',gridTemplateColumns:'260px 1fr',gap:22}} className="json-format-grid">
+          {/* Format selector — vertical ledger of options */}
+          <div style={{display:'flex',flexDirection:'column',gap:10}}>
+            {JSON_FORMATS.map(f => {
+              const active = selectedFormat===f.id;
+              return (
+                <button key={f.id} onClick={() => setSelectedFormat(f.id)} style={{
+                  textAlign:'left',padding:'14px 16px',borderRadius:'10px',cursor:'pointer',
+                  border: active ? `1.5px solid ${C.gold}` : `1px solid ${C.gray}`,
+                  background: active ? C.goldBg : C.white,
+                  boxShadow: active ? '0 4px 14px rgba(156,122,46,0.14)' : '0 1px 4px rgba(0,0,0,0.04)',
+                  position:'relative', transition:'all 0.2s ease',
+                }}>
+                  {active && <span style={{position:'absolute',left:0,top:10,bottom:10,width:3,borderRadius:'0 3px 3px 0',background:`linear-gradient(180deg, ${C.gold}, ${C.goldLight})`}}/>}
+                  <p style={{margin:0,fontWeight:800,fontSize:'0.85rem',color: active ? C.primaryDark : C.textDark}}>{f.label}</p>
+                  <span style={{display:'inline-block',marginTop:7,padding:'2px 9px',borderRadius:'5px',background:f.badgeBg,color:f.badgeColor,fontSize:'0.64rem',fontWeight:700,letterSpacing:'0.03em'}}>
+                    {f.badge}
+                  </span>
+                </button>
+              );
+            })}
+
+            <div style={{marginTop:6,background:C.goldBg,borderRadius:'10px',padding:'14px 15px',border:`1px solid ${C.gold}30`}}>
+              <p style={{margin:'0 0 8px 0',fontSize:'0.72rem',fontWeight:800,color:C.gold,textTransform:'uppercase',letterSpacing:'0.05em'}}>Key Rules</p>
+              <div style={{fontSize:'0.76rem',color:C.textDark,lineHeight:1.85}}>
+                • <code>correct_answer</code> = option value, e.g. <code>"2"</code><br/>
+                • <code>question_hi</code> is optional<br/>
+                • Dates as <code>YYYY-MM-DD</code>
+              </div>
+            </div>
           </div>
 
-          <div style={{background:C.white,borderRadius:'12px',border:`1px solid ${C.gray}`,overflow:'hidden',boxShadow:'0 2px 12px rgba(26,54,93,0.08)'}}>
-            <div style={{padding:'14px 18px',background:`linear-gradient(135deg, ${C.primaryDark}, ${C.primary})`,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
-              <div style={{display:'flex',alignItems:'center',gap:12}}>
-                <FiCode color="#fff" size={18}/>
-                <span style={{color:'#fff',fontWeight:700,fontSize:'0.88rem'}}>{fmt.label}</span>
+          {/* Schema preview — official document styling */}
+          <div style={{background:C.white,borderRadius:'12px',border:`1px solid ${C.gray}`,overflow:'hidden',boxShadow:'0 2px 14px rgba(26,54,93,0.08)'}}>
+            <div style={{padding:'14px 20px',background:C.offWhite,borderBottom:`1px solid ${C.gray}`,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <span style={{width:8,height:8,borderRadius:'50%',background:C.secondary}}/>
+                <span style={{fontWeight:800,fontSize:'0.84rem',color:C.textDark}}>{fmt.label}</span>
                 <Chip label={fmt.badge} color={fmt.badgeColor} bg={fmt.badgeBg}/>
               </div>
               <div style={{display:'flex',gap:8}}>
                 <button onClick={() => handleCopy(fmt.example, fmt.id)} style={{
-                  padding:'6px 14px',borderRadius:'8px',border:'1px solid rgba(255,255,255,0.2)',
-                  background:'rgba(255,255,255,0.1)',color:'#fff',cursor:'pointer',
-                  fontSize:'0.78rem',display:'flex',alignItems:'center',gap:6,fontWeight:700,
+                  padding:'7px 14px',borderRadius:'7px',border:`1.5px solid ${C.gray}`,
+                  background:'#fff',color:C.textDark,cursor:'pointer',
+                  fontSize:'0.76rem',display:'flex',alignItems:'center',gap:6,fontWeight:700,
                   transition:'all 0.2s ease'
                 }}>
-                  <FiCopy size={13}/>{copied===fmt.id ? 'Copied!' : 'Copy'}
+                  <FiCopy size={12}/>{copied===fmt.id ? 'Copied' : 'Copy'}
                 </button>
                 <button onClick={handleUseTemplate} style={{
-                  padding:'6px 14px',borderRadius:'8px',border:'none',
-                  background:C.accent,color:'#fff',cursor:'pointer',
-                  fontSize:'0.78rem',display:'flex',alignItems:'center',gap:6,fontWeight:700,
+                  padding:'7px 14px',borderRadius:'7px',border:'none',
+                  background:`linear-gradient(135deg, ${C.gold}, ${C.goldLight})`,color:'#fff',cursor:'pointer',
+                  fontSize:'0.76rem',display:'flex',alignItems:'center',gap:6,fontWeight:700,
+                  boxShadow:'0 2px 8px rgba(156,122,46,0.3)',
                   transition:'all 0.2s ease'
                 }}>
-                  <FiSend size={13}/>Use Template
+                  <FiSend size={12}/>Use Template
                 </button>
               </div>
             </div>
             <pre style={{
-              margin:0,padding:'20px',fontFamily:'monospace',fontSize:'0.75rem',
-              color:C.textDark,background:C.offWhite,overflowX:'auto',
-              lineHeight:1.7,maxHeight:'50vh',overflowY:'auto',
-              borderRadius:'0 0 12px 12px'
+              margin:0,padding:'22px',fontFamily:"'SF Mono','Fira Code',monospace",fontSize:'0.76rem',
+              color:C.textDark,background:'#fbfcfe',overflowX:'auto',
+              lineHeight:1.75,maxHeight:'52vh',overflowY:'auto',
             }}>
               {fmt.example}
             </pre>
-          </div>
-
-          <div style={{marginTop:18,background:'#fff8f3',borderRadius:'10px',padding:'14px 16px',border:`1px solid ${C.accent}40`,display:'flex',gap:10}}>
-            <FiInfo color={C.accent} size={16} style={{flexShrink:0,marginTop:2}}/>
-            <div style={{fontSize:'0.78rem',color:C.textDark,lineHeight:1.8}}>
-              <strong style={{color:C.accent}}>Key Rules:</strong><br/>
-              • <code>correct_answer</code> must be the option value (e.g. <code>"2"</code>)<br/>
-              • Optional: <code>question_hi</code> for Hindi translations<br/>
-              • Date format: <code>YYYY-MM-DD</code>
-            </div>
           </div>
         </div>
       )}
 
       {activeFormatTab === 'upload' && (
-        <div style={{background:C.white,borderRadius:'12px',padding:28,border:`1px solid ${C.gray}`,boxShadow:'0 2px 12px rgba(26,54,93,0.08)'}}>
-          <h3 style={{margin:'0 0 16px 0',color:C.textDark,fontSize:'1rem',fontWeight:700,display:'flex',alignItems:'center',gap:10}}>
-            <FiUploadCloud color={C.accent} size={20}/> Upload JSON or .docx
-          </h3>
-          <label style={{
-            display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
-            border:`2px dashed ${C.accent}`,borderRadius:'12px',padding:'40px 20px',
-            textAlign:'center',cursor:'pointer',background:'#fff8f3',marginBottom:18,gap:8,
-            transition:'all 0.2s ease'
-          }}>
-            <FiUploadCloud size={40} color={C.accent}/>
-            <p style={{margin:'8px 0 2px 0',fontWeight:700,color:C.accent,fontSize:'0.92rem'}}>Click to upload or drag file</p>
-            <p style={{margin:0,fontSize:'0.74rem',color:C.textMuted}}>.json or .docx supported</p>
-            <input type="file" ref={fileRef}
-              accept=".json,.docx,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              onChange={handleFile} style={{display:'none'}}/>
-          </label>
-          <div style={{textAlign:'center',color:C.textMuted,fontSize:'0.78rem',fontWeight:700,margin:'12px 0',textTransform:'uppercase',letterSpacing:'0.05em'}}>Or Paste JSON</div>
-          <textarea rows={14} value={rawJson} onChange={e => setRawJson(e.target.value)}
-            placeholder={`Paste exam JSON here…`}
-            style={{width:'100%',padding:14,fontFamily:'monospace',fontSize:'0.78rem',borderRadius:'10px',border:`1.5px solid ${C.gray}`,resize:'vertical',background:C.offWhite,color:C.textDark,boxSizing:'border-box', transition:'all 0.2s ease'}}/>
-          <div style={{display:'flex',gap:10,marginTop:16}}>
-            <button onClick={handleSubmit} disabled={loading} style={{
-              flex:1,padding:'13px',
-              background:loading ? C.mediumGray : `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
-              color:'#fff',border:'none',borderRadius:'10px',fontWeight:700,
-              cursor:loading ? 'not-allowed' : 'pointer',fontSize:'0.92rem',
-              display:'flex',alignItems:'center',justifyContent:'center',gap:8,
-              boxShadow:'0 4px 14px rgba(26,54,93,0.25)',
-              transition:'all 0.3s ease'
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:22}} className="json-upload-grid">
+          {/* Left: dropzone / file intake */}
+          <div style={{background:C.white,borderRadius:'12px',padding:24,border:`1px solid ${C.gray}`,boxShadow:'0 2px 14px rgba(26,54,93,0.08)'}}>
+            <h3 style={{margin:'0 0 4px 0',color:C.textDark,fontSize:'0.92rem',fontWeight:800,display:'flex',alignItems:'center',gap:9}}>
+              <FiUploadCloud color={C.gold} size={18}/> Submit a File
+            </h3>
+            <p style={{margin:'0 0 16px 0',fontSize:'0.76rem',color:C.textMuted}}>Accepts .json or .docx documents.</p>
+            <label style={{
+              display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+              border:`1.5px dashed ${C.gold}60`,borderRadius:'12px',padding:'36px 20px',
+              textAlign:'center',cursor:'pointer',background:C.goldBg,marginBottom:18,gap:8,
+              transition:'all 0.2s ease'
             }}>
-              {loading ? <><FiRefreshCw style={{animation:'spin 1s linear infinite'}}/> Processing…</> : <><FiSave/> Parse & Upload</>}
-            </button>
-            {rawJson && (
-              <button onClick={() => { setRawJson(''); if (fileRef.current) fileRef.current.value = ''; }} style={btnSecondary}>
-                <FiX/> Clear
-              </button>
-            )}
+              <FiUploadCloud size={34} color={C.gold}/>
+              <p style={{margin:'6px 0 2px 0',fontWeight:700,color:C.gold,fontSize:'0.88rem'}}>Click to upload or drag file</p>
+              <p style={{margin:0,fontSize:'0.72rem',color:C.textMuted}}>.json or .docx supported</p>
+              <input type="file" ref={fileRef}
+                accept=".json,.docx,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={handleFile} style={{display:'none'}}/>
+            </label>
+            <div style={{display:'flex',alignItems:'center',gap:10,margin:'18px 0'}}>
+              <div style={{flex:1,height:1,background:C.gray}}/>
+              <span style={{fontSize:'0.7rem',fontWeight:800,color:C.textMuted,textTransform:'uppercase',letterSpacing:'0.06em'}}>Or Paste Directly</span>
+              <div style={{flex:1,height:1,background:C.gray}}/>
+            </div>
+            <textarea rows={11} value={rawJson} onChange={e => setRawJson(e.target.value)}
+              placeholder={`Paste exam JSON here…`}
+              style={{width:'100%',padding:14,fontFamily:"'SF Mono','Fira Code',monospace",fontSize:'0.76rem',borderRadius:'10px',border:`1.5px solid ${C.gray}`,resize:'vertical',background:C.offWhite,color:C.textDark,boxSizing:'border-box', transition:'all 0.2s ease'}}/>
+          </div>
+
+          {/* Right: live status + submit, styled as a review ledger */}
+          <div style={{display:'flex',flexDirection:'column'}}>
+            <div style={{background:C.white,borderRadius:'12px',padding:24,border:`1px solid ${C.gray}`,boxShadow:'0 2px 14px rgba(26,54,93,0.08)',flex:1,display:'flex',flexDirection:'column'}}>
+              <h3 style={{margin:'0 0 14px 0',color:C.textDark,fontSize:'0.92rem',fontWeight:800,display:'flex',alignItems:'center',gap:9}}>
+                <FiEye color={C.gold} size={18}/> Submission Status
+              </h3>
+              <div style={{flex:1,display:'flex',flexDirection:'column',gap:10}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 14px',borderRadius:'9px',background:C.offWhite,border:`1px solid ${C.gray}`}}>
+                  <span style={{fontSize:'0.78rem',fontWeight:700,color:C.textMuted}}>Payload size</span>
+                  <Chip label={`${rawJson.length.toLocaleString()} chars`} color={C.primary} bg={C.infoBg}/>
+                </div>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 14px',borderRadius:'9px',background:C.offWhite,border:`1px solid ${C.gray}`}}>
+                  <span style={{fontSize:'0.78rem',fontWeight:700,color:C.textMuted}}>Validity</span>
+                  {(() => {
+                    if (!rawJson.trim()) return <Chip label="Awaiting input" color={C.textMuted} bg={C.lightGray}/>;
+                    try { JSON.parse(rawJson); return <Chip label="Valid JSON" color={C.secondary} bg={C.successBg} icon={<FiCheckCircle size={11}/>}/>; }
+                    catch { return <Chip label="Invalid JSON" color={C.error} bg={C.errorBg} icon={<FiAlertCircle size={11}/>}/>; }
+                  })()}
+                </div>
+                <div style={{marginTop:'auto',paddingTop:14}}>
+                  <div style={{display:'flex',gap:10}}>
+                    <button onClick={handleSubmit} disabled={loading} style={{
+                      flex:1,padding:'13px',
+                      background:loading ? C.mediumGray : `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
+                      color:'#fff',border:'none',borderRadius:'10px',fontWeight:700,
+                      cursor:loading ? 'not-allowed' : 'pointer',fontSize:'0.9rem',
+                      display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+                      boxShadow:'0 4px 14px rgba(26,54,93,0.25)',
+                      transition:'all 0.3s ease'
+                    }}>
+                      {loading ? <><FiRefreshCw style={{animation:'spin 1s linear infinite'}}/> Processing…</> : <><FiSave/> Parse & Upload</>}
+                    </button>
+                    {rawJson && (
+                      <button onClick={() => { setRawJson(''); if (fileRef.current) fileRef.current.value = ''; }} style={btnSecondary}>
+                        <FiX/> Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      <style>{`
+        @media (max-width: 760px) {
+          .json-format-grid { grid-template-columns: 1fr !important; }
+          .json-upload-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -1328,12 +1403,24 @@ function EditExamModal({
   onClose,
   loading,
   onQuestionAdded,
+  diffMap,
+  onEditQuestion,
+  onDeleteQuestion,
+  onDeleteExam,
+  onDownloadDocx,
+  dlLoading,
 }: {
-  exam: { id: string; title: string; exam_date: string };
+  exam: { id: string; title: string; exam_date: string; mquestions?: Question[] };
   onSave: (title: string, date: string) => void;
   onClose: () => void;
   loading: boolean;
   onQuestionAdded?: () => void;
+  diffMap?: Record<string,string>;
+  onEditQuestion?: (q: Question) => void;
+  onDeleteQuestion?: (qid: string) => void;
+  onDeleteExam?: (id: string, title: string) => void;
+  onDownloadDocx?: (exam: any) => void;
+  dlLoading?: string | null;
 }) {
   const [title, setTitle]   = useState(exam.title);
   const [date,  setDate]    = useState(exam.exam_date);
@@ -1372,15 +1459,36 @@ function EditExamModal({
 
   return (
     <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',zIndex:999,display:'flex',alignItems:'center',justifyContent:'center',padding:16,overflowY:'auto'}}>
-      <div className="modal-card" style={{background:C.white,borderRadius:'14px',width:'100%',maxWidth:640,boxShadow:'0 12px 48px rgba(26,54,93,0.25)',maxHeight:'92vh',overflowY:'auto'}}>
-        <div style={{padding:'18px 24px',borderBottom:`1px solid ${C.gray}`,background:`linear-gradient(135deg, ${C.primaryDark}, ${C.primary})`,borderRadius:'14px 14px 0 0',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+      <div className="modal-card" style={{background:C.white,borderRadius:'14px',width:'100%',maxWidth:680,boxShadow:'0 12px 48px rgba(26,54,93,0.25)',maxHeight:'92vh',overflowY:'auto'}}>
+        <div style={{padding:'18px 24px',borderBottom:`1px solid ${C.gray}`,background:`linear-gradient(135deg, ${C.primaryDark}, ${C.primary})`,borderRadius:'14px 14px 0 0',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
           <div style={{display:'flex',alignItems:'center',gap:12}}>
             <HiOutlineAcademicCap size={22} color="#fff"/>
             <span style={{color:'#fff',fontWeight:700,fontSize:'1rem'}}>Edit Exam</span>
           </div>
-          <button onClick={onClose} style={{background:'none',border:'none',color:'rgba(255,255,255,0.7)',cursor:'pointer',fontSize:20,display:'flex'}}>
-            <FiX/>
-          </button>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            {onDownloadDocx && (
+              <button onClick={() => onDownloadDocx(exam)} disabled={dlLoading === exam.id} title="Download as Word" style={{
+                display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:'7px',
+                border:'1px solid rgba(255,255,255,0.25)',background:'rgba(255,255,255,0.1)',color:'#fff',
+                cursor:'pointer',fontSize:'0.74rem',fontWeight:700, opacity: dlLoading === exam.id ? 0.6 : 1,
+              }}>
+                {dlLoading === exam.id ? <FiRefreshCw size={12} style={{animation:'spin 1s linear infinite'}}/> : <FiDownload size={12}/>}
+                Word
+              </button>
+            )}
+            {onDeleteExam && (
+              <button onClick={() => onDeleteExam(exam.id, exam.title)} title="Delete exam" style={{
+                display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:'7px',
+                border:'1px solid rgba(255,255,255,0.25)',background:'rgba(239,68,68,0.18)',color:'#fff',
+                cursor:'pointer',fontSize:'0.74rem',fontWeight:700,
+              }}>
+                <FiTrash2 size={12}/> Delete
+              </button>
+            )}
+            <button onClick={onClose} style={{background:'none',border:'none',color:'rgba(255,255,255,0.7)',cursor:'pointer',fontSize:20,display:'flex'}}>
+              <FiX/>
+            </button>
+          </div>
         </div>
 
         <div style={{padding:24}}>
@@ -1392,12 +1500,41 @@ function EditExamModal({
             <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{...inputStyle,marginBottom:0}}/>
           </div>
 
-          <div style={{display:'flex',gap:10,marginBottom:10}}>
+          <div style={{display:'flex',gap:10,marginBottom:22}}>
             <button onClick={() => onSave(title, date)} disabled={loading || !title.trim()} style={{...btnPrimary, opacity: (loading || !title.trim()) ? 0.6 : 1, cursor: (loading || !title.trim()) ? 'not-allowed' : 'pointer'}}>
               {loading ? <><FiRefreshCw style={{animation:'spin 1s linear infinite'}}/> Saving…</> : <><FiSave/> Save Details</>}
             </button>
             <button onClick={onClose} style={btnSecondary}><FiX/> Cancel</button>
           </div>
+
+          {/* ── Questions in this exam ──────────────────────────────────────── */}
+          {(exam.mquestions?.length ?? 0) > 0 && (
+            <div style={{borderTop:`1px solid ${C.gray}`,paddingTop:20,marginBottom:6}}>
+              <h4 style={{margin:'0 0 14px 0',color:C.textDark,fontSize:'0.84rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em',display:'flex',alignItems:'center',gap:8}}>
+                <FiFileText size={14} color={C.gold}/> Questions ({exam.mquestions!.length})
+              </h4>
+              <div style={{display:'flex',flexDirection:'column',gap:10,maxHeight:300,overflowY:'auto',marginBottom:8}}>
+                {[...exam.mquestions!].sort((a,b) => a.question_number - b.question_number).map(q => (
+                  <div key={q.id} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'12px 14px',border:`1px solid ${C.gray}`,borderRadius:'9px',background:C.offWhite}}>
+                    <span style={{minWidth:26,height:26,background:C.primary,color:'#fff',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.7rem',fontWeight:800,flexShrink:0}}>
+                      {q.question_number}
+                    </span>
+                    <div style={{flex:1,minWidth:0}}>
+                      <p style={{margin:0,fontWeight:700,color:C.textDark,fontSize:'0.82rem',overflow:'hidden',textOverflow:'ellipsis',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{q.question_en}</p>
+                      <div style={{display:'flex',gap:5,marginTop:6,flexWrap:'wrap'}}>
+                        {diffMap && <DiffChip level={diffMap[q.id]}/>}
+                        <Chip label={`Ans: ${q.correct_answer}`} color={C.secondary} bg={C.successBg}/>
+                      </div>
+                    </div>
+                    <div style={{display:'flex',gap:5,flexShrink:0}}>
+                      <IconBtn icon={<FiEdit2 size={12}/>} title="Edit" color={C.primary} onClick={() => onEditQuestion?.(q)}/>
+                      <IconBtn icon={<FiTrash2 size={12}/>} title="Delete" color={C.error} onClick={() => onDeleteQuestion?.(q.id)}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div style={{borderTop:`1px solid ${C.gray}`,paddingTop:20,marginTop:14}}>
             <button onClick={() => setShowAddQ(p => !p)} style={{
@@ -1500,11 +1637,13 @@ export default function ExamDashboard() {
   const [rtStatus,  setRtStatus]  = useState<'live'|'off'>('off');
   const [tfReady,   setTfReady]   = useState(false);
   const [diffMap,   setDiffMap]   = useState<Record<string,string>>({});
-  const [expanded,  setExpanded]  = useState<Record<string,boolean>>({});
-  const [editExam,  setEditExam]  = useState<{id:string;title:string;exam_date:string}|null>(null);
+  const [editExam,  setEditExam]  = useState<Exam|null>(null);
   const [editQ,     setEditQ]     = useState<Question|null>(null);
   const [activeTab, setActiveTab] = useState<'smart'|'json'|'list'>('smart');
   const [dlLoading, setDlLoading] = useState<string|null>(null);
+  const [filterYear,  setFilterYear]  = useState<string>('all');
+  const [filterMonth, setFilterMonth] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const channelRef = useRef<RealtimeChannel|null>(null);
 
@@ -1518,7 +1657,7 @@ export default function ExamDashboard() {
     return () => { channelRef.current?.unsubscribe(); };
   }, []);
 
-  const loadAll = async () => {
+  const loadAll = async (): Promise<Exam[]> => {
     const [examsData, statsResult] = await Promise.all([
       fetchExamsAction(),
       fetchDashboardStatsAction(),
@@ -1526,6 +1665,7 @@ export default function ExamDashboard() {
     setExams(examsData);
     if (statsResult.success && statsResult.data) setStats(statsResult.data);
     scoreDifficulties(examsData);
+    return examsData;
   };
 
   const scoreDifficulties = async (examsData: Exam[]) => {
@@ -1565,7 +1705,12 @@ export default function ExamDashboard() {
       options: q.options, correct_answer: q.correct_answer,
     });
     setLoading(false);
-    if (res.success) { toast('Question updated.', 'success'); setEditQ(null); await loadAll(); }
+    if (res.success) {
+      toast('Question updated.', 'success');
+      setEditQ(null);
+      const fresh = await loadAll();
+      setEditExam(prev => prev ? (fresh.find(e => e.id === prev.id) ?? prev) : prev);
+    }
     else toast(res.error ?? 'Update failed.', 'error');
   };
 
@@ -1605,6 +1750,21 @@ export default function ExamDashboard() {
     {id:'json',  label:'JSON Converter',  icon:<FiCode size={15}/>},
     {id:'list',  label:'Exam Records',    icon:<FiDatabase size={15}/>},
   ] as const;
+
+  // ── Derived: available years, and the filtered/searched exam list ──────────
+  const availableYears = Array.from(new Set(
+    exams.map(e => (e.exam_date || '').slice(0, 4)).filter(Boolean)
+  )).sort((a, b) => b.localeCompare(a));
+
+  const filteredExams = exams.filter(exam => {
+    const d = exam.exam_date || '';
+    const year  = d.slice(0, 4);
+    const month = String(parseInt(d.slice(5, 7), 10)); // '1'..'12', no leading zero
+    if (filterYear !== 'all' && year !== filterYear) return false;
+    if (filterMonth !== 'all' && month !== filterMonth) return false;
+    if (searchQuery.trim() && !exam.title.toLowerCase().includes(searchQuery.trim().toLowerCase())) return false;
+    return true;
+  });
 
   return (
     <div style={{minHeight:'100vh',background:C.lightGray,fontFamily:"'Segoe UI','Trebuchet MS',system-ui,sans-serif"}}>
@@ -1682,113 +1842,181 @@ export default function ExamDashboard() {
                 <p style={{margin:0,fontWeight:700,fontSize:'0.96rem'}}>No exams yet</p>
                 <p style={{margin:'6px 0 0 0',fontSize:'0.82rem'}}>Use Smart Import to add your first exam</p>
               </div>
-            ) : exams.map(exam => {
-              const isOpen = expanded[exam.id];
-              return (
-                <div key={exam.id} style={{background:C.white,borderRadius:'12px',marginBottom:16,border:`1px solid ${C.gray}`,boxShadow:'0 2px 8px rgba(26,54,93,0.08)',overflow:'hidden',transition:'all 0.3s ease'}}>
-                  {/* Exam header */}
-                  <div style={{display:'flex',alignItems:'center',gap:12,padding:'16px 20px',borderBottom:isOpen?`1px solid ${C.gray}`:'none',background:isOpen?'linear-gradient(90deg,#f0f4ff,#fff)':'#fff',flexWrap:'wrap'}}>
-                    <HiOutlineAcademicCap size={22} color={C.primary} style={{flexShrink:0}}/>
-                    <div style={{flex:1,minWidth:0}}>
-                      <p style={{margin:0,fontWeight:800,color:C.textDark,fontSize:'0.96rem',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{exam.title}</p>
-                      <div style={{display:'flex',gap:8,marginTop:6,flexWrap:'wrap'}}>
-                        <Chip label={exam.exam_date}                           icon={<FiClock size={11}/>}      color={C.primary}   bg={C.infoBg}/>
-                        <Chip label={`${exam.mquestions?.length??0} Q`}        icon={<FiFileText size={11}/>}   color={C.secondary} bg={C.successBg}/>
-                        {diffMap && exam.mquestions?.length > 0 && (() => {
-                          const diffs = exam.mquestions.map(q => diffMap[q.id]).filter(Boolean);
-                          const hard   = diffs.filter(d => d === 'Hard').length;
-                          const medium = diffs.filter(d => d === 'Medium').length;
-                          if (hard > 0)   return <Chip label={`${hard} Hard`}   color='#991b1b' bg='#fee2e2'/>;
-                          if (medium > 0) return <Chip label={`${medium} Medium`} color='#92400e' bg='#fef3c7'/>;
-                          return null;
-                        })()}
-                      </div>
-                    </div>
-                    <div style={{display:'flex',gap:8,flexShrink:0}}>
-                      <button
-                        onClick={() => handleDownloadDocx(exam)}
-                        disabled={dlLoading === exam.id}
-                        title="Download as Word"
-                        style={{
-                          display:'flex',alignItems:'center',gap:6,padding:'6px 14px',
-                          borderRadius:'8px',border:`1.5px solid ${C.primary}20`,
-                          background:`${C.primary}08`,color:C.primary,cursor:'pointer',
-                          fontSize:'0.75rem',fontWeight:700,
-                          opacity: dlLoading === exam.id ? 0.6 : 1,
-                          transition:'all 0.2s ease'
-                        }}
-                      >
-                        {dlLoading === exam.id
-                          ? <FiRefreshCw size={13} style={{animation:'spin 1s linear infinite'}}/>
-                          : <FiDownload size={13}/>}
-                        {dlLoading === exam.id ? 'Gen…' : '.docx'}
-                      </button>
-                      <IconBtn icon={<FiEdit2 size={14}/>} title="Edit" color={C.primary} onClick={() => setEditExam({id:exam.id,title:exam.title,exam_date:exam.exam_date})}/>
-                      <IconBtn icon={<FiTrash2 size={14}/>} title="Delete" color={C.error} onClick={() => handleDeleteExam(exam.id, exam.title)}/>
-                      <IconBtn icon={isOpen?<FiChevronUp size={14}/>:<FiChevronDown size={14}/>} title="Expand" color={C.textMuted} onClick={() => setExpanded(p => ({...p,[exam.id]:!p[exam.id]}))}/>
-                    </div>
+            ) : (
+              <>
+                {/* ── Filter Bar ──────────────────────────────────────────────── */}
+                <div style={{
+                  display:'flex',alignItems:'center',gap:12,flexWrap:'wrap',
+                  padding:'14px 18px',marginBottom:22,borderRadius:'12px',
+                  background:C.white,border:`1px solid ${C.gray}`,boxShadow:'0 2px 10px rgba(26,54,93,0.06)',
+                  position:'relative',
+                }}>
+                  <span style={{position:'absolute',left:0,top:12,bottom:12,width:3,borderRadius:'0 3px 3px 0',background:`linear-gradient(180deg, ${C.gold}, ${C.goldLight})`}}/>
+                  <div style={{display:'flex',alignItems:'center',gap:8,paddingLeft:8}}>
+                    <FiClock size={15} color={C.gold}/>
+                    <span style={{fontSize:'0.72rem',fontWeight:800,color:C.textMuted,textTransform:'uppercase',letterSpacing:'0.05em'}}>Filter Records</span>
                   </div>
 
-                  {/* Expanded questions list */}
-                  {isOpen && (
-                    <div style={{padding:'18px 20px',background:C.offWhite,borderTop:`1px solid ${C.gray}`}}>
-                      {(exam.mquestions??[]).length === 0 ? (
-                        <p style={{color:C.textMuted,fontSize:'0.82rem',margin:0}}>No questions in this exam.</p>
-                      ) : [...(exam.mquestions??[])].sort((a,b) => a.question_number - b.question_number).map((q,qi) => (
-                        <div key={q.id} style={{marginBottom:qi < (exam.mquestions?.length ?? 0) - 1 ? 14 : 0,padding:'14px 16px',border:`1px solid ${C.gray}`,borderRadius:'10px',background:C.white}}>
-                          <div style={{display:'flex',alignItems:'flex-start',gap:12}}>
-                            <span style={{minWidth:32,height:32,background:C.primary,color:'#fff',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.75rem',fontWeight:800,flexShrink:0}}>
-                              {q.question_number}
-                            </span>
-                            <div style={{flex:1,minWidth:0}}>
-                              <p style={{margin:'0 0 4px 0',fontWeight:700,color:C.textDark,fontSize:'0.87rem'}}>{q.question_en}</p>
-                              {q.question_hi && <p style={{margin:'0 0 8px 0',color:C.textMuted,fontSize:'0.79rem',fontStyle:'italic'}}>{q.question_hi}</p>}
-                              <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:10}}>
-                                <DiffChip level={diffMap[q.id]}/>
-                                <Chip label={`Ans: ${q.correct_answer}`} color={C.secondary} bg={C.successBg} icon={<FiCheckCircle size={11}/>}/>
-                              </div>
-                              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:6}}>
-                                {q.options?.map((opt, oi) => {
-                                  const correct = String(q.correct_answer) === String(opt.value);
-                                  return (
-                                    <div key={oi} style={{
-                                      padding:'6px 10px',borderRadius:'8px',fontSize:'0.78rem',
-                                      border: correct ? `1.5px solid ${C.secondary}` : `1px solid ${C.gray}`,
-                                      background: correct ? C.successBg : C.offWhite,
-                                      color: correct ? C.secondary : C.textDark,fontWeight: correct ? 700 : 500,
-                                    }}>
-                                      <span style={{fontWeight:800,marginRight:3}}>{opt.value}.</span>{opt.text}
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                  <select value={filterYear} onChange={e => setFilterYear(e.target.value)} style={{
+                    padding:'8px 12px',borderRadius:'8px',border:`1.5px solid ${C.gray}`,
+                    background:C.offWhite,color:C.textDark,fontSize:'0.8rem',fontWeight:700,cursor:'pointer',
+                  }}>
+                    <option value="all">All Years</option>
+                    {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+
+                  <select value={filterMonth} onChange={e => setFilterMonth(e.target.value)} style={{
+                    padding:'8px 12px',borderRadius:'8px',border:`1.5px solid ${C.gray}`,
+                    background:C.offWhite,color:C.textDark,fontSize:'0.8rem',fontWeight:700,cursor:'pointer',
+                  }}>
+                    <option value="all">All Months</option>
+                    {MONTH_NAMES.map((name, idx) => (
+                      <option key={name} value={String(idx + 1)}>{name}</option>
+                    ))}
+                  </select>
+
+                  <input
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Search exam title…"
+                    style={{
+                      flex:'1 1 200px', minWidth:160, padding:'8px 14px',borderRadius:'8px',
+                      border:`1.5px solid ${C.gray}`,background:C.offWhite,color:C.textDark,fontSize:'0.8rem',
+                    }}
+                  />
+
+                  {(filterYear !== 'all' || filterMonth !== 'all' || searchQuery.trim()) && (
+                    <button onClick={() => { setFilterYear('all'); setFilterMonth('all'); setSearchQuery(''); }} style={{
+                      padding:'8px 14px',borderRadius:'8px',border:`1.5px solid ${C.gray}`,
+                      background:'#fff',color:C.textMuted,fontSize:'0.78rem',fontWeight:700,cursor:'pointer',
+                      display:'flex',alignItems:'center',gap:6,
+                    }}>
+                      <FiX size={13}/> Reset
+                    </button>
+                  )}
+
+                  <span style={{marginLeft:'auto',fontSize:'0.78rem',fontWeight:700,color:C.textMuted,whiteSpace:'nowrap'}}>
+                    {filteredExams.length} of {exams.length} exams
+                  </span>
+                </div>
+
+                {/* ── Card Grid ───────────────────────────────────────────────── */}
+                {filteredExams.length === 0 ? (
+                  <div style={{textAlign:'center',padding:'56px 24px',color:C.textMuted,border:`2px dashed ${C.gray}`,borderRadius:'14px',background:C.white}}>
+                    <FiAlertCircle size={36} style={{marginBottom:12,color:C.gray}}/>
+                    <p style={{margin:0,fontWeight:700,fontSize:'0.9rem'}}>No exams match these filters</p>
+                    <p style={{margin:'6px 0 0 0',fontSize:'0.8rem'}}>Try a different year, month, or search term</p>
+                  </div>
+                ) : (
+                  <div className="exam-card-grid" style={{
+                    display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap:18,
+                  }}>
+                    {filteredExams.map(exam => {
+                      const diffs  = (exam.mquestions ?? []).map(q => diffMap[q.id]).filter(Boolean);
+                      const hard   = diffs.filter(d => d === 'Hard').length;
+                      const medium = diffs.filter(d => d === 'Medium').length;
+                      const dateObj = exam.exam_date ? new Date(exam.exam_date + 'T00:00:00') : null;
+                      const monthLabel = dateObj ? MONTH_NAMES[dateObj.getMonth()].slice(0,3) : '—';
+                      const dayLabel   = dateObj ? dateObj.getDate() : '—';
+                      const yearLabel  = dateObj ? dateObj.getFullYear() : '—';
+
+                      return (
+                        <div
+                          key={exam.id}
+                          onClick={() => setEditExam(exam)}
+                          className="exam-card"
+                          style={{
+                            background:C.white, borderRadius:'14px', border:`1px solid ${C.gray}`,
+                            boxShadow:'0 2px 10px rgba(26,54,93,0.07)', overflow:'hidden', cursor:'pointer',
+                            display:'flex', flexDirection:'column', position:'relative',
+                            transition:'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
+                          }}
+                        >
+                          {/* Seal corner-fold accent */}
+                          <div style={{
+                            position:'absolute', top:0, right:0, width:0, height:0,
+                            borderStyle:'solid', borderWidth:'0 34px 34px 0',
+                            borderColor:`transparent ${C.goldBg} transparent transparent`,
+                          }}/>
+                          <FiShield size={12} color={C.gold} style={{position:'absolute', top:7, right:7, opacity:0.85}}/>
+
+                          {/* Card header: date block + title */}
+                          <div style={{display:'flex', gap:14, padding:'18px 18px 14px 18px'}}>
+                            <div style={{
+                              flexShrink:0, width:54, height:58, borderRadius:'10px',
+                              background:`linear-gradient(160deg, ${C.primaryDark}, ${C.primary})`,
+                              display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+                              color:'#fff', boxShadow:'0 3px 10px rgba(26,54,93,0.25)',
+                            }}>
+                              <span style={{fontSize:'0.62rem', fontWeight:800, letterSpacing:'0.05em', color:'#cdd9ea', textTransform:'uppercase'}}>{monthLabel}</span>
+                              <span style={{fontSize:'1.15rem', fontWeight:800, lineHeight:1.1}}>{dayLabel}</span>
+                              <span style={{fontSize:'0.58rem', fontWeight:700, color:'#a5c4ea'}}>{yearLabel}</span>
                             </div>
-                            <div style={{display:'flex',gap:6,flexShrink:0}}>
-                              <IconBtn icon={<FiEdit2 size={13}/>} title="Edit" color={C.primary} onClick={() => setEditQ({...q})}/>
-                              <IconBtn icon={<FiTrash2 size={13}/>} title="Delete" color={C.error} onClick={() => handleDeleteQuestion(q.id)}/>
+                            <div style={{flex:1, minWidth:0}}>
+                              <p style={{
+                                margin:0, fontWeight:800, color:C.textDark, fontSize:'0.94rem', lineHeight:1.3,
+                                display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden',
+                              }}>{exam.title}</p>
+                              <div style={{display:'flex', gap:6, marginTop:8, flexWrap:'wrap'}}>
+                                <Chip label={`${exam.mquestions?.length??0} Questions`} icon={<FiFileText size={11}/>} color={C.secondary} bg={C.successBg}/>
+                              </div>
                             </div>
                           </div>
+
+                          {/* Difficulty strip */}
+                          <div style={{padding:'0 18px 14px 18px', display:'flex', gap:6, flexWrap:'wrap'}}>
+                            {hard > 0   && <Chip label={`${hard} Hard`}   color='#991b1b' bg='#fee2e2'/>}
+                            {medium > 0 && <Chip label={`${medium} Medium`} color='#92400e' bg='#fef3c7'/>}
+                            {hard === 0 && medium === 0 && diffs.length > 0 && <Chip label="Mostly Easy" color='#0369a1' bg='#dbeafe'/>}
+                          </div>
+
+                          {/* Footer actions — stop propagation so card click doesn't fire */}
+                          <div
+                            onClick={e => e.stopPropagation()}
+                            style={{
+                              marginTop:'auto', display:'flex', gap:8, padding:'12px 14px',
+                              borderTop:`1px solid ${C.gray}`, background:C.offWhite,
+                            }}
+                          >
+                            <button
+                              onClick={() => handleDownloadDocx(exam)}
+                              disabled={dlLoading === exam.id}
+                              title="Download as Word"
+                              style={{
+                                flex:1, display:'flex',alignItems:'center',justifyContent:'center',gap:6,padding:'7px 10px',
+                                borderRadius:'7px',border:`1.5px solid ${C.primary}20`,
+                                background:`${C.primary}08`,color:C.primary,cursor:'pointer',
+                                fontSize:'0.73rem',fontWeight:700,
+                                opacity: dlLoading === exam.id ? 0.6 : 1,
+                                transition:'all 0.2s ease'
+                              }}
+                            >
+                              {dlLoading === exam.id
+                                ? <FiRefreshCw size={12} style={{animation:'spin 1s linear infinite'}}/>
+                                : <FiDownload size={12}/>}
+                              {dlLoading === exam.id ? 'Gen…' : 'Word'}
+                            </button>
+                            <IconBtn icon={<FiEye size={13}/>} title="Open" color={C.gold} onClick={() => setEditExam(exam)}/>
+                            <IconBtn icon={<FiTrash2 size={13}/>} title="Delete" color={C.error} onClick={() => handleDeleteExam(exam.id, exam.title)}/>
+                          </div>
                         </div>
-                      ))}
-                      <button
-                        onClick={() => setEditExam({id:exam.id,title:exam.title,exam_date:exam.exam_date})}
-                        style={{
-                          marginTop:10,width:'100%',padding:'10px',border:`2px dashed ${C.gray}`,
-                          borderRadius:'8px',background:'transparent',color:C.textMuted,cursor:'pointer',
-                          fontSize:'0.82rem',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',gap:6,
-                          transition:'all 0.2s ease'
-                        }}
-                      >
-                        <FiPlus size={15}/> Add Question
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>
+
+      <style>{`
+        .exam-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 24px rgba(26,54,93,0.16) !important;
+          border-color: ${C.gold}50 !important;
+        }
+      `}</style>
 
       {/* ── Edit Exam Modal ─────────────────────────────────────────────────── */}
       {editExam && (
@@ -1797,7 +2025,20 @@ export default function ExamDashboard() {
           onSave={handleUpdateExam}
           onClose={() => setEditExam(null)}
           loading={loading}
-          onQuestionAdded={loadAll}
+          onQuestionAdded={async () => {
+            const fresh = await loadAll();
+            setEditExam(prev => prev ? (fresh.find(e => e.id === prev.id) ?? prev) : prev);
+          }}
+          diffMap={diffMap}
+          onEditQuestion={q => setEditQ({ ...q })}
+          onDeleteQuestion={async (qid) => {
+            await handleDeleteQuestion(qid);
+            const fresh = await loadAll();
+            setEditExam(prev => prev ? (fresh.find(e => e.id === prev.id) ?? null) : prev);
+          }}
+          onDeleteExam={async (id, title) => { await handleDeleteExam(id, title); setEditExam(null); }}
+          onDownloadDocx={handleDownloadDocx}
+          dlLoading={dlLoading}
         />
       )}
 
@@ -1835,6 +2076,7 @@ export default function ExamDashboard() {
           .stats-grid { grid-template-columns: 1fr !important; }
           .header-subtitle { display: none; }
           .modal-card { border-radius: 0 !important; max-height: 100vh !important; }
+          .exam-card-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
