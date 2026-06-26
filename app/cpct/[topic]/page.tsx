@@ -2,7 +2,6 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
 import {
   FileText,
   Clock3,
@@ -15,20 +14,7 @@ import {
   BarChart3,
   Calendar,
 } from "lucide-react";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-type Exam = {
-  id: string;
-  exam_title: string;
-  topic: string;
-  total_questions: number;
-  created_at: string;
-  exam_code?: string;
-};
+import { getTopicExams, type Exam } from "@/app/actions/getTopicExam";
 
 export default function TopicPage({
   params,
@@ -51,15 +37,14 @@ export default function TopicPage({
       setLoading(true);
       setError("");
 
-      const { data, error: supaError } = await supabase
-        .from("exams")
-        .select("id, exam_title, topic, total_questions, created_at, exam_code")
-        .eq("topic", decodedTopic)
-        .order("created_at", { ascending: false });
+      const { exams: data, error: fetchError } = await getTopicExams(decodedTopic);
 
-      if (supaError) throw supaError;
-
-      setExams(data || []);
+      if (fetchError) {
+        setError(fetchError);
+        setExams([]);
+      } else {
+        setExams(data);
+      }
     } catch (err) {
       console.error("Failed to fetch exams:", err);
       setError("Failed to load exams. Please try again later.");

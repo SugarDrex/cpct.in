@@ -1,61 +1,43 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-import Exams from "../../exams";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import Exams from "@/app/cpct/exams";
+import { getExamData, type Exam, type Question } from "@/app/actions/getTopicData";
 
 export default function ExamPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // ✅ unwrap params
   const { id } = use(params);
 
-  const [exam, setExam] = useState<any>(null);
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [exam, setExam] = useState<Exam | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchExam();
-  }, []);
+  }, [id]);
 
   async function fetchExam() {
     try {
-      // FETCH EXAM
-      const { data: examData, error: examError } =
-        await supabase
-          .from("exams")
-          .select("*")
-          .eq("id", id)
-          .single();
+      setLoading(true);
+      setError("");
 
-      if (examError) throw examError;
+      const { exam: examData, questions: questionsData, error: fetchError } = await getExamData(id);
 
-      setExam(examData);
-
-      // FETCH QUESTIONS
-      const {
-        data: questionsData,
-        error: questionsError,
-      } = await supabase
-        .from("exam_questions")
-        .select("*")
-        .eq("exam_id", id)
-        .order("question_number", {
-          ascending: true,
-        });
-
-      if (questionsError) throw questionsError;
-
-      setQuestions(questionsData || []);
+      if (fetchError) {
+        setError(fetchError);
+        setExam(null);
+        setQuestions([]);
+      } else {
+        setExam(examData);
+        setQuestions(questionsData);
+      }
     } catch (err) {
       console.error(err);
+      setError("Failed to load exam data. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -65,6 +47,22 @@ export default function ExamPage({
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         Loading Exam...
+      </div>
+    );
+  }
+
+  if (error || !exam) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">{error || "Exam not found"}</p>
+          <button
+            onClick={fetchExam}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
