@@ -178,8 +178,8 @@ export default function PracticePage() {
 
             const prompt =
                 language === "english"
-                    ? `Write 3-4 plain, clear paragraphs (100-120 words total) about "${topicEnglish}", suitable as a typing-test passage. Plain prose only, no headings, no markdown, no bullet points.`
-                    : `निम्नलिखित विषय पर शुद्ध हिंदी (यूनिकोड) में 3-4 सरल अनुच्छेद लिखें (कुल 100-110 शब्द), जो टंकण अभ्यास हेतु उपयुक्त हों: "${topicHindi}"। कोई शीर्षक, मार्कडाउन या बुलेट पॉइंट न दें, केवल सामान्य गद्य।`
+                    ? `Write 3-4 plain, clear paragraphs (200-220 words total) about "${topicEnglish}", suitable as a typing-test passage. Plain prose only, no headings, no markdown, no bullet points.`
+                    : `निम्नलिखित विषय पर शुद्ध हिंदी (यूनिकोड) में 3-4 सरल अनुच्छेद लिखें (कुल 200-220 शब्द), जो टंकण अभ्यास हेतु उपयुक्त हों: "${topicHindi}"। कोई शीर्षक, मार्कडाउन या बुलेट पॉइंट न दें, केवल सामान्य गद्य।`
 
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
