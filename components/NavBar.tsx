@@ -22,7 +22,7 @@ const desktopLinks = [
   { name: "Home", href: "/" },
   { name: "About", href: "/cpct-about" },
   { name: "Notes", href: "/cpct-notes" },
-  { name: "Practice", href: "/cpct-practice" },
+  { name: "Typing-Test", href: "/cpct-practice" },
   { name: "Contact", href: "/cpct-in-contact" },
 ];
 
