@@ -104,7 +104,7 @@ function LuxLoader({ isDark }: { isDark: boolean }) {
         </div>
         <div className={`w-48 h-1 ${isDark ? "bg-slate-800" : "bg-slate-200"} rounded-full mx-auto overflow-hidden`}>
           <div className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500 rounded-full animate-[shimmer_2s_ease-in-out_infinite]"
-               style={{ width: "60%", animation: "shimmer 2s ease-in-out infinite" }}
+            style={{ width: "60%", animation: "shimmer 2s ease-in-out infinite" }}
           />
         </div>
       </div>
@@ -146,8 +146,8 @@ export default function ExamPage({
   useEffect(() => {
     const checkDarkMode = () => {
       const isDarkMode = document.documentElement.classList.contains("dark") ||
-                         localStorage.getItem("theme") === "dark" ||
-                         (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        localStorage.getItem("theme") === "dark" ||
+        (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
       setIsDark(isDarkMode);
     };
 
@@ -260,7 +260,9 @@ export default function ExamPage({
       window.location.href = topicUrl;
     }
   }
-
+useEffect(() => {
+  document.getElementById("result-card")?.scrollIntoView();
+}, []);
   // ============================================
   // THEME CLASSES
   // ============================================
@@ -402,7 +404,7 @@ export default function ExamPage({
             <div className="flex items-center gap-2">
               <Link
                 href={topicUrl}
-                className={`h-8 px-4 rounded-lg ${theme.backBtn} border text-xs font-bold flex items-center gap-1.5 transition`}
+                className={`h-8 px-4 rounded-lg ${theme.backBtn} border cursor-pointer  text-xs font-bold flex items-center gap-1.5 transition`}
               >
                 <ArrowLeft size={14} /> Back to {topic}
               </Link>
@@ -413,7 +415,7 @@ export default function ExamPage({
         <main className="max-w-6xl mx-auto px-4 py-8">
           {/* Score Card */}
           <div className={`rounded-xl border ${theme.resultCard} ${theme.cardShadow} p-6 mb-6`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div  id="result-card" className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className={`w-16 h-16 rounded-xl ${theme.scoreRing} border-2 flex items-center justify-center`}>
                   <span className={`text-2xl font-black ${theme.scoreText}`}>{percentage}%</span>
@@ -443,8 +445,8 @@ export default function ExamPage({
           </div>
 
           {/* Action Buttons Grid - 2 columns: Retake + Back to Topic (Next button removed) */}
-          
- <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             {/* Retake Exam Button */}
             <button
               onClick={handleRetake}
@@ -456,7 +458,7 @@ export default function ExamPage({
                 hover:-translate-y-0.5 hover:scale-[1.01]
                 active:translate-y-[2px] active:scale-[0.99]
                 focus:outline-none focus:ring-4 focus:ring-slate-500/20
-                flex items-center justify-center gap-2
+                flex items-center justify-center gap-2 cursor-pointer
               `}
             >
               <RotateCcw size={16} className="transition-transform duration-300 group-hover:-rotate-180" />
@@ -465,7 +467,7 @@ export default function ExamPage({
 
             {/* Back to Topic Button (replaces "Previous Paper" — always works now) */}
             <button
-   onClick={() => router.push(`${topicUrl}${topic}`)}
+              onClick={() => router.push(`${topicUrl}${topic}`)}
               className={`
                 group h-14 rounded-xl
                 bg-gradient-to-b ${theme.prevBtn}
@@ -474,7 +476,7 @@ export default function ExamPage({
                 hover:-translate-y-0.5 hover:scale-[1.01]
                 active:translate-y-[2px] active:scale-[0.99]
                 focus:outline-none focus:ring-4 focus:ring-slate-500/20
-                flex items-center justify-center gap-2
+                flex items-center justify-center gap-2 cursor-pointer
               `}
             >
               <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
@@ -574,13 +576,13 @@ export default function ExamPage({
               <div className="flex items-center gap-4 pt-2">
                 <button
                   onClick={cancelSubmit}
-                  className={`flex-1 h-10 rounded-xl border ${isDark ? "border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700" : "border-[#d1d5db] bg-[#f3f4f6] text-[#6b7280] hover:bg-[#e5e7eb]"} text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2`}
+                  className={`flex-1 h-10 rounded-xl cursor-pointer border ${isDark ? "border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700" : "border-[#d1d5db] bg-[#f3f4f6] text-[#6b7280] hover:bg-[#e5e7eb]"} text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2`}
                 >
                   <XCircle size={16} /> Cancel
                 </button>
                 <button
                   onClick={confirmSubmit}
-                  className="flex-1 h-10 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-lg"
+                  className="flex-1 h-10 rounded-xl cursor-pointer bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-lg"
                 >
                   <Send size={16} /> Confirm Submit
                 </button>
@@ -607,7 +609,7 @@ export default function ExamPage({
                     <div className="w-5.5 h-5.5 rounded bg-slate-500" />
                     <span className={`text-[11px] font-medium ${theme.textMuted}`}>Unanswered</span>
                   </div>
-                  <span className={`text-sm font-black ${theme.textSecondary}`}>{notAnsweredCount}</span>
+                  <span className={`text-sm font-black ${theme.textMuted}`}>{notAnsweredCount}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 px-3">
                   <div className="flex items-center gap-3">
@@ -618,10 +620,10 @@ export default function ExamPage({
                 </div>
                 <div className="flex items-center justify-between py-2 px-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-5.5 h-5.5 rounded bg-amber-500" />
+                    <div className="w-5.5 h-5.5 rounded bg-amber-300" />
                     <span className={`text-[11px] font-medium ${theme.textMuted}`}>Marked for Review</span>
                   </div>
-                  <span className="text-sm font-black text-amber-400">{marked.length}</span>
+                  <span className="text-sm font-black text-amber-300">{marked.length}</span>
                 </div>
               </div>
             </div>
@@ -635,6 +637,10 @@ export default function ExamPage({
                 <div className="flex items-center justify-between">
                   <span className={`text-[11px] font-medium ${theme.textMuted}`}>Total Questions</span>
                   <span className={`text-sm font-black ${theme.textSecondary}`}>{questions.length}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={`text-[11px] font-medium ${theme.textMuted}`}>Marked for Review</span>
+                  <span className={`text-sm font-black text-amber-300`}>{marked.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className={`text-[11px] font-medium ${theme.textMuted}`}>Questions Answered</span>
@@ -667,7 +673,7 @@ export default function ExamPage({
           </aside>
 
           {/* CENTER - Question Card */}
-          <main className="space-y-4">
+          <main className="space-y-4 ">
             <div className={`rounded-2xl border ${theme.questionCardBorder} ${theme.questionCardBg} shadow-2xl overflow-hidden`}>
               {/* Card Header with Gradient Title */}
               <div className="px-6 pt-5 pb-3">
@@ -685,10 +691,10 @@ export default function ExamPage({
                 </div>
                 <button
                   onClick={() => toggleReview(current)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition border ${marked.includes(current) ? "bg-amber-100 text-amber-700 border-amber-300" : "text-slate-500 hover:text-amber-600 border-slate-300 hover:border-amber-300 bg-white"}`}
+                  className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition border ${marked.includes(current) ? "bg-amber-100 text-amber-700 border-amber-300" : "text-slate-500 hover:text-amber-600 border-slate-300 hover:border-amber-300 bg-white"}`}
                 >
                   <Bookmark size={12} className={marked.includes(current) ? "fill-current" : ""} />
-                  Mark
+                  Mark for review
                 </button>
               </div>
 
@@ -706,7 +712,7 @@ export default function ExamPage({
                       <button
                         key={i}
                         onClick={() => handleSelect(option)}
-                        className={`rounded-xl border-2 p-5 text-left transition-all duration-200 ${selected ? theme.optionSelected : theme.optionDefault}`}
+                        className={`rounded-xl cursor-pointer border-2 p-5 text-left transition-all duration-200 ${selected ? theme.optionSelected : theme.optionDefault}`}
                       >
                         <p className={`text-[15px] font-medium leading-snug ${selected ? theme.optionTextSelected : theme.optionTextDefault}`}>
                           {cleanText(option)}
@@ -718,13 +724,13 @@ export default function ExamPage({
 
                 {/* Bottom Action Bar */}
                 <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
-                  <button
+                  {/* <button
                     onClick={clearAnswer}
                     disabled={!answers[current]}
                     className={`h-9 px-4 rounded-lg border ${theme.btnClear} text-[11px] font-bold uppercase tracking-wider transition disabled:opacity-40 flex items-center gap-2`}
                   >
                     <RotateCcw size={14} /> Clear
-                  </button>
+                  </button>*/}
 
                   <div className={`text-[11px] font-medium ${theme.textMuted}`}>
                     {answeredCount}/{questions.length} Answered
@@ -734,7 +740,7 @@ export default function ExamPage({
                     <button
                       disabled={current === 0}
                       onClick={() => setCurrent((prev) => prev - 1)}
-                      className={`h-9 px-5 rounded-lg border ${theme.btnSecondary} text-[11px] font-bold uppercase tracking-wider transition disabled:opacity-40 flex items-center gap-2`}
+                      className={`h-9 px-5 cursor-pointer rounded-lg border ${theme.btnSecondary} text-[11px] font-bold uppercase tracking-wider transition disabled:opacity-40 flex items-center gap-2`}
                     >
                       <ChevronLeft size={14} /> Previous
                     </button>
@@ -742,14 +748,14 @@ export default function ExamPage({
                     {current === questions.length - 1 ? (
                       <button
                         onClick={openSubmitModal}
-                        className={`h-9 px-6 rounded-lg ${theme.btnPrimary} text-white text-[11px] font-bold uppercase tracking-wider shadow-lg transition flex items-center gap-2`}
+                        className={`h-9 px-6 rounded-lg ${theme.btnPrimary} text-white text-[11px] cursor-pointer font-bold uppercase tracking-wider shadow-lg transition flex items-center gap-2`}
                       >
                         <Send size={13} /> Finish
                       </button>
                     ) : (
                       <button
                         onClick={() => setCurrent((prev) => prev + 1)}
-                        className={`h-9 px-6 rounded-lg ${theme.btnPrimary} text-white text-[11px] font-bold uppercase tracking-wider shadow-lg transition flex items-center gap-2`}
+                        className={`h-9 px-6 rounded-lg ${theme.btnPrimary} text-white text-[11px] cursor-pointer font-bold uppercase tracking-wider shadow-lg transition flex items-center gap-2`}
                       >
                         Next <ChevronRight size={14} />
                       </button>
@@ -807,7 +813,7 @@ export default function ExamPage({
                       <button
                         key={index}
                         onClick={() => jumpToQuestion(index)}
-                        className={`h-10 rounded-lg text-sm font-bold transition-all border ${btnClass}`}
+                        className={`h-10 cursor-pointer rounded-lg text-sm font-bold transition-all border ${btnClass}`}
                         title={`Q${index + 1}`}
                       >
                         {index + 1}
@@ -834,7 +840,7 @@ export default function ExamPage({
                 focus:outline-none
                 focus:ring-4
                 focus:ring-emerald-500/30
-                flex items-center justify-center gap-3
+                flex items-center justify-center gap-3 cursor-pointer
               `}
             >
               <ArrowRight size={20} className="transition-transform duration-200" />
