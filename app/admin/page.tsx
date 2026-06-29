@@ -1,401 +1,317 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
-import Link from 'next/link';
-import { useTheme } from 'next-themes';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+import Link from "next/link";
 import {
-  FiUploadCloud, FiDatabase, FiBarChart2, FiTrendingUp,
-  FiUser, FiCheckCircle, FiArrowRight, FiZap, FiBookOpen, FiAward, FiCpu,
-  FiActivity, FiClock, FiUsers, FiSettings, FiCode,
-} from 'react-icons/fi';
-import { HiOutlineAcademicCap, HiOutlineSparkles } from 'react-icons/hi';
+  FiUpload,
+  FiBell,
+  FiFileText,
+  FiBook,
+  FiUser,
+  FiMail,
+  FiCheckCircle,
+  FiMenu,
+  FiX,
+  FiLogOut,
+  FiSettings,
+  FiShieldOff,
+  FiTrendingUp,
+  FiSunrise,
+  FiCodesandbox,
+} from "react-icons/fi";
+import { BsFiletypeDoc } from "react-icons/bs";
 
-type UserToken = { username: string; email: string; exp?: number };
-
-const luxeThemes = {
-  light: {
-    bg: '#fafbfc',
-    bgDark: '#f0f3f7',
-    card: '#ffffff',
-    text: '#0a0e27',
-    textMuted: '#6b7280',
-    border: '#e5e7eb',
-    accentBlue: '#003087',
-    accentOrange: '#FF6B00',
-    glass: 'rgba(255, 255, 255, 0.7)',
-    shadow: '0 20px 60px rgba(0, 48, 135, 0.12)',
-    shadowHover: '0 30px 90px rgba(0, 48, 135, 0.25)',
-  },
-  dark: {
-    bg: '#0a0e27',
-    bgDark: '#050812',
-    card: '#1a1f3a',
-    text: '#f1f5f9',
-    textMuted: '#94a3b8',
-    border: '#334155',
-    accentBlue: '#3b82f6',
-    accentOrange: '#ff8c42',
-    glass: 'rgba(30, 41, 59, 0.6)',
-    shadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
-    shadowHover: '0 30px 90px rgba(59, 130, 246, 0.3)',
-  },
+type UserToken = {
+  username: string;
+  email: string;
+  exp?: number;
 };
 
-export default function LuxeAdminDashboard() {
+export default function Dashboard() {
   const [user, setUser] = useState<UserToken | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
-  const { theme } = useTheme();
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
+
     if (!token) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
+
     try {
       const decoded = jwtDecode<UserToken>(token);
+
       if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        localStorage.removeItem('token');
-        router.push('/login');
+        localStorage.removeItem("token");
+        router.push("/login");
         return;
       }
+
       setUser(decoded);
-    } catch {
-      localStorage.removeItem('token');
-      router.push('/login');
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Invalid token");
+      localStorage.removeItem("token");
+      router.push("/login");
     }
   }, [router]);
 
-  if (!mounted || loading || !user) return null;
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
 
-  const isDark = theme === 'dark';
-  const T = isDark ? luxeThemes.dark : luxeThemes.light;
+  if (!user) {
+    return null;
+  }
 
-  const stats = [
-    { icon: '📊', label: 'Total Exams', value: '48', trend: '+12%' },
-    { icon: '📚', label: 'Study Materials', value: '156', trend: '+8%' },
-    { icon: '👥', label: 'Active Students', value: '15K', trend: '+24%' },
-    { icon: '🏆', label: 'Completion Rate', value: '87%', trend: '+5%' },
-  ];
-
-  const modules = [
+  const adminActions = [
     {
-      id: 'smart-import',
-      title: 'Smart Exam Import',
-      desc: 'CPCT bilingual parsing • Auto-answer detection • TensorFlow scoring',
-      icon: '🤖',
-      href: '/admin/smart-import',
-      color: '#003087',
-      colorLight: '#3b82f6',
+      title: "Upload Study Notes",
+      description: "Add and manage study materials for students",
+      icon: <FiUpload className="w-8 h-8" />,
+      href: "/admin/notesupload",
+      color: "from-blue-600 to-blue-700",
+      buttonColor: "text-blue-600",
+      borderColor: "border-blue-200",
     },
     {
-      id: 'notes',
-      title: 'Study Materials',
-      desc: 'Version control • Categorization • Access tracking',
-      icon: '📄',
-      href: '/admin/notesupload',
-      color: '#FF6B00',
-      colorLight: '#ff8c42',
+      title: "Latest Updates",
+      description: "Post announcements and notifications",
+      icon: <FiBell className="w-8 h-8" />,
+      href: "/admin/latestupdate",
+      color: "from-emerald-600 to-emerald-700",
+      buttonColor: "text-emerald-600",
+      borderColor: "border-emerald-200",
     },
     {
-      id: 'updates',
-      title: 'Latest Updates',
-      desc: 'Announcements • Real-time alerts • Notifications',
-      icon: '⚡',
-      href: '/admin/latestupdate',
-      color: '#10b981',
-      colorLight: '#34d399',
+      title: "Exam Updates",
+      description: "Add and manage exam schedules and details",
+      icon: <FiFileText className="w-8 h-8" />,
+      href: "/admin/newexams",
+      color: "from-purple-600 to-purple-700",
+      buttonColor: "text-purple-600",
+      borderColor: "border-purple-200",
     },
     {
-      id: 'exams',
-      title: 'Exam Management',
-      desc: 'CRUD operations • Analytics • Performance tracking',
-      icon: '🎯',
-      href: '/admin/newexams',
-      color: '#7c3aed',
-      colorLight: '#a855f7',
+      title: "Topic-Wise Papers",
+      description: "Upload and organize previous year papers",
+      icon: <FiBook className="w-8 h-8" />,
+      href: "/admin/topic-mcq",
+      color: "from-orange-600 to-orange-700",
+      buttonColor: "text-orange-600",
+      borderColor: "border-orange-200",
     },
     {
-      id: 'questions',
-      title: 'Question Bank',
-      desc: 'Topic organization • Difficulty levels • Analytics',
-      icon: '📋',
-      href: '/admin/topic-mcq',
-      color: '#06b6d4',
-      colorLight: '#22d3ee',
+      title: "Super Admin Panel",
+      description: "Access advanced examination settings",
+      icon: <FiCodesandbox className="w-8 h-8" />,
+      href: "/admin/superadmin/exam",
+      color: "from-red-600 to-red-700",
+      buttonColor: "text-red-600",
+      borderColor: "border-red-200",
     },
     {
-      id: 'analytics',
-      title: 'AI Analytics',
-      desc: 'TensorFlow insights • Performance metrics • Predictions',
-      icon: '📈',
-      href: '/admin/analytics',
-      color: '#f43f5e',
-      colorLight: '#fb7185',
+      title: "Analytics",
+      description: "View comprehensive system analytics",
+      icon: <FiTrendingUp className="w-8 h-8" />,
+      href: "/admin/analytics",
+      color: "from-indigo-600 to-indigo-700",
+      buttonColor: "text-indigo-600",
+      borderColor: "border-indigo-200",
+    },
+    {
+      title: "Exam Papers Upload",
+      description: "Upload exam papers to Supabase database",
+      icon: <BsFiletypeDoc className="w-8 h-8" />,
+      href: "/admin/superadmin/upload",
+      color: "from-cyan-600 to-cyan-700",
+      buttonColor: "text-cyan-600",
+      borderColor: "border-cyan-200",
     },
   ];
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: isDark
-          ? 'linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%)'
-          : 'linear-gradient(135deg, #fafbfc 0%, #f0f3f7 50%, #eef2f7 100%)',
-        color: T.text,
-        fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
-        position: 'relative',
-        overflow: 'hidden',
-        transition: 'background 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-      }}
-    >
-      {/* Premium animated gradients */}
-      {[
-        { size: 500, top: '-20%', left: '-10%', delay: '0s', colors: isDark ? 'rgba(59, 130, 246, 0.08)' : 'rgba(0, 48, 135, 0.06)' },
-        { size: 400, bottom: '-15%', right: '-5%', delay: '2s', colors: isDark ? 'rgba(124, 58, 237, 0.06)' : 'rgba(255, 107, 0, 0.06)' },
-        { size: 350, bottom: '10%', left: '5%', delay: '4s', colors: isDark ? 'rgba(16, 185, 129, 0.05)' : 'rgba(16, 185, 129, 0.04)' },
-      ].map((blob, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'fixed',
-            width: blob.size,
-            height: blob.size,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${blob.colors} 0%, transparent 70%)`,
-            pointerEvents: 'none',
-            top: blob.top,
-            bottom: blob.bottom,
-            left: blob.left,
-            right: blob.right,
-            animation: `drift 20s ease-in-out ${blob.delay} infinite`,
-            filter: 'blur(50px)',
-          }}
-        />
-      ))}      
-
-      <div style={{ maxWidth: '1800px', margin: '0 auto', padding: '40px 28px' }}>
-        {/* Welcome Card - Ultra Premium */}
-        <div
-          style={{
-            background: isDark
-              ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.4), rgba(124, 58, 237, 0.3))'
-              : 'linear-gradient(135deg, rgba(0, 48, 135, 0.5), rgba(59, 130, 246, 0.3))',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '20px',
-            padding: '44px 40px',
-            color: '#fff',
-            marginBottom: 40,
-            border: `1px solid ${isDark ? 'rgba(226, 232, 240, 0.15)' : 'rgba(255, 255, 255, 0.3)'}`,
-            boxShadow: T.shadow,
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: '-50%',
-              right: '-10%',
-              width: '400px',
-              height: '400px',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
-              borderRadius: '50%',
-              pointerEvents: 'none',
-            }}
-          />
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              <HiOutlineSparkles size={28} style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))' }} />
-              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.5px' }}>
-                Welcome back, {user.username}
-              </h2>
-            </div>
-            <p style={{ margin: '0 0 28px 0', fontSize: '0.98rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.8 }}>
-              Manage sophisticated exam systems with AI insights. Your admin hub is configured and optimized for peak performance.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
-              {[
-                { label: 'Account', value: user.email, emoji: '📧' },
-                { label: 'Status', value: '🟢 Active Premium', emoji: '⚡' },
-                { label: 'Mode', value: isDark ? '🌙 Dark Mode' : '☀️ Light Mode', emoji: '🎨' },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)',
-                    padding: '14px 16px',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                  }}
-                >
-                  <p style={{ margin: '0 0 4px 0', fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    {item.label}
-                  </p>
-                  <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: 600, wordBreak: 'break-all' }}>
-                    {item.value}
-                  </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 transition-colors duration-300">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo/Title */}
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:block">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">A</span>
                 </div>
-              ))}
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+                  Admin Portal
+                </h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Education Management System
+                </p>
+              </div>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-4">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                <FiLogOut className="w-4 h-4" />
+                <span className="text-sm">Logout</span>
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+            >
+              {mobileOpen ? (
+                <FiX className="w-5 h-5" />
+              ) : (
+                <FiMenu className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+          <button
+            onClick={() => {
+              handleLogout();
+              setMobileOpen(false);
+            }}
+            className="w-full flex items-center gap-2 px-4 py-3 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <FiLogOut className="w-4 h-4" />
+            <span className="text-sm">Logout</span>
+          </button>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hero Section - User Profile */}
+        <div className="mb-12">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 rounded-2xl shadow-lg overflow-hidden">
+            <div className="px-6 sm:px-8 py-10 sm:py-12">
+              <div className="flex items-center gap-6 mb-6">
+                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <FiUser className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <p className="text-blue-100 text-sm font-medium mb-1">
+                    Welcome back,
+                  </p>
+                  <h2 className="text-3xl font-bold text-white">
+                    {user.username}
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-blue-500 bg-opacity-40 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <FiUser className="w-5 h-5 text-blue-100 mt-0.5" />
+                    <div>
+                      <p className="text-blue-100 text-xs font-medium">
+                        USERNAME
+                      </p>
+                      <p className="text-white font-semibold mt-1">
+                        {user.username}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-500 bg-opacity-40 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <FiMail className="w-5 h-5 text-blue-100 mt-0.5" />
+                    <div>
+                      <p className="text-blue-100 text-xs font-medium">
+                        EMAIL ADDRESS
+                      </p>
+                      <p className="text-white font-semibold mt-1 break-all text-sm">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-500 bg-opacity-40 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <FiCheckCircle className="w-5 h-5 text-emerald-300 mt-0.5" />
+                    <div>
+                      <p className="text-blue-100 text-xs font-medium">
+                        ACCOUNT STATUS
+                      </p>
+                      <p className="text-emerald-300 font-semibold mt-1">
+                        Active
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Stats - Premium Cards */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: 20,
-            marginBottom: 48,
-          }}
-        >
-          {stats.map((stat, idx) => (
-            <div
-              key={idx}
-              style={{
-                background: T.glass,
-                backdropFilter: 'blur(20px)',
-                borderRadius: '16px',
-                padding: '24px',
-                border: `1px solid ${T.border}`,
-                boxShadow: T.shadow,
-                transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                cursor: 'pointer',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-8px)';
-                e.currentTarget.style.boxShadow = T.shadowHover;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = T.shadow;
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                <span style={{ fontSize: '28px' }}>{stat.icon}</span>
-                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#10b981', background: 'rgba(16, 185, 129, 0.15)', padding: '4px 10px', borderRadius: '6px' }}>
-                  {stat.trend}
-                </span>
-              </div>
-              <p style={{ margin: 0, fontSize: '0.8rem', color: T.textMuted, fontWeight: 600 }}>
-                {stat.label}
-              </p>
-              <p style={{ margin: '8px 0 0 0', fontSize: '1.7rem', fontWeight: 700, color: T.text }}>
-                {stat.value}
-              </p>
-            </div>
-          ))}
-        </div>
+        {/* Actions Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <FiSettings className="w-6 h-6 text-slate-700 dark:text-slate-300" />
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+              Administrative Actions
+            </h3>
+          </div>
 
-        {/* Modules - Luxury Grid */}
-        <div style={{ marginBottom: 48 }}>
-          <h2 style={{ margin: '0 0 10px 0', fontSize: '1.5rem', fontWeight: 700, color: T.text, letterSpacing: '-0.5px' }}>
-            Management Suite
-          </h2>
-          <p style={{ margin: '0 0 28px 0', fontSize: '0.95rem', color: T.textMuted }}>
-            Professional tools for modern exam administration
-          </p>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-              gap: 24,
-            }}
-          >
-            {modules.map((mod) => (
-              <Link key={mod.id} href={mod.href} style={{ textDecoration: 'none' }}>
-                <div
-                  style={{
-                    background: T.glass,
-                    backdropFilter: 'blur(20px)',
-                    borderRadius: '18px',
-                    padding: '28px',
-                    border: `1.5px solid ${T.border}`,
-                    boxShadow: T.shadow,
-                    transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-12px)';
-                    e.currentTarget.style.boxShadow = T.shadowHover;
-                    e.currentTarget.style.borderColor = isDark ? mod.colorLight : mod.color;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = T.shadow;
-                    e.currentTarget.style.borderColor = T.border;
-                  }}
-                >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {adminActions.map((action, index) => (
+              <Link
+                key={index}
+                href={action.href}
+                className="group"
+              >
+                <div className={`h-full bg-white dark:bg-slate-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500`}>
                   {/* Top accent bar */}
                   <div
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: '4px',
-                      background: `linear-gradient(90deg, ${mod.color}, ${mod.colorLight})`,
-                    }}
+                    className={`h-1 bg-gradient-to-r ${action.color}`}
                   />
 
-                  {/* Icon */}
-                  <div style={{ fontSize: '40px', marginBottom: 16 }}>{mod.icon}</div>
+                  <div className="p-6">
+                    {/* Icon */}
+                    <div
+                      className={`w-12 h-12 rounded-lg bg-gradient-to-br ${action.color} text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {action.icon}
+                    </div>
 
-                  {/* Title */}
-                  <h3
-                    style={{
-                      margin: '0 0 10px 0',
-                      fontSize: '1.1rem',
-                      fontWeight: 700,
-                      color: T.text,
-                      letterSpacing: '-0.3px',
-                    }}
-                  >
-                    {mod.title}
-                  </h3>
+                    {/* Content */}
+                    <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {action.title}
+                    </h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
+                      {action.description}
+                    </p>
 
-                  {/* Description */}
-                  <p
-                    style={{
-                      margin: '0 0 20px 0',
-                      fontSize: '0.85rem',
-                      color: T.textMuted,
-                      lineHeight: 1.7,
-                      flex: 1,
-                    }}
-                  >
-                    {mod.desc}
-                  </p>
-
-                  {/* CTA */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      color: isDark ? mod.colorLight : mod.color,
-                      fontWeight: 600,
-                      fontSize: '0.9rem',
-                    }}
-                  >
-                    Access
-                    <FiArrowRight size={16} style={{ marginLeft: 'auto' }} />
+                    {/* Arrow indicator */}
+                    <div className={`flex items-center gap-2 ${action.buttonColor} font-semibold text-sm group-hover:gap-3 transition-all duration-300`}>
+                      <span>Access</span>
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        →
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Link>
@@ -403,117 +319,42 @@ export default function LuxeAdminDashboard() {
           </div>
         </div>
 
-        {/* AI Features Section */}
-        <div
-          style={{
-            background: isDark
-              ? 'linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(59, 130, 246, 0.2))'
-              : 'linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(59, 130, 246, 0.15))',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '18px',
-            padding: '36px',
-            color: T.text,
-            border: `1px solid ${isDark ? 'rgba(226, 232, 240, 0.15)' : 'rgba(0, 0, 0, 0.08)'}`,
-            boxShadow: T.shadow,
-            marginBottom: 40,
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: '-100px',
-              right: '-100px',
-              width: '300px',
-              height: '300px',
-              background: 'radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%)',
-              borderRadius: '50%',
-              pointerEvents: 'none',
-            }}
-          />
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <span style={{ fontSize: '24px' }}>🚀</span>
-              <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
-                TensorFlow AI Engine
-              </h2>
-            </div>
-            <p style={{ margin: '0 0 20px 0', color: T.textMuted, lineHeight: 1.8 }}>
-              Intelligent question parsing, difficulty prediction, student analytics, and adaptive learning recommendations powered by advanced machine learning.
+        {/* Footer Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
+              TOTAL USERS
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
-              {['🧠 Smart Parsing', '📊 Analytics', '🎯 Predictions', '📈 Insights'].map((f, i) => (
-                <div
-                  key={i}
-                  style={{
-                    background: T.glass,
-                    backdropFilter: 'blur(10px)',
-                    padding: '12px 14px',
-                    borderRadius: '10px',
-                    border: `1px solid ${T.border}`,
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    color: T.text,
-                  }}
-                >
-                  {f}
-                </div>
-              ))}
-            </div>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">
+              1,234
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
+              MATERIALS
+            </p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">
+              456
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
+              EXAMS
+            </p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">
+              89
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
+              PAPERS
+            </p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">
+              2,145
+            </p>
           </div>
         </div>
-
-        {/* Footer Status */}
-        <div
-          style={{
-            background: T.glass,
-            backdropFilter: 'blur(20px)',
-            borderRadius: '16px',
-            padding: '24px',
-            border: `1px solid ${T.border}`,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: 20,
-            boxShadow: T.shadow,
-          }}
-        >
-          {[
-            { icon: '⏱️', label: 'Last Updated', value: 'Just now' },
-            { icon: '✅', label: 'System Status', value: 'Online' },
-            { icon: '⚡', label: 'Data Sync', value: 'Real-time' },
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ fontSize: '20px' }}>{item.icon}</div>
-              <div>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: T.textMuted, fontWeight: 600 }}>
-                  {item.label}
-                </p>
-                <p style={{ margin: '3px 0 0 0', fontSize: '0.9rem', fontWeight: 700, color: T.text }}>
-                  {item.value}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes drift {
-          0%, 100% { transform: translateY(0px) translateX(0px); }
-          33% { transform: translateY(-30px) translateX(20px); }
-          66% { transform: translateY(20px) translateX(-30px); }
-        }
-        * { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: ${T.bg}; }
-        ::-webkit-scrollbar-thumb {
-          background: ${T.border};
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover { background: ${T.textMuted}; }
-      `}</style>
+      </main>
     </div>
   );
 }
