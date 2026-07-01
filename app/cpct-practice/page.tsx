@@ -20,9 +20,7 @@ import {
     TrendingUp,
 } from "lucide-react"
 
-/* ================================================================ */
-/*  CONFIG                                                          */
-/* ================================================================ */
+ 
 
 const HINDI_FONT_OPTIONS = [
     { id: "mangal", label: "Mangal (Unicode)", family: "'Mangal','Noto Sans Devanagari',sans-serif" },
@@ -47,15 +45,22 @@ const KEYS_PER_MINUTE_TARGET = 200
 
 const FALLBACK_TEXTS: Record<Language, Record<Difficulty, string>> = {
     english: {
-        easy: "Reading is one of the simplest habits that can change a person's life. It opens the mind to new ideas, improves vocabulary, and builds patience. Many successful people credit a portion of their growth to the books they read in their early years. A short period of focused reading every day, even fifteen minutes, can sharpen concentration over time. Public libraries and digital archives have made access to knowledge easier than ever before. Choosing the right book, however, often matters as much as the act of reading itself. Readers who explore different genres tend to develop a broader and more balanced view of the world around them.",
-        medium: "Technology has reshaped the way students learn and teachers instruct. Classrooms once limited to a blackboard and chalk now use digital boards, recorded lectures, and online assessments. This shift has allowed learners in remote areas to access lessons that were once available only in major cities. At the same time, the role of a teacher has not disappeared; instead it has evolved into that of a guide who helps students filter and apply information. Government training institutes have started including basic computer and typing proficiency as part of standard curriculum, recognising that digital literacy is now a core employability skill rather than an optional extra.",
-        hard: "Artificial intelligence is steadily moving from research laboratories into everyday administrative work, including the public sector. Government departments are beginning to use automated systems for document verification, scheduling, and preliminary screening of applications, which reduces manual workload and shortens turnaround time for citizens. This transition, however, raises legitimate questions about accountability, data protection, and the digital skills required of the workforce that operates alongside these systems. Employees are increasingly expected to combine domain knowledge with comfort in using new software tools, and typing proficiency remains a basic but essential requirement for handling the volume of digital correspondence that modern offices generate every single day.",
-    },
-    hindi: {
-        easy: "भारत की संस्कृति विविधताओं से भरी हुई है और यही विविधता इसकी सबसे बड़ी पहचान है। यहाँ अनेक भाषाएँ, धर्म और परंपराएँ एक साथ फलती-फूलती हैं। त्योहारों के समय पूरा देश एक नई ऊर्जा से भर जाता है और लोग आपस में मिलकर खुशियाँ बाँटते हैं। हमारी सांस्कृतिक विरासत न केवल हमें गर्व का अनुभव कराती है बल्कि आने वाली पीढ़ियों के लिए मार्गदर्शक का भी काम करती है। इसी कारण विद्यालयों में बच्चों को अपनी संस्कृति के बारे में पढ़ाया जाता है ताकि वे इसका सम्मान करना सीख सकें।",
-        medium: "प्रौद्योगिकी ने शिक्षा के क्षेत्र में एक नई क्रांति ला दी है। आज विद्यार्थी कंप्यूटर और इंटरनेट की सहायता से दुनिया भर की जानकारी कुछ ही क्षणों में प्राप्त कर सकते हैं। सरकारी कार्यालयों में भी डिजिटल प्रशिक्षण को अनिवार्य किया जा रहा है जिससे कर्मचारी आधुनिक उपकरणों का सही उपयोग कर सकें। टंकण कौशल अब केवल एक अतिरिक्त योग्यता नहीं रहा बल्कि अधिकतर सरकारी पदों के लिए यह एक बुनियादी आवश्यकता बन गया है। इसी कारण अभ्यर्थियों को नियमित अभ्यास करने की सलाह दी जाती है।",
-        hard: "भविष्य की दुनिया में कृत्रिम बुद्धिमत्ता और स्वचालन का प्रभाव हर क्षेत्र में स्पष्ट दिखाई देगा। सरकारी विभाग दस्तावेज़ों के सत्यापन, आवेदनों की प्रारंभिक जाँच और समय-निर्धारण जैसे कार्यों के लिए स्वचालित प्रणालियों का उपयोग बढ़ा रहे हैं, जिससे कार्य की गति तेज़ होती है और नागरिकों को सेवाएँ शीघ्र मिलती हैं। परंतु इस बदलाव के साथ जवाबदेही, डेटा सुरक्षा और कर्मचारियों के डिजिटल कौशल से जुड़े गंभीर प्रश्न भी उठते हैं। ऐसे परिवेश में शुद्धता और गति के साथ टंकण करने की क्षमता एक कर्मचारी के लिए अब भी एक मूलभूत और अपरिहार्य योग्यता बनी हुई है।",
-    },
+    easy: `Reading is one of the simplest habits that can change a person's life. It opens the mind to new ideas, improves vocabulary, strengthens memory, and develops the ability to think clearly and logically. People who read regularly often become better communicators because they are exposed to different styles of writing and expression. Even spending fifteen to twenty minutes each day with a good book can make a noticeable difference over time in overall personality development. Reading also reduces stress by allowing the mind to focus on meaningful content instead of constant distractions from social media and daily worries. Public libraries, schools, and digital platforms have made books available to people from every background and economic condition. Fiction encourages imagination and creativity, while biographies teach valuable life lessons through the experiences of successful individuals who overcame challenges. Newspapers and educational magazines help readers stay informed about current events and important developments happening around the world. Students preparing for competitive examinations benefit greatly from regular reading because it improves comprehension, concentration, analytical thinking, and overall academic performance. Parents who encourage reading at home create a positive learning environment for children that supports their growth. Developing the habit at an early age builds confidence and curiosity that continue throughout life and help in achieving goals. Although technology has changed the way people consume information through various digital means, books remain one of the most reliable sources of knowledge and wisdom. Choosing meaningful content and reading consistently can improve both personal and professional growth, making reading a lifelong investment in education and self-development that brings immense satisfaction.`,
+
+    medium: `Technology has transformed the way students learn and teachers deliver education in modern times. Traditional classrooms that once depended only on blackboards and printed books now use smart boards, online learning platforms, digital assignments, and interactive educational software that make classes lively. These improvements have made learning more engaging and accessible for students living in both urban and rural areas across the country. Educational videos, virtual classrooms, and recorded lectures allow learners to revise topics whenever necessary, reducing dependence on physical attendance alone and providing flexibility. Teachers now act not only as instructors but also as mentors who help students evaluate information, develop critical thinking, and solve practical problems effectively. Government institutions across the country have introduced computer education and digital literacy as essential parts of the curriculum because most workplaces now require employees to use technology confidently and efficiently. Typing proficiency, document preparation, spreadsheet management, and basic internet skills are increasingly becoming standard qualifications for many government and private sector jobs in various fields. Online examinations, digital certificates, and electronic document verification have significantly reduced paperwork while improving efficiency and transparency in administrative processes. However, responsible use of technology is equally important to avoid negative effects. Students should balance screen time with reading physical books, physical activity, outdoor sports, and face-to-face communication with family and friends. Schools also educate learners about online safety, cyber security, ethical use of digital resources, and ways to protect personal information from threats. Continuous learning has become easier than ever because educational content is available through mobile phones, computers, and online libraries at any time. Individuals who regularly update their technical skills remain competitive in today's rapidly changing job market and adapt quickly to new challenges. Lifelong learning, supported by technology and disciplined practice, has become one of the strongest foundations for career growth, professional success, personal development, and overall well-being in society.`,
+
+    hard: `Artificial intelligence is steadily transforming modern workplaces, including government departments, educational institutions, healthcare systems, financial organizations, and private businesses across various sectors. Tasks that once required significant manual effort, such as document verification, appointment scheduling, data entry, report generation, and preliminary application screening, can now be completed more efficiently with the assistance of intelligent software systems and advanced algorithms. This technological progress allows employees to dedicate more time to decision-making, problem-solving, creative tasks, and public service instead of repetitive administrative work that consumes hours. Despite these advantages, the adoption of artificial intelligence introduces important responsibilities related to transparency, accountability, privacy, and data security that cannot be ignored. Government agencies handling sensitive citizen information must ensure that automated systems operate fairly, accurately, and without discrimination based on any factors. Employees working alongside these technologies require continuous training to understand new software, recognize potential errors, maintain human oversight whenever necessary, and make ethical decisions. Digital literacy has therefore become an essential professional skill rather than an optional qualification for everyone in the workforce. Competence in typing, document formatting, spreadsheet management, email communication, and online collaboration remains fundamental because nearly every administrative process now depends on electronic records and digital systems. Competitive examinations increasingly evaluate candidates on computer awareness and typing speed to ensure they can perform effectively in digital workplaces and contribute productively. Organizations also encourage continuous learning through workshops, online certification programs, and professional development courses that keep employees updated with emerging technologies and industry trends. While automation improves efficiency and reduces costs, human qualities such as creativity, ethical judgment, empathy, emotional intelligence, and communication continue to play an irreplaceable role in public administration and business management. The future workforce will succeed by combining technical knowledge with adaptability, critical thinking, teamwork abilities, and a willingness to learn throughout their careers. Individuals who embrace innovation while maintaining strong foundational skills will be better prepared to contribute meaningfully to modern organizations and to serve society with greater efficiency, accuracy, and responsibility in an increasingly digital world full of opportunities and challenges.`
+},
+
+     hindi: {
+    easy: `भारत अपनी समृद्ध संस्कृति, विविध परंपराओं और अनेक भाषाओं के कारण पूरे विश्व में विशेष पहचान रखता है। यहाँ विभिन्न धर्मों, रीति-रिवाजों और जीवन शैलियों के लोग आपसी सम्मान और सहयोग के साथ सद्भावपूर्वक रहते हैं। प्रत्येक राज्य की अपनी अलग संस्कृति, वेशभूषा, भोजन और लोककला है, जो भारत की सांस्कृतिक धरोहर को और भी समृद्ध बनाती है तथा पर्यटकों को आकर्षित करती है। दीपावली, होली, ईद, क्रिसमस, गुरुपर्व और अन्य अनेक त्योहार लोगों को एक-दूसरे के निकट लाते हैं तथा सामाजिक सद्भाव को मजबूत करते हैं। विद्यालयों में विद्यार्थियों को हमारी सांस्कृतिक विरासत, राष्ट्रीय प्रतीकों और महान व्यक्तित्वों के बारे में पढ़ाया जाता है ताकि उनमें देश के प्रति सम्मान और जिम्मेदारी की भावना विकसित हो सके तथा वे अच्छे नागरिक बनें। परिवार में बड़े-बुजुर्ग बच्चों को नैतिक मूल्यों, अनुशासन और ईमानदारी का महत्व समझाते हैं जो उनके चरित्र निर्माण में सहायक होते हैं। पुस्तकों का अध्ययन, अच्छे विचारों का पालन और नियमित अभ्यास व्यक्ति के व्यक्तित्व को निखारते हैं तथा ज्ञान की वृद्धि करते हैं। अपनी संस्कृति का सम्मान करते हुए आधुनिक शिक्षा और विज्ञान को अपनाना समय की आवश्यकता है। यही संतुलन व्यक्ति को सफल, जागरूक और जिम्मेदार नागरिक बनने में सहायता करता है तथा समाज के विकास में योगदान देता है। भारत की यही विविधता, एकता और सांस्कृतिक समृद्धि उसे विश्व के सबसे महान देशों में स्थान दिलाती है तथा गर्व की भावना जगाती है।`,
+
+    medium: `प्रौद्योगिकी ने शिक्षा के क्षेत्र में अभूतपूर्व परिवर्तन किया है। आज विद्यार्थी कंप्यूटर, इंटरनेट और डिजिटल संसाधनों की सहायता से देश और दुनिया की जानकारी बहुत कम समय में प्राप्त कर सकते हैं। ऑनलाइन कक्षाएँ, वीडियो व्याख्यान, डिजिटल पुस्तकालय और अभ्यास परीक्षाएँ सीखने की प्रक्रिया को अधिक सरल, प्रभावी और रोचक बना रही हैं। ग्रामीण क्षेत्रों के विद्यार्थियों को भी अब गुणवत्तापूर्ण शिक्षा तक पहुँचने के नए अवसर मिल रहे हैं जो पहले सीमित थे। शिक्षक केवल जानकारी देने वाले व्यक्ति नहीं रहे, बल्कि वे विद्यार्थियों का मार्गदर्शन करने वाले सलाहकार की भूमिका निभा रहे हैं तथा व्यक्तिगत ध्यान देते हैं। सरकारी संस्थानों ने भी डिजिटल साक्षरता, कंप्यूटर प्रशिक्षण और टंकण कौशल को शिक्षा का महत्वपूर्ण भाग बनाया है क्योंकि अधिकांश सरकारी तथा निजी कार्यालयों में कार्य अब कंप्यूटर आधारित हो चुका है। दस्तावेज़ तैयार करना, ईमेल भेजना, ऑनलाइन आवेदन भरना और डिजिटल अभिलेखों का प्रबंधन दैनिक कार्यों का हिस्सा बन चुके हैं। इसलिए विद्यार्थियों को नियमित रूप से टाइपिंग का अभ्यास करने, कंप्यूटर के मूलभूत ज्ञान को मजबूत करने और नई तकनीकों को सीखने की सलाह दी जाती है। साथ ही उन्हें इंटरनेट का सुरक्षित और जिम्मेदारीपूर्ण उपयोग, साइबर सुरक्षा तथा व्यक्तिगत जानकारी की सुरक्षा के बारे में भी जागरूक किया जाता है ताकि वे सुरक्षित रहें। आधुनिक शिक्षा का उद्देश्य केवल परीक्षा उत्तीर्ण करना नहीं बल्कि ऐसे सक्षम, आत्मविश्वासी और तकनीकी रूप से दक्ष नागरिक तैयार करना है जो बदलती दुनिया की आवश्यकताओं के अनुसार स्वयं को निरंतर विकसित कर सकें तथा राष्ट्र की प्रगति में योगदान दें।`,
+
+    hard: `भविष्य की दुनिया में कृत्रिम बुद्धिमत्ता, स्वचालन और डिजिटल प्रौद्योगिकी का प्रभाव लगभग प्रत्येक क्षेत्र में स्पष्ट रूप से दिखाई देगा। सरकारी विभाग, बैंक, शैक्षणिक संस्थान, स्वास्थ्य सेवाएँ तथा निजी कंपनियाँ दस्तावेज़ों के सत्यापन, डेटा विश्लेषण, समय-निर्धारण, आवेदन पत्रों की प्रारंभिक जाँच तथा अन्य प्रशासनिक कार्यों के लिए आधुनिक स्वचालित प्रणालियों का उपयोग तेजी से बढ़ा रही हैं। इससे कार्यों की गति बढ़ती है, त्रुटियाँ कम होती हैं और नागरिकों को सेवाएँ पहले की अपेक्षा अधिक शीघ्र प्राप्त होती हैं। हालांकि इस परिवर्तन के साथ डेटा सुरक्षा, गोपनीयता, पारदर्शिता और जवाबदेही जैसे महत्वपूर्ण प्रश्न भी जुड़े हुए हैं जिनका समाधान आवश्यक है। किसी भी स्वचालित प्रणाली की विश्वसनीयता सुनिश्चित करने के लिए प्रशिक्षित कर्मचारियों की आवश्यकता बनी रहती है जो परिणामों का परीक्षण कर सकें और आवश्यकतानुसार उचित निर्णय ले सकें। इसलिए आज के समय में डिजिटल साक्षरता, कंप्यूटर संचालन, दस्तावेज़ प्रबंधन, ईमेल संचार, स्प्रेडशीट का उपयोग तथा तेज़ और शुद्ध टंकण जैसी क्षमताएँ प्रत्येक कर्मचारी के लिए अत्यंत महत्वपूर्ण हो गई हैं। विभिन्न प्रतियोगी परीक्षाओं में भी कंप्यूटर ज्ञान और टंकण दक्षता का मूल्यांकन किया जाता है ताकि अभ्यर्थी आधुनिक कार्यालयों में प्रभावी ढंग से कार्य कर सकें। नई तकनीकों को अपनाने के साथ-साथ निरंतर सीखते रहना, नैतिक मूल्यों का पालन करना, समस्या समाधान की क्षमता विकसित करना और टीम के साथ प्रभावी संवाद बनाए रखना भी समान रूप से आवश्यक है। जो व्यक्ति तकनीकी ज्ञान के साथ अनुशासन, ईमानदारी, सटीकता और सीखने की इच्छा बनाए रखते हैं, वे भविष्य के डिजिटल कार्यस्थलों में अधिक सफल सिद्ध होंगे तथा समाज और राष्ट्र के विकास में महत्वपूर्ण योगदान देंगे।
+    प्रौद्योगिकी ने शिक्षा के क्षेत्र में अभूतपूर्व परिवर्तन किया है। आज विद्यार्थी कंप्यूटर, इंटरनेट और डिजिटल संसाधनों की सहायता से देश और दुनिया की जानकारी बहुत कम समय में प्राप्त कर सकते हैं। ऑनलाइन कक्षाएँ, वीडियो व्याख्यान, डिजिटल पुस्तकालय और अभ्यास परीक्षाएँ सीखने की प्रक्रिया को अधिक सरल, प्रभावी और रोचक बना रही हैं। ग्रामीण क्षेत्रों के विद्यार्थियों को भी अब गुणवत्तापूर्ण शिक्षा तक पहुँचने के नए अवसर मिल रहे हैं जो पहले सीमित थे। शिक्षक केवल जानकारी देने वाले व्यक्ति नहीं रहे, बल्कि वे विद्यार्थियों का मार्गदर्शन करने वाले सलाहकार की भूमिका निभा रहे हैं तथा व्यक्तिगत ध्यान देते हैं। सरकारी संस्थानों ने भी डिजिटल साक्षरता, कंप्यूटर प्रशिक्षण और टंकण कौशल को शिक्षा का महत्वपूर्ण भाग बनाया है क्योंकि अधिकांश सरकारी तथा निजी कार्यालयों में कार्य अब कंप्यूटर आधारित हो चुका है। दस्तावेज़ तैयार करना, ईमेल भेजना, ऑनलाइन आवेदन भरना और डिजिटल अभिलेखों का प्रबंधन दैनिक कार्यों का हिस्सा बन चुके हैं। इसलिए विद्यार्थियों को नियमित रूप से टाइपिंग का अभ्यास करने, कंप्यूटर के मूलभूत ज्ञान को मजबूत करने और नई तकनीकों को सीखने की सलाह दी जाती है। साथ ही उन्हें इंटरनेट का सुरक्षित और जिम्मेदारीपूर्ण उपयोग, साइबर सुरक्षा तथा व्यक्तिगत जानकारी की सुरक्षा के बारे में भी जागरूक किया जाता है ताकि वे सुरक्षित रहें। आधुनिक शिक्षा का उद्देश्य केवल परीक्षा उत्तीर्ण करना नहीं बल्कि ऐसे सक्षम, आत्मविश्वासी और तकनीकी रूप से दक्ष नागरिक तैयार करना है जो बदलती दुनिया की आवश्यकताओं के अनुसार स्वयं को निरंतर विकसित कर सकें तथा राष्ट्र की प्रगति में योगदान दें।`,
+
+}
 }
 
 interface TestResult {
@@ -80,9 +85,7 @@ interface TestResult {
 
 const STORAGE_KEY = "typingTestSession"
 
-/* ================================================================ */
-/*  UTILITY FUNCTIONS                                              */
-/* ================================================================ */
+ 
 
 const generateCandidateId = () => {
     const year = new Date().getFullYear()
@@ -102,10 +105,7 @@ const generateExamId = (index: number) => {
 const generateCentreCode = () => {
     return `CENTRE${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`
 }
-
-/* ================================================================ */
-/*  COMPONENT                                                      */
-/* ================================================================ */
+ 
 
 export default function PracticePage() {
     // Setup
@@ -139,9 +139,7 @@ export default function PracticePage() {
     const requiredKeys = timeLimit * KEYS_PER_MINUTE_TARGET
     const fontFamily = HINDI_FONT_OPTIONS.find((f) => f.id === fontId)?.family ?? HINDI_FONT_OPTIONS[0].family
 
-    /* ================================================================ */
-    /*  INITIALIZATION                                                 */
-    /* ================================================================ */
+   
 
     useEffect(() => {
         const newCandidateId = generateCandidateId()
@@ -161,9 +159,7 @@ export default function PracticePage() {
         }
     }, [candidateId])
 
-    /* ================================================================ */
-    /*  PASSAGE GENERATION                                             */
-    /* ================================================================ */
+ 
 
     const generateText = useCallback(async () => {
         setLoading(true)
@@ -178,8 +174,8 @@ export default function PracticePage() {
 
             const prompt =
                 language === "english"
-                    ? `Write 3-4 plain, clear paragraphs (200-220 words total) about "${topicEnglish}", suitable as a typing-test passage. Plain prose only, no headings, no markdown, no bullet points.`
-                    : `निम्नलिखित विषय पर शुद्ध हिंदी (यूनिकोड) में 3-4 सरल अनुच्छेद लिखें (कुल 200-220 शब्द), जो टंकण अभ्यास हेतु उपयुक्त हों: "${topicHindi}"। कोई शीर्षक, मार्कडाउन या बुलेट पॉइंट न दें, केवल सामान्य गद्य।`
+                    ? `Write 3-4 plain, clear paragraphs (300-320 words total) about "${topicEnglish}", suitable as a typing-test passage. Plain prose only, no headings, no markdown, no bullet points.`
+                    : `निम्नलिखित विषय पर शुद्ध हिंदी (यूनिकोड) में 3-4 सरल अनुच्छेद लिखें (कुल 300-320 शब्द), जो टंकण अभ्यास हेतु उपयुक्त हों: "${topicHindi}"। कोई शीर्षक, मार्कडाउन या बुलेट पॉइंट न दें, केवल सामान्य गद्य।`
 
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -230,9 +226,6 @@ export default function PracticePage() {
         return () => clearInterval(intervalRef.current!)
     }, [started, submitted])
 
-    /* ================================================================ */
-    /*  HANDLERS                                                       */
-    /* ================================================================ */
 
     const handleChange = (value: string) => {
         if (!started && value.length > 0) setStarted(true)
@@ -313,9 +306,6 @@ export default function PracticePage() {
         setTimeLeft(duration * 60)
     }
 
-    /* ================================================================ */
-    /*  DERIVED METRICS                                                */
-    /* ================================================================ */
 
     const totalTyped = input.length
     const correctChars = input.split("").filter((char, i) => char === text[i]).length
@@ -334,16 +324,12 @@ export default function PracticePage() {
 
     return (
         <div className="min-h-screen bg-[#F6F4EE] text-[#1B2A4A] dark:bg-[#10141C] dark:text-[#E8E4DA]">
-            <main className="mx-auto max-w-8xl px-4 py-8 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                    {/* ============================================================ */}
-                    {/* MAIN COLUMN                                                */}
-                    {/* ============================================================ */}
-                    <div className="space-y-5 lg:col-span-2">
-                        {/* Header with Candidate ID */}
-                     
+            <main className="mx-auto max-w-9xl px-4 py-8 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
 
-                        {/* Exam configuration */}
+                    <div className="space-y-2 lg:col-span-2">
+
+
                         <motion.section
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -355,7 +341,7 @@ export default function PracticePage() {
                             </h2>
 
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                                {/* Language */}
+
                                 <div>
                                     <label className="mb-2 flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
                                         <Languages className="h-3.5 w-3.5" /> Language
@@ -366,8 +352,8 @@ export default function PracticePage() {
                                             onClick={() => setLanguage("english")}
                                             disabled={started}
                                             className={`flex-1 rounded-sm border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${language === "english"
-                                                    ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
-                                                    : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
+                                                ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
+                                                : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
                                                 }`}
                                         >
                                             English
@@ -377,8 +363,8 @@ export default function PracticePage() {
                                             onClick={() => setLanguage("hindi")}
                                             disabled={started}
                                             className={`flex-1 rounded-sm border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${language === "hindi"
-                                                    ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
-                                                    : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
+                                                ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
+                                                : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
                                                 }`}
                                         >
                                             हिंदी
@@ -438,7 +424,7 @@ export default function PracticePage() {
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.05 }}
-                            className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+                            className="grid grid-cols-2 gap-2 sm:grid-cols-4"
                         >
                             {[
                                 { label: "Key Depressions", value: keyDepressions },
@@ -448,7 +434,7 @@ export default function PracticePage() {
                             ].map((m) => (
                                 <div
                                     key={m.label}
-                                    className="rounded-sm border border-[#1B2A4A]/15 bg-white p-3 text-center dark:border-white/10 dark:bg-[#161B26]"
+                                    className="rounded-sm border border-[#1B2A4A]/15 bg-white p-2 text-center dark:border-white/10 dark:bg-[#161B26]"
                                 >
                                     <div className="text-[11px] font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
                                         {m.label}
@@ -457,21 +443,20 @@ export default function PracticePage() {
                                 </div>
                             ))}
                         </motion.section>
-
-                        {/* Passage */}
                         <motion.section
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="rounded-sm border border-[#1B2A4A]/15 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#161B26] sm:p-6"
+                            className=" relative h-50 -mt-1 overflow-y-auto rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-2 text-base leading-8 scroll-smooth dark:border-white/10 dark:bg-[#10141C] sm:text-lg rounded-sm border border-[#1B2A4A]/15 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#161B26] sm:p-6"
                         >
-                            <h3 className="mb-3 font-serif text-base font-semibold">Passage to Type</h3>
+                            <h3 className="-mt-4 font-serif text-base font-semibold p-1  ">Passage to Type</h3>
+
                             <div
                                 style={{ fontFamily: language === "hindi" ? fontFamily : undefined }}
-                                className="min-h-48 select-none overflow-auto rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-5 text-base leading-8 dark:border-white/10 dark:bg-[#10141C] sm:text-lg"
+                                className=" select-none overflow-auto rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-2 text-base leading-8 dark:border-white/10 dark:bg-[#10141C] sm:text-lg"
                             >
                                 {loading ? (
-                                    <div className="flex h-40 items-center justify-center">
+                                    <div className="flex h-20 items-center justify-center">
                                         <motion.div
                                             animate={{ rotate: 360 }}
                                             transition={{ duration: 1.1, repeat: Infinity, ease: "linear" }}
@@ -538,13 +523,13 @@ export default function PracticePage() {
                                                 </h2>
                                                 <p className="mt-1 text-xs text-[#5B6472] dark:text-[#9AA3B2]">Issued by Government Typing Test Portal</p>
                                             </div>
-                                            
+
                                         </div>
 
                                         {/* Certification Info */}
                                         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                                            
-                                            
+
+
                                             <div>
                                                 <p className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
                                                     Exam Date
@@ -577,18 +562,16 @@ export default function PracticePage() {
                                             ].map((row) => (
                                                 <div
                                                     key={row.label}
-                                                    className={`rounded-sm border p-4 ${
-                                                        row.highlight
-                                                            ? "border-[#2F6B4F]/30 bg-[#E8F5F1] dark:border-[#7BC9A0]/30 dark:bg-[#0A3D2F]/40"
-                                                            : "border-[#1B2A4A]/15 bg-white dark:border-white/10 dark:bg-[#10141C]"
-                                                    }`}
+                                                    className={`rounded-sm border p-4 ${row.highlight
+                                                        ? "border-[#2F6B4F]/30 bg-[#E8F5F1] dark:border-[#7BC9A0]/30 dark:bg-[#0A3D2F]/40"
+                                                        : "border-[#1B2A4A]/15 bg-white dark:border-white/10 dark:bg-[#10141C]"
+                                                        }`}
                                                 >
                                                     <div className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
                                                         {row.label}
                                                     </div>
-                                                    <div className={`font-mono text-2xl font-bold tabular-nums ${
-                                                        row.highlight ? "text-[#2F6B4F] dark:text-[#7BC9A0]" : ""
-                                                    }`}>
+                                                    <div className={`font-mono text-2xl font-bold tabular-nums ${row.highlight ? "text-[#2F6B4F] dark:text-[#7BC9A0]" : ""
+                                                        }`}>
                                                         {row.value}
                                                     </div>
                                                 </div>
@@ -640,11 +623,10 @@ export default function PracticePage() {
                                                 Status
                                             </p>
                                             <p
-                                                className={`font-mono text-sm font-bold flex items-center gap-1 ${
-                                                    latestResult.qualification === "Qualified"
-                                                        ? "text-[#2F6B4F]"
-                                                        : "text-[#8C2F39]"
-                                                }`}
+                                                className={`font-mono text-sm font-bold flex items-center gap-1 ${latestResult.qualification === "Qualified"
+                                                    ? "text-[#2F6B4F]"
+                                                    : "text-[#8C2F39]"
+                                                    }`}
                                             >
                                                 {latestResult.qualification === "Qualified" ? (
                                                     <CheckCircle2 className="h-4 w-4" />
@@ -664,11 +646,10 @@ export default function PracticePage() {
 
                                     {/* Qualification Stamp */}
                                     <div
-                                        className={`pointer-events-none absolute right-4 top-48 rotate-16 select-none rounded-sm border-4 px-6 py-2 text-sm font-bold uppercase tracking-widest sm:right-8 ${
-                                            latestResult.qualification === "Qualified"
-                                                ? "border-[#2F6B4F] text-[#2F6B4F]"
-                                                : "border-[#8C2F39] text-[#8C2F39]"
-                                        }`}
+                                        className={`pointer-events-none absolute right-4 top-48 rotate-16 select-none rounded-sm border-4 px-6 py-2 text-sm font-bold uppercase tracking-widest sm:right-8 ${latestResult.qualification === "Qualified"
+                                            ? "border-[#2F6B4F] text-[#2F6B4F]"
+                                            : "border-[#8C2F39] text-[#8C2F39]"
+                                            }`}
                                         style={{ opacity: 0.75 }}
                                     >
                                         {latestResult.qualification === "Qualified" ? "✓ Qualified" : "✗ Not Qualified"}
@@ -701,9 +682,9 @@ export default function PracticePage() {
                         </AnimatePresence>
                     </div>
 
-                    {/* ============================================================ */}
+               
                     {/* SIDEBAR                                                    */}
-                    {/* ============================================================ */}
+                   
                     <motion.aside
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -716,11 +697,10 @@ export default function PracticePage() {
                                 <ClockAlertIcon className="h-4 w-4" /> Exam Timer
                             </h3>
                             <div
-                                className={`flex w-full items-center justify-center gap-2 rounded-sm border-2 px-4 py-4 font-mono text-3xl font-bold tabular-nums transition-colors ${
-                                    timeCritical
-                                        ? "border-[#8C2F39] bg-[#8C2F39] text-white"
-                                        : "border-[#1B2A4A]/20 bg-[#1B2A4A]/5 text-[#1B2A4A] dark:border-white/15 dark:bg-white/5 dark:text-[#E8E4DA]"
-                                }`}
+                                className={`flex w-full items-center justify-center gap-2 rounded-sm border-2 px-4 py-4 font-mono text-3xl font-bold tabular-nums transition-colors ${timeCritical
+                                    ? "border-[#8C2F39] bg-[#8C2F39] text-white"
+                                    : "border-[#1B2A4A]/20 bg-[#1B2A4A]/5 text-[#1B2A4A] dark:border-white/15 dark:bg-white/5 dark:text-[#E8E4DA]"
+                                    }`}
                             >
                                 <Clock className="h-6 w-6" />
                                 {minutesLabel}:{secondsLabel}
@@ -749,11 +729,10 @@ export default function PracticePage() {
                                             <div className="mb-2 flex items-center justify-between">
                                                 <span className="font-mono font-bold text-[#1B2A4A] dark:text-[#E8E4DA]">{r.netSpeed}</span>
                                                 <span
-                                                    className={`flex items-center gap-1 text-xs font-semibold ${
-                                                        r.qualification === "Qualified"
-                                                            ? "text-[#2F6B4F]"
-                                                            : "text-[#8C2F39]"
-                                                    }`}
+                                                    className={`flex items-center gap-1 text-xs font-semibold ${r.qualification === "Qualified"
+                                                        ? "text-[#2F6B4F]"
+                                                        : "text-[#8C2F39]"
+                                                        }`}
                                                 >
                                                     {r.qualification === "Qualified" ? (
                                                         <CheckCircle2 className="h-3.5 w-3.5" />
