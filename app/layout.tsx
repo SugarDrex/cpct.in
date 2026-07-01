@@ -904,7 +904,7 @@ export default function RootLayout({
                 name: "CPCT.IN – #1 Free CPCT Mock Test Platform",
               }),
             }}
-          />
+          />  
         </head>
 
         <body

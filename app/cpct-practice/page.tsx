@@ -178,8 +178,8 @@ export default function PracticePage() {
 
             const prompt =
                 language === "english"
-                    ? `Write 3-4 plain, clear paragraphs (200-210 words total) about "${topicEnglish}", suitable as a typing-test passage. Plain prose only, no headings, no markdown, no bullet points.`
-                    : `निम्नलिखित विषय पर शुद्ध हिंदी (यूनिकोड) में 3-4 सरल अनुच्छेद लिखें (कुल 200-210 शब्द), जो टंकण अभ्यास हेतु उपयुक्त हों: "${topicHindi}"। कोई शीर्षक, मार्कडाउन या बुलेट पॉइंट न दें, केवल सामान्य गद्य।`
+                    ? `Write 3-4 plain, clear paragraphs (200-220 words total) about "${topicEnglish}", suitable as a typing-test passage. Plain prose only, no headings, no markdown, no bullet points.`
+                    : `निम्नलिखित विषय पर शुद्ध हिंदी (यूनिकोड) में 3-4 सरल अनुच्छेद लिखें (कुल 200-220 शब्द), जो टंकण अभ्यास हेतु उपयुक्त हों: "${topicHindi}"। कोई शीर्षक, मार्कडाउन या बुलेट पॉइंट न दें, केवल सामान्य गद्य।`
 
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -339,9 +339,9 @@ export default function PracticePage() {
                     {/* ============================================================ */}
                     {/* MAIN COLUMN                                                */}
                     {/* ============================================================ */}
-                    <div className="space-y-2 lg:col-span-3">
+                    <div className="space-y-5 lg:col-span-2">
                         {/* Header with Candidate ID */}
-
+                     
 
                         {/* Exam configuration */}
                         <motion.section
@@ -366,8 +366,8 @@ export default function PracticePage() {
                                             onClick={() => setLanguage("english")}
                                             disabled={started}
                                             className={`flex-1 rounded-sm border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${language === "english"
-                                                ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
-                                                : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
+                                                    ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
+                                                    : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
                                                 }`}
                                         >
                                             English
@@ -377,8 +377,8 @@ export default function PracticePage() {
                                             onClick={() => setLanguage("hindi")}
                                             disabled={started}
                                             className={`flex-1 rounded-sm border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${language === "hindi"
-                                                ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
-                                                : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
+                                                    ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
+                                                    : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
                                                 }`}
                                         >
                                             हिंदी
@@ -463,12 +463,12 @@ export default function PracticePage() {
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="rounded-sm border border-[#1B2A4A]/15 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#161B26] sm:p-4"
+                            className="rounded-sm border border-[#1B2A4A]/15 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#161B26] sm:p-6"
                         >
-                            <h3 className="mb-0 font-serif text-base font-semibold">Passage to Type</h3>
+                            <h3 className="mb-3 font-serif text-base font-semibold">Passage to Type</h3>
                             <div
                                 style={{ fontFamily: language === "hindi" ? fontFamily : undefined }}
-                                className="min-h-45 select-none overflow-auto rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-2 text-base leading-8 dark:border-white/10 dark:bg-[#10141C] sm:text-md"
+                                className="min-h-48 select-none overflow-auto rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-5 text-base leading-8 dark:border-white/10 dark:bg-[#10141C] sm:text-lg"
                             >
                                 {loading ? (
                                     <div className="flex h-40 items-center justify-center">
@@ -506,15 +506,7 @@ export default function PracticePage() {
                             transition={{ delay: 0.15 }}
                             className="rounded-sm border border-[#1B2A4A]/15 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#161B26] sm:p-6"
                         >
-                            <div className="mb-3 flex items-center justify-between">
-                                <h3 className="font-serif text-base font-semibold">
-                                    Answer Sheet
-                                </h3>
-
-                                <span className="rounded-md bg-blue-50 px-2 py-1 font-mono text-sm font-bold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                                    {minutesLabel}:{secondsLabel}
-                                </span>
-                            </div>
+                            <h3 className="mb-3 font-serif text-base font-semibold">Answer Sheet</h3>
                             <textarea
                                 ref={textareaRef}
                                 value={input}
@@ -546,13 +538,13 @@ export default function PracticePage() {
                                                 </h2>
                                                 <p className="mt-1 text-xs text-[#5B6472] dark:text-[#9AA3B2]">Issued by Government Typing Test Portal</p>
                                             </div>
-
+                                            
                                         </div>
 
                                         {/* Certification Info */}
                                         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-
-
+                                            
+                                            
                                             <div>
                                                 <p className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
                                                     Exam Date
@@ -585,16 +577,18 @@ export default function PracticePage() {
                                             ].map((row) => (
                                                 <div
                                                     key={row.label}
-                                                    className={`rounded-sm border p-4 ${row.highlight
-                                                        ? "border-[#2F6B4F]/30 bg-[#E8F5F1] dark:border-[#7BC9A0]/30 dark:bg-[#0A3D2F]/40"
-                                                        : "border-[#1B2A4A]/15 bg-white dark:border-white/10 dark:bg-[#10141C]"
-                                                        }`}
+                                                    className={`rounded-sm border p-4 ${
+                                                        row.highlight
+                                                            ? "border-[#2F6B4F]/30 bg-[#E8F5F1] dark:border-[#7BC9A0]/30 dark:bg-[#0A3D2F]/40"
+                                                            : "border-[#1B2A4A]/15 bg-white dark:border-white/10 dark:bg-[#10141C]"
+                                                    }`}
                                                 >
                                                     <div className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
                                                         {row.label}
                                                     </div>
-                                                    <div className={`font-mono text-2xl font-bold tabular-nums ${row.highlight ? "text-[#2F6B4F] dark:text-[#7BC9A0]" : ""
-                                                        }`}>
+                                                    <div className={`font-mono text-2xl font-bold tabular-nums ${
+                                                        row.highlight ? "text-[#2F6B4F] dark:text-[#7BC9A0]" : ""
+                                                    }`}>
                                                         {row.value}
                                                     </div>
                                                 </div>
@@ -646,10 +640,11 @@ export default function PracticePage() {
                                                 Status
                                             </p>
                                             <p
-                                                className={`font-mono text-sm font-bold flex items-center gap-1 ${latestResult.qualification === "Qualified"
-                                                    ? "text-[#2F6B4F]"
-                                                    : "text-[#8C2F39]"
-                                                    }`}
+                                                className={`font-mono text-sm font-bold flex items-center gap-1 ${
+                                                    latestResult.qualification === "Qualified"
+                                                        ? "text-[#2F6B4F]"
+                                                        : "text-[#8C2F39]"
+                                                }`}
                                             >
                                                 {latestResult.qualification === "Qualified" ? (
                                                     <CheckCircle2 className="h-4 w-4" />
@@ -669,13 +664,14 @@ export default function PracticePage() {
 
                                     {/* Qualification Stamp */}
                                     <div
-                                        className={`pointer-events-none absolute right-4 top-48 rotate-16 select-none rounded-sm border-4 px-6 py-2 text-sm font-bold uppercase tracking-widest sm:right-8 ${latestResult.qualification === "Qualified"
-                                            ? "border-[#2F6B4F] text-[#2F6B4F]"
-                                            : "border-[#8C2F39] text-[#8C2F39]"
-                                            }`}
+                                        className={`pointer-events-none absolute right-4 top-48 rotate-16 select-none rounded-sm border-4 px-6 py-2 text-sm font-bold uppercase tracking-widest sm:right-8 ${
+                                            latestResult.qualification === "Qualified"
+                                                ? "border-[#2F6B4F] text-[#2F6B4F]"
+                                                : "border-[#8C2F39] text-[#8C2F39]"
+                                        }`}
                                         style={{ opacity: 0.75 }}
                                     >
-                                        {latestResult.qualification === "Qualified" ? "✓ Qualified" : "✗ better luck next time"}
+                                        {latestResult.qualification === "Qualified" ? "✓ Qualified" : "✗ Not Qualified"}
                                     </div>
 
                                     {/* Footer Actions */}
@@ -705,112 +701,131 @@ export default function PracticePage() {
                         </AnimatePresence>
                     </div>
 
-
-                </div>    {/* ============================================================ */}
-                {/* SIDEBAR                                                    */}
-                {/* ============================================================ */}
-                <motion.aside
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="h-fit space-y-5 mt-15 lg:sticky lg:top-6"
-                >
-               
-
-                    {/* Session History */}
-                    <section className="rounded-sm border border-[#1B2A4A]/15 bg-white p-5 dark:border-white/10 dark:bg-[#161B26]">
-                        <h2 className="mb-1 flex items-center gap-2 font-serif text-base font-semibold">
-                            <TrendingUp className="h-4 w-4" /> Session History
-                        </h2>
-                        <p className="mb-4 text-xs text-[#5B6472] dark:text-[#9AA3B2]">Session attempts — cleared on page refresh</p>
-
-                        {results.length === 0 ? (
-                            <p className="py-6 text-center text-sm text-[#5B6472] dark:text-[#9AA3B2]">No test attempts yet</p>
-                        ) : (
-                            <div className="max-h-96 space-y-2 overflow-y-auto">
-                                {results.map((r, i) => (
-                                    <div
-                                        key={i}
-                                        className="rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-3 text-sm dark:border-white/10 dark:bg-[#10141C]"
-                                    >
-                                        <div className="mb-2 flex items-center justify-between">
-                                            <span className="font-mono font-bold text-[#1B2A4A] dark:text-[#E8E4DA]">{r.netSpeed}</span>
-                                            <span
-                                                className={`flex items-center gap-1 text-xs font-semibold ${r.qualification === "Qualified"
-                                                    ? "text-[#2F6B4F]"
-                                                    : "text-[#8C2F39]"
-                                                    }`}
-                                            >
-                                                {r.qualification === "Qualified" ? (
-                                                    <CheckCircle2 className="h-3.5 w-3.5" />
-                                                ) : (
-                                                    <XCircle className="h-3.5 w-3.5" />
-                                                )}
-                                            </span>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-1 text-xs text-[#5B6472] dark:text-[#9AA3B2]">
-                                            <span>{r.language}</span>
-                                            <span>{r.difficulty}</span>
-                                            <span>Acc {r.accuracy}</span>
-                                            <span className="font-mono">{r.examId}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {results.length > 0 && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    try {
-                                        window.localStorage.removeItem(STORAGE_KEY)
-                                    } catch {
-                                        /* ignore */
-                                    }
-                                    setResults([])
-                                }}
-                                className="mt-4 w-full rounded-sm border border-[#8C2F39]/40 py-2 text-sm font-semibold text-[#8C2F39] transition hover:bg-[#8C2F39]/5 dark:border-[#E0918C]/40 dark:text-[#E0918C]"
+                    {/* ============================================================ */}
+                    {/* SIDEBAR                                                    */}
+                    {/* ============================================================ */}
+                    <motion.aside
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="h-fit space-y-5 mt-15 lg:sticky lg:top-6"
+                    >
+                        {/* Timer Section */}
+                        <section className="rounded-sm border border-[#1B2A4A]/15 bg-white p-5 dark:border-white/10 dark:bg-[#161B26]">
+                            <h3 className="mb-3 flex items-center gap-2 font-serif text-sm font-semibold">
+                                <ClockAlertIcon className="h-4 w-4" /> Exam Timer
+                            </h3>
+                            <div
+                                className={`flex w-full items-center justify-center gap-2 rounded-sm border-2 px-4 py-4 font-mono text-3xl font-bold tabular-nums transition-colors ${
+                                    timeCritical
+                                        ? "border-[#8C2F39] bg-[#8C2F39] text-white"
+                                        : "border-[#1B2A4A]/20 bg-[#1B2A4A]/5 text-[#1B2A4A] dark:border-white/15 dark:bg-white/5 dark:text-[#E8E4DA]"
+                                }`}
                             >
-                                Clear History
-                            </button>
-                        )}
-                    </section>
+                                <Clock className="h-6 w-6" />
+                                {minutesLabel}:{secondsLabel}
+                            </div>
+                            {timeCritical && (
+                                <p className="mt-2 text-xs font-semibold text-[#8C2F39] dark:text-[#E0918C]">⚠ Time critical: 30 seconds or less</p>
+                            )}
+                        </section>
 
-                    {/* Action Buttons */}
-                    <div className="space-y-2">
-                        <motion.button
-                            whileTap={{ scale: 0.99 }}
-                            onClick={() => {
-                                handleSubmit()
-                                setTimeout(() => {
-                                    document
-                                        .getElementById("result-card")
-                                        ?.scrollIntoView({
-                                            behavior: "smooth",
-                                            block: "start",
-                                        })
-                                }, 300)
-                            }}
-                            disabled={loading || !started}
-                            className="w-full rounded-sm bg-[#1B2A4A] py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-[#16213B] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#E8E4DA] dark:text-[#10141C] dark:hover:bg-white"
-                        >
-                            Submit Test
-                        </motion.button>
+                        {/* Session History */}
+                        <section className="rounded-sm border border-[#1B2A4A]/15 bg-white p-5 dark:border-white/10 dark:bg-[#161B26]">
+                            <h2 className="mb-1 flex items-center gap-2 font-serif text-base font-semibold">
+                                <TrendingUp className="h-4 w-4" /> Session History
+                            </h2>
+                            <p className="mb-4 text-xs text-[#5B6472] dark:text-[#9AA3B2]">Session attempts — cleared on page refresh</p>
 
-                        {submitted && (
+                            {results.length === 0 ? (
+                                <p className="py-6 text-center text-sm text-[#5B6472] dark:text-[#9AA3B2]">No test attempts yet</p>
+                            ) : (
+                                <div className="max-h-96 space-y-2 overflow-y-auto">
+                                    {results.map((r, i) => (
+                                        <div
+                                            key={i}
+                                            className="rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-3 text-sm dark:border-white/10 dark:bg-[#10141C]"
+                                        >
+                                            <div className="mb-2 flex items-center justify-between">
+                                                <span className="font-mono font-bold text-[#1B2A4A] dark:text-[#E8E4DA]">{r.netSpeed}</span>
+                                                <span
+                                                    className={`flex items-center gap-1 text-xs font-semibold ${
+                                                        r.qualification === "Qualified"
+                                                            ? "text-[#2F6B4F]"
+                                                            : "text-[#8C2F39]"
+                                                    }`}
+                                                >
+                                                    {r.qualification === "Qualified" ? (
+                                                        <CheckCircle2 className="h-3.5 w-3.5" />
+                                                    ) : (
+                                                        <XCircle className="h-3.5 w-3.5" />
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-1 text-xs text-[#5B6472] dark:text-[#9AA3B2]">
+                                                <span>{r.language}</span>
+                                                <span>{r.difficulty}</span>
+                                                <span>Acc {r.accuracy}</span>
+                                                <span className="font-mono">{r.examId}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {results.length > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        try {
+                                            window.localStorage.removeItem(STORAGE_KEY)
+                                        } catch {
+                                            /* ignore */
+                                        }
+                                        setResults([])
+                                    }}
+                                    className="mt-4 w-full rounded-sm border border-[#8C2F39]/40 py-2 text-sm font-semibold text-[#8C2F39] transition hover:bg-[#8C2F39]/5 dark:border-[#E0918C]/40 dark:text-[#E0918C]"
+                                >
+                                    Clear History
+                                </button>
+                            )}
+                        </section>
+
+                        {/* Action Buttons */}
+                        <div className="space-y-2">
                             <motion.button
                                 whileTap={{ scale: 0.99 }}
-                                onClick={handleRetake}
-                                initial={{ opacity: 0, y: 8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="w-full flex items-center justify-center gap-2 rounded-sm border border-[#1B2A4A]/30 py-3 text-sm font-semibold text-[#1B2A4A] transition hover:bg-[#1B2A4A]/5 dark:border-white/30 dark:text-[#E8E4DA] dark:hover:bg-white/5"
+                                onClick={() => {
+                                    handleSubmit()
+                                    setTimeout(() => {
+                                        document
+                                            .getElementById("result-card")
+                                            ?.scrollIntoView({
+                                                behavior: "smooth",
+                                                block: "start",
+                                            })
+                                    }, 300)
+                                }}
+                                disabled={loading || !started}
+                                className="w-full rounded-sm bg-[#1B2A4A] py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-[#16213B] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#E8E4DA] dark:text-[#10141C] dark:hover:bg-white"
                             >
-                                <RotateCcw className="h-4 w-4" /> Retake Test
+                                Submit Test
                             </motion.button>
-                        )}
-                    </div>
-                </motion.aside>
+
+                            {submitted && (
+                                <motion.button
+                                    whileTap={{ scale: 0.99 }}
+                                    onClick={handleRetake}
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="w-full flex items-center justify-center gap-2 rounded-sm border border-[#1B2A4A]/30 py-3 text-sm font-semibold text-[#1B2A4A] transition hover:bg-[#1B2A4A]/5 dark:border-white/30 dark:text-[#E8E4DA] dark:hover:bg-white/5"
+                                >
+                                    <RotateCcw className="h-4 w-4" /> Retake Test
+                                </motion.button>
+                            )}
+                        </div>
+                    </motion.aside>
+                </div>
             </main>
         </div>
     )

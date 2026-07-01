@@ -308,7 +308,7 @@ useEffect(() => {
       current: isDark ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/25" : "bg-[#2563eb] border-[#3b82f6] text-white shadow-md",
       markedAnswered: isDark ? "bg-emerald-600 border-emerald-500 text-white" : "bg-[#059669] border-[#10b981] text-white",
       marked: isDark ? "bg-amber-500 border-amber-400 text-white" : "bg-[#d97706] border-[#f59e0b] text-white",
-      answered: isDark ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400" : "bg-[#d1fae5] border-[#6ee7b7] text-[#059669]",
+      answered: isDark ? "bg-emerald-600 border-emerald-500 text-white" : "bg-[#059669] border-[#10b981] text-white",
       default: isDark ? "bg-slate-700/40 border-slate-600/50 text-slate-400 hover:bg-slate-700/60" : "bg-[#f1f5f9] border-[#e2e8f0] text-[#64748b] hover:bg-[#e2e8f0]",
     },
     submitBtn: isDark
@@ -326,7 +326,7 @@ useEffect(() => {
     scoreText: isDark ? "text-blue-300" : "text-[#2563eb]",
     correctBox: isDark ? "bg-emerald-950 border-emerald-700" : "bg-white border-[#bbf7d0]",
     correctText: isDark ? "text-emerald-400" : "text-[#059669]",
-    correctLabel: isDark ? "text-emerald-400" : "text-[#10b981]",
+    correctLabel: isDark ? "text-emerald-400" : "text-[#059669]",
     wrongBox: isDark ? "bg-red-950 border-red-700" : "bg-white border-[#fecaca]",
     wrongText: isDark ? "text-red-400" : "text-[#dc2626]",
     wrongLabel: isDark ? "text-red-400" : "text-[#ef4444]",
@@ -613,7 +613,7 @@ useEffect(() => {
                 </div>
                 <div className="flex items-center justify-between py-2 px-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-5.5 h-5.5 rounded bg-emerald-500" />
+                    <div className="w-5.5 h-5.5 rounded bg-[#059669]" />
                     <span className={`text-[11px] font-medium ${theme.textMuted}`}>Answered</span>
                   </div>
                   <span className={`text-sm font-black ${theme.correctText}`}>{answeredCount}</span>

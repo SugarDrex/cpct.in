@@ -224,7 +224,7 @@ async function downloadExamAsDocx(exam: Exam): Promise<void> {
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `(${opt.value}) ${opt.text}${isCorrect ? ' ✓' : ''}`,
+                  text: `(${opt.value}) ${opt.text}${isCorrect ? ' ' : ''}`,
                   size: 22,
                   font: 'Calibri',
                   bold: isCorrect,
@@ -261,10 +261,7 @@ async function downloadExamAsDocx(exam: Exam): Promise<void> {
       new Paragraph({
         spacing: { before: 80, after: 60 },
         children: [
-          new TextRun({
-            text: `Answer: (${q.correct_answer}) ${correctOpt?.text ?? ''}`,
-            size: 20, font: 'Calibri', bold: true, color: '166534',
-          }),
+           
         ],
       })
     );
@@ -310,11 +307,10 @@ async function downloadExamAsDocx(exam: Exam): Promise<void> {
     }],
   });
 
-  const buffer = await Packer.toBuffer(doc);
-  const bytes  = new Uint8Array(buffer);
-  const blob   = new Blob([bytes], {
-    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  });
+  // Packer.toBlob() is the browser-targeted export method (Packer.toBuffer()
+  // is for Node.js and relies on a Buffer global that isn't guaranteed to
+  // exist client-side) — this is the safer, library-recommended path here.
+  const blob = await Packer.toBlob(doc);
   const url  = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href     = url;

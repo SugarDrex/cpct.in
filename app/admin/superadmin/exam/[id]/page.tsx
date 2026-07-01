@@ -128,7 +128,7 @@ function ShiftCard({ shift, examId }: { shift: Shift; examId: string }) {
           <FiClock size={14} className="text-amber-400" />
           <div>
             <p className="text-slate-500 text-xs">Duration</p>
-            <p className="text-white font-semibold text-sm">{formatDuration(shift.duration_minutes)}</p>
+            <p className="text-white font-semibold text-sm">{formatDuration(shift.duration_minutes)}&nbsp; hour</p>
           </div>
         </div>
       </div>

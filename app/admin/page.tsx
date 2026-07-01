@@ -132,143 +132,48 @@ export default function Dashboard() {
       color: "from-cyan-600 to-cyan-700",
       buttonColor: "text-cyan-600",
       borderColor: "border-cyan-200",
+      
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 transition-colors duration-300">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo/Title */}
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:block">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">A</span>
-                </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 transition-colors duration-300"> 
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="py-15">
+          <div className="rounded-xl mb-5 overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-4 px-6 py-5">
+              <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <FiUser className="w-6 h-6 text-slate-600 dark:text-slate-300" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Admin Portal
-                </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Education Management System
-                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Welcome back,</p>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{user.username}</h2>
               </div>
             </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-4">
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-              >
-                <FiLogOut className="w-4 h-4" />
-                <span className="text-sm">Logout</span>
-              </button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
-            >
-              {mobileOpen ? (
-                <FiX className="w-5 h-5" />
-              ) : (
-                <FiMenu className="w-5 h-5" />
-              )}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Menu */}
-      {mobileOpen && (
-        <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-          <button
-            onClick={() => {
-              handleLogout();
-              setMobileOpen(false);
-            }}
-            className="w-full flex items-center gap-2 px-4 py-3 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <FiLogOut className="w-4 h-4" />
-            <span className="text-sm">Logout</span>
-          </button>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section - User Profile */}
-        <div className="mb-12">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 rounded-2xl shadow-lg overflow-hidden">
-            <div className="px-6 sm:px-8 py-10 sm:py-12">
-              <div className="flex items-center gap-6 mb-6">
-                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <FiUser className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <p className="text-blue-100 text-sm font-medium mb-1">
-                    Welcome back,
-                  </p>
-                  <h2 className="text-3xl font-bold text-white">
-                    {user.username}
-                  </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-slate-200 dark:bg-slate-800">
+              <div className="flex items-start gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-3">
+                <FiUser className="w-5 h-5 text-slate-500 dark:text-slate-400 mt-0.5" />
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Username</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5 truncate">{user.username}</p>
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-blue-500 bg-opacity-40 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <FiUser className="w-5 h-5 text-blue-100 mt-0.5" />
-                    <div>
-                      <p className="text-blue-100 text-xs font-medium">
-                        USERNAME
-                      </p>
-                      <p className="text-white font-semibold mt-1">
-                        {user.username}
-                      </p>
-                    </div>
-                  </div>
+              <div className="flex items-start gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-3">
+                <FiMail className="w-5 h-5 text-slate-500 dark:text-slate-400 mt-0.5" />
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Email Address</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5 break-all">{user.email}</p>
                 </div>
-
-                <div className="bg-blue-500 bg-opacity-40 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <FiMail className="w-5 h-5 text-blue-100 mt-0.5" />
-                    <div>
-                      <p className="text-blue-100 text-xs font-medium">
-                        EMAIL ADDRESS
-                      </p>
-                      <p className="text-white font-semibold mt-1 break-all text-sm">
-                        {user.email}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-blue-500 bg-opacity-40 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <FiCheckCircle className="w-5 h-5 text-emerald-300 mt-0.5" />
-                    <div>
-                      <p className="text-blue-100 text-xs font-medium">
-                        ACCOUNT STATUS
-                      </p>
-                      <p className="text-emerald-300 font-semibold mt-1">
-                        Active
-                      </p>
-                    </div>
-                  </div>
+              </div>
+              <div className="flex items-start gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-3">
+                <FiCheckCircle className="w-5 h-5 text-emerald-500 dark:text-emerald-400 mt-0.5" />
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Account Status</p>
+                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">Active</p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Actions Section */}
-        <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
             <FiSettings className="w-6 h-6 text-slate-700 dark:text-slate-300" />
             <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
