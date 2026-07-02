@@ -273,7 +273,7 @@ export default function ExamShiftsPage() {
   const [monthLabel, setMonthLabel] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
