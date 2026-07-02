@@ -813,11 +813,10 @@ export default function SecureExamPage() {
 
                 {/* Bottom Action Bar */}
                 <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                  <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                  <div className="flex items-center gap-3">
+                       <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
                     {answeredCount}/{questions.length} Answered
                   </span>
-
-                  <div className="flex items-center gap-3">
                     <button
                       disabled={current === 0}
                       onClick={() => setCurrent((prev) => prev - 1)}
