@@ -824,6 +824,7 @@ export default function RootLayout({
           <meta name="Distribution" content="Global" />
           <meta name="Audience" content="All" />
           <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+          <meta name="google-adsense-account" content="ca-pub-7991231452123187">
 
           {/* ═══════════════════════════════════════════════════════════════ */}
           {/* ═════════ AEO (ANSWER ENGINE OPTIMIZATION) META TAGS ═════════ */}
