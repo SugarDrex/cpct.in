@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../app/globals.css";
 
 import Navbar from "@/components/NavBar";
 import { Poppins, Inter } from "next/font/google";
@@ -905,7 +905,7 @@ export default function RootLayout({
                 name: "CPCT.IN – #1 Free CPCT Mock Test Platform",
               }),
             }}
-          />  
+          />         
         </head>
 
         <body
@@ -943,11 +943,7 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
 
-          {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ════════════════ ALL STRUCTURED DATA SCHEMAS ═══════════════════ */}
-          {/* ═════════════════════════════════════════════════════════════════ */}
-
-          {/* 1. WEBSITE SCHEMA */}
+      
           <Script
             id="schema-website"
             type="application/ld+json"
@@ -1030,11 +1026,7 @@ export default function RootLayout({
             />
           ))}
 
-          {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ═════════════════ APP & THEME PROVIDER ════════════════════════ */}
-          {/* ═════════════════════════════════════════════════════════════════ */}
-
-          <ThemeProvider
+         <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
