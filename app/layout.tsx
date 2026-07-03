@@ -824,7 +824,7 @@ export default function RootLayout({
           <meta name="Distribution" content="Global" />
           <meta name="Audience" content="All" />
           <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-          <meta name="google-adsense-account" content="ca-pub-7991231452123187"/>
+       
 
           {/* ═══════════════════════════════════════════════════════════════ */}
           {/* ═════════ AEO (ANSWER ENGINE OPTIMIZATION) META TAGS ═════════ */}
@@ -935,14 +935,8 @@ export default function RootLayout({
             }}
           />
 
-          {/* Google AdSense */}
-          <Script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7991231452123187"
-            crossOrigin="anonymous"
-            strategy="afterInteractive"
-          />
-
+   
+       
       
           <Script
             id="schema-website"
@@ -1026,7 +1020,8 @@ export default function RootLayout({
             />
           ))}
 
-         <ThemeProvider
+        
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
