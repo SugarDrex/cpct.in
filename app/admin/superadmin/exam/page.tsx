@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 import { fetchExamsAction, getRealtimeConfigAction } from '@/app/actions/getMainExam';
 import { getSmartExamData } from '@/app/actions/getOldExams';
-import { FcCheckmark } from "react-icons/fc";
+import { FcAcceptDatabase, FcCheckmark } from "react-icons/fc";
+import { RiFileExcel2Fill } from 'react-icons/ri';
+import { FaRegFilePowerpoint, FaRegFileWord } from 'react-icons/fa';
+import { LucideNetwork } from 'lucide-react';
+import { BsGlobeAmericasFill } from 'react-icons/bs';
+import { MdDevicesOther } from 'react-icons/md';
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Exam {
   id: string;
@@ -176,6 +181,70 @@ function IconGlobe({ className }: { className?: string }) {
   );
 }
 
+// ── Header wavy gradient ribbon ─────────────────────────────────────────────────
+function HeaderRibbon() {
+  return (
+    <div className="absolute inset-x-0 top-0 h-full w-full overflow-hidden pointer-events-none">
+      <svg
+        className="absolute -top-6 left-0 w-[200%] h-40 animate-ribbon-flow"
+        viewBox="0 0 1600 200"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient id="ribbonGradA" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="#60a5fa" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#93c5fd" stopOpacity="0.15" />
+          </linearGradient>
+          <linearGradient id="ribbonGradB" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.2" />
+            <stop offset="50%" stopColor="#1d4ed8" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.08" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M0,80 C200,140 400,20 600,70 C800,120 1000,10 1200,60 C1400,110 1500,50 1600,80 L1600,200 L0,200 Z"
+          fill="url(#ribbonGradA)"
+        />
+        <path
+          d="M0,110 C220,60 420,150 640,100 C860,50 1040,140 1260,90 C1420,55 1520,110 1600,110 L1600,200 L0,200 Z"
+          fill="url(#ribbonGradB)"
+        />
+      </svg>
+      <style jsx global>{`
+        @keyframes ribbonFlow {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-ribbon-flow {
+          animation: ribbonFlow 18s linear infinite;
+        }
+        @keyframes floatUp {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+          animation: floatUp 4s ease-in-out infinite;
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.5s ease both;
+        }
+        @keyframes glowPulse {
+          0%, 100% { box-shadow: 0 0 0px rgba(59,130,246,0); }
+          50% { box-shadow: 0 0 22px rgba(59,130,246,0.35); }
+        }
+        .animate-glow-pulse {
+          animation: glowPulse 2.6s ease-in-out infinite;
+        }
+      `}</style>
+    </div>
+  );
+}
 
 // ── Hero Section ───────────────────────────────────────────────────────────────
 function HeroSection() {
@@ -183,30 +252,35 @@ function HeroSection() {
     typeof document !== "undefined" &&
     document.documentElement.classList.contains("dark");
   return (
-    <section className="bg-gradient-to-br from-blue-50 via-white to-blue-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-2xl border border-blue-100 dark:border-gray-800 p-6 sm:p-8 mb-6 relative overflow-hidden">
+    <section className="relative bg-gradient-to-br from-blue-50 via-white to-blue-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-2xl border border-blue-100 dark:border-gray-800 p-6 sm:p-8 mb-6 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-100/60 dark:hover:shadow-blue-950/30 transition-shadow duration-500">
+      <HeaderRibbon />
+  
+
       <div className="flex flex-col lg:flex-row items-center gap-6 relative z-10" >
-        <div className="flex-1 space-y-4" >
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-900 text-[11px] font-semibold text-blue-700 dark:text-blue-400 shadow-sm">
-            <IconAward className="w-3 h-3" />
-            Welcome to CPCT Portal
+        <div className="flex-1 space-y-4 animate-fade-in-up" >
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-900 text-[13px] font-semibold text-blue-700 dark:text-blue-400 shadow-sm hover:shadow-md hover:shadow-blue-200/60 dark:hover:shadow-blue-950/40 hover:scale-105 transition-all duration-300">
+            <IconAward className="w-5 h-5 text-yellow-300" />
+            Welcome to CPCT.IN
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
             Prepare Smart.<br />
-            <span className="text-blue-700 dark:text-blue-400">Score Higher.</span>
+            <span className="text-blue-700 dark:text-blue-400 bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 dark:from-blue-400 dark:via-blue-300 dark:to-blue-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-[gradientShift_4s_ease_infinite]">
+              Score Higher.
+            </span>
           </h1>
           <p className="text-slate-500 dark:text-gray-400 text-sm leading-relaxed max-w-md">
             Latest CPCT papers, topic-wise practice and helpful resources for your success.
           </p>
           <div className="flex items-center gap-3 pt-1">
             <Link href="/#takeone">
-              <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-[13px] font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 dark:shadow-blue-950/40 hover:shadow-blue-300 dark:hover:shadow-blue-900/50">
+              <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-[13px] font-semibold hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-200 dark:shadow-blue-950/40 hover:shadow-2xl hover:shadow-blue-400/50 dark:hover:shadow-blue-700/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95">
                 Start Practicing
-                <IconArrowRight className="w-4 h-4" />
+                <IconArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
 
             <Link href="/cpct-notes">
-              <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 text-[13px] font-semibold hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-700 dark:hover:text-blue-400 transition-all">
+              <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 text-[13px] font-semibold hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-700 dark:hover:text-blue-400 hover:shadow-lg hover:shadow-blue-100/60 dark:hover:shadow-blue-950/30 hover:-translate-y-0.5 transition-all duration-300">
                 <IconFileText className="w-4 h-4" />
                 View Notes
               </button>
@@ -216,9 +290,9 @@ function HeroSection() {
 
         {/* Hero Illustration */}
         <div className="hidden lg:flex flex-1 justify-center relative" >
-          <div className="relative w-64 h-48" >
+          <div className="relative w-64 h-48 transition-transform duration-500 hover:-translate-y-1" >
             {/* Monitor */}
-            <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-xl border-2 border-blue-200 dark:border-blue-900 shadow-xl shadow-blue-100 dark:shadow-none flex flex-col overflow-hidden">
+            <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-xl border-2 border-blue-200 dark:border-blue-900 shadow-xl shadow-blue-100 dark:shadow-none hover:shadow-2xl hover:shadow-blue-300/50 dark:hover:shadow-blue-900/40 transition-shadow duration-500 flex flex-col overflow-hidden">
               <div className="h-5 bg-blue-50 dark:bg-gray-900 border-b border-blue-100 dark:border-gray-700 flex items-center px-2 gap-1">
                 <div className="w-2 h-2 rounded-full bg-red-400" />
                 <div className="w-2 h-2 rounded-full bg-amber-400" />
@@ -240,12 +314,12 @@ function HeroSection() {
   </div>
 
   {/* Check Badge */}
-  <div className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 shadow-md ">
+  <div className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 shadow-md animate-glow-pulse">
     <FcCheckmark className="text-xl" />
   </div>
 </div>
             </div>
-            {/* Stand <FcCheckmark /> */}
+            {/* Stand */}
              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-full h-4 bg-blue-200 dark:bg-gray-700 rounded-b-lg" />
           
             <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-3 bg-blue-200 dark:bg-gray-700 rounded-b-lg" />
@@ -259,7 +333,7 @@ function HeroSection() {
               msUserSelect: "none",
               filter: "contrast(1.15) brightness(1.02)",
               pointerEvents: "none",
-            }} className="absolute top-29 -right-12 w-12 h-12 bg-white dark:bg-blue-950/40   rounded-full flex items-center justify-center  ">
+            }} className="absolute top-29 -right-12 w-12 h-12 bg-white dark:bg-blue-950/40 rounded-full flex items-center justify-center animate-float">
               <span className="text-lg leading-none select-none ">
                 <img style={{
                   mixBlendMode: isDark ? "darken" : "multiply",
@@ -279,10 +353,10 @@ function HeroSection() {
               msUserSelect: "none",
               filter: "contrast(1.15) brightness(1.02)",
               pointerEvents: "none",
-            }} className="absolute top-1/2 -left-19 w-12 h-12 bg-white dark:bg-blue-950/40   rounded-full flex items-center justify-center  ">
+            }} className="absolute top-1/2 -left-19 w-12 h-12 bg-white dark:bg-blue-950/40 rounded-full flex items-center justify-center animate-float" >
               <IconFileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
-            <div className="absolute top-6 -left-20 w-10 h-10 bg-white dark:bg-blue-950/40 rounded-full flex items-center justify-center">
+            <div className="absolute top-6 -left-20 w-10 h-10 bg-white dark:bg-blue-950/40 rounded-full flex items-center justify-center animate-float">
               <span className="text-lg leading-none select-none ">
                 <img style={{
                   mixBlendMode: isDark ? "darken" : "multiply",
@@ -328,22 +402,17 @@ function HeroSection() {
           </div>
         </div>
       </div>
+      <style jsx global>{`
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% center; }
+          50% { background-position: 100% center; }
+        }
+      `}</style>
     </section>
   );
 }
 
-// ── Realtime Badge ─────────────────────────────────────────────────────────────
-function RealtimeBadge({ connected }: { connected: boolean }) {
-  return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${connected
-      ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800'
-      : 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800'
-      }`}>
-      {connected ? <IconWifi className="w-3 h-3" /> : <IconWifiOff className="w-3 h-3" />}
-      {connected ? 'Live' : 'Offline'}
-    </span>
-  );
-}
+ 
 
 // ── Skeleton ───────────────────────────────────────────────────────────────────
 function SkeletonCard() {
@@ -364,7 +433,7 @@ function Skeleton() {
 }
 
 // ── Exam Month Card ────────────────────────────────────────────────────────────
-function ExamMonthCard({ month, year, count }: { month: { label: string; month: number; exams: Exam[] }; year: number; count: number }) {
+function ExamMonthCard({ month, year, count, index }: { month: { label: string; month: number; exams: Exam[] }; year: number; count: number; index: number }) {
   const href = `/admin/superadmin/exam/${month}?year=${year}&month=${month.month}`;
   const iconColors = [
     'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950/40 dark:border-blue-800',
@@ -374,14 +443,24 @@ function ExamMonthCard({ month, year, count }: { month: { label: string; month: 
     'text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/40 dark:border-rose-800',
     'text-cyan-600 bg-cyan-50 border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-800',
   ];
+  const glowColors = [
+    'hover:shadow-blue-300/50 dark:hover:shadow-blue-800/30',
+    'hover:shadow-emerald-300/50 dark:hover:shadow-emerald-800/30',
+    'hover:shadow-violet-300/50 dark:hover:shadow-violet-800/30',
+    'hover:shadow-amber-300/50 dark:hover:shadow-amber-800/30',
+    'hover:shadow-rose-300/50 dark:hover:shadow-rose-800/30',
+    'hover:shadow-cyan-300/50 dark:hover:shadow-cyan-800/30',
+  ];
   const colorClass = iconColors[month.month % iconColors.length];
+  const glowClass = glowColors[month.month % glowColors.length];
 
   return (
     <Link
       href={href}
-      className="group relative flex items-start gap-3 rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md hover:shadow-blue-100/50 dark:hover:shadow-blue-950/30 transition-all duration-200">
+      style={{ animationDelay: `${index * 60}ms` }}
+      className={`animate-fade-in-up group relative flex items-start gap-3 rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl ${glowClass} hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300`}>
       {/* Icon */}
-      <div className={`shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center ${colorClass}`}>
+      <div className={`shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center ${colorClass} group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
         <IconCalendar className="w-5 h-5" />
       </div>
 
@@ -389,13 +468,13 @@ function ExamMonthCard({ month, year, count }: { month: { label: string; month: 
       <div className="flex-1 min-w-0 pt-0.5">
         <div className="flex items-center justify-between mb-0.5">
           <h3 className="text-[13px] font-bold text-slate-900 dark:text-gray-100 leading-tight">{month.label} {year}</h3>
-          <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">NEW</span>
+          <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold group-hover:animate-pulse">NEW</span>
         </div>
         <p className="text-[11px] text-slate-500 dark:text-gray-400 mb-2">CPCT Exam {year}</p>
         <div className="flex items-center justify-between">
           <span className="text-[11px] text-slate-400 dark:text-gray-500 font-medium">{count} shift{count !== 1 ? 's' : ''}</span>
           <span className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 group-hover:underline">
-            View Papers <IconChevronRight className="w-3 h-3" />
+            View Papers <IconChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-300" />
           </span>
         </div>
       </div>
@@ -404,16 +483,17 @@ function ExamMonthCard({ month, year, count }: { month: { label: string; month: 
 }
 
 // ── Topic Card ─────────────────────────────────────────────────────────────────
-function TopicCard({ title, href, icon: Icon, color }: { title: string; href: string; icon: React.FC<{ className?: string }>; color: string }) {
+function TopicCard({ title, href, icon: Icon, color, index }: { title: string; href: string; icon: React.FC<{ className?: string }>; color: string; index: number }) {
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md hover:shadow-blue-100/50 dark:hover:shadow-blue-950/30 transition-all duration-200">
-      <div className={`shrink-0 w-9 h-9 rounded-lg border flex items-center justify-center ${color}`}>
-        <Icon className="w-4 h-4" />
+      style={{ animationDelay: `${index * 60}ms` }}
+      className="animate-fade-in-up group flex items-center gap-3 rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl hover:shadow-blue-200/50 dark:hover:shadow-blue-950/30 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300">
+      <div className={`shrink-0 w-11 h-9 rounded-lg border flex items-center justify-center ${color} group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300`}>
+        <Icon className="w-10 h-10" />
       </div>
       <span className="flex-1 text-[13px] font-semibold text-slate-800 dark:text-gray-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{title}</span>
-      <IconChevronRight className="w-4 h-4 text-slate-300 dark:text-gray-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
+      <IconChevronRight className="w-4 h-4 text-slate-300 dark:text-gray-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all duration-300" />
     </Link>
   );
 }
@@ -428,7 +508,7 @@ function StudyResources() {
   ];
 
   return (
-    <aside className="rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+    <aside className="rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 hover:shadow-lg hover:shadow-blue-100/50 dark:hover:shadow-blue-950/20 transition-shadow duration-500">
       <h3 className="text-slate-900 dark:text-gray-100 font-bold text-sm mb-3 flex items-center gap-2">
         <IconBookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
         Study Resources
@@ -436,15 +516,15 @@ function StudyResources() {
       <ul className="space-y-1">
         {items.map(it => (
           <li key={it.label}>
-            <Link href="/" className="flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-800 transition-all duration-200 group">
-              <div className={`w-8 h-8 rounded-lg border flex items-center justify-center ${it.color}`}>
+            <Link href="/" className="flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-800 hover:shadow-md hover:shadow-blue-100/40 dark:hover:shadow-blue-950/20 transition-all duration-300 group">
+              <div className={`w-8 h-8 rounded-lg border flex items-center justify-center ${it.color} group-hover:scale-110 transition-transform duration-300`}>
                 <it.icon className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-semibold text-slate-800 dark:text-gray-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{it.label}</p>
                 <p className="text-[11px] text-slate-400 dark:text-gray-500">{it.desc}</p>
               </div>
-              <IconChevronRight className="w-4 h-4 text-slate-300 dark:text-gray-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
+              <IconChevronRight className="w-4 h-4 text-slate-300 dark:text-gray-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all duration-300" />
             </Link>
           </li>
         ))}
@@ -456,13 +536,13 @@ function StudyResources() {
 // ── Preparation Card ─────────────────────────────────────────────────────────────
 function PreparationCard() {
   return (
-    <div className="rounded-xl border border-blue-100 dark:border-blue-900 bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 p-4 relative overflow-hidden">
+    <div className="rounded-xl border border-blue-100 dark:border-blue-900 bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 p-4 relative overflow-hidden hover:shadow-xl hover:shadow-blue-200/50 dark:hover:shadow-blue-950/30 transition-shadow duration-500 group">
       <h3 className="text-slate-900 dark:text-gray-100 font-bold text-sm mb-1">CPCT Exam Preparation</h3>
       <p className="text-[11px] text-slate-500 dark:text-gray-400 mb-3">Consistent Practice. Better Results.</p>
-      <button className="px-4 py-2 rounded-lg bg-blue-600 text-white text-[12px] font-semibold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200 dark:shadow-blue-950/40">
+      <button className="px-4 py-2 rounded-lg bg-blue-600 text-white text-[12px] font-semibold hover:bg-blue-700 transition-all duration-300 shadow-sm shadow-blue-200 dark:shadow-blue-950/40 hover:shadow-lg hover:shadow-blue-400/50 hover:-translate-y-0.5 active:scale-95">
         Stay Consistent
       </button>
-      <div className="absolute right-2 bottom-2 text-blue-200 dark:text-blue-900/60">
+      <div className="absolute right-2 bottom-2 text-blue-200 dark:text-blue-900/60 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-500">
         <IconTarget className="w-12 h-12" />
       </div>
     </div>
@@ -472,7 +552,7 @@ function PreparationCard() {
 // ── About CPCT Sidebar ───────────────────────────────────────────────────────────
 function AboutCpct() {
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+    <div className="rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 hover:shadow-lg hover:shadow-emerald-100/50 dark:hover:shadow-emerald-950/20 transition-shadow duration-500">
       <div className="flex items-center gap-2 mb-2">
         <IconShield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
         <span className="text-slate-900 dark:text-gray-100 text-sm font-bold">About CPCT</span>
@@ -480,8 +560,8 @@ function AboutCpct() {
       <p className="text-[12px] text-slate-500 dark:text-gray-400 leading-relaxed mb-2">
         Computer Proficiency Certification Test conducted by NIC/MP Government.
       </p>
-      <Link href="/about" className="inline-flex items-center gap-1 text-[12px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-        Learn More <IconChevronRight className="w-3 h-3" />
+      <Link href="/about" className="inline-flex items-center gap-1 text-[12px] font-semibold text-blue-600 dark:text-blue-400 hover:underline group">
+        Learn More <IconChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-300" />
       </Link>
     </div>
   );
@@ -546,14 +626,17 @@ export default function CpctExamsPage() {
   const totalExams = grouped.reduce((a, g) => a + g.months.reduce((b, m) => b + m.exams.length, 0), 0);
 
   // Icons/colors are cycled across the dynamically fetched topics
-  const topicIcons = [IconCpu, IconFileText, IconBarChart, IconLayers, IconGlobe, IconBookOpen, IconLightbulb, IconMonitor];
+  const topicIcons = [IconLayers,  FaRegFileWord, RiFileExcel2Fill , FaRegFilePowerpoint, FcAcceptDatabase, LucideNetwork, BsGlobeAmericasFill, MdDevicesOther];
   const topicColors = [
+    'text-yellow-400 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-950/40 dark:border-yellow-800',
     'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950/40 dark:border-blue-800',
-    'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-950/40 dark:border-emerald-800',
-    'text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-950/40 dark:border-amber-800',
-    'text-violet-600 bg-violet-50 border-violet-200 dark:text-violet-400 dark:bg-violet-950/40 dark:border-violet-800',
-    'text-cyan-600 bg-cyan-50 border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-800',
+    'text-green-600 bg-green-50 border-gray-200 dark:text-green-400 dark:bg-gray-950/40 dark:border-green-900',
+    'text-red-800 bg-red-100 border-red-200 dark:text-red-400 dark:bg-red-950/40 dark:border-red-800',
+    'text-cyan-800 bg-cyan-50 border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-800',
     'text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/40 dark:border-rose-800',
+    'text-cyan-800 bg-cyan-50 border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-800',
+    'text-red-800 bg-red-100 border-red-200 dark:text-red-400 dark:bg-red-950/40 dark:border-red-800',
+    
   ];
 
   return (
@@ -571,25 +654,7 @@ export default function CpctExamsPage() {
                 <IconCalendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <h2 className="text-sm font-bold text-slate-900 dark:text-gray-100">CPCT Exams</h2>
               </div>
-              {/*<div className="flex items-center gap-2">
-                <RealtimeBadge connected={rtConnected} />
-                {lastUpdated && (
-                  <span className="text-[11px] text-slate-400 dark:text-gray-500 hidden sm:inline">
-                    Updated {lastUpdated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                )}
-                <button
-                  onClick={() => load(true)}
-                  disabled={refreshing}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-600 dark:text-gray-400 text-[11px] font-medium hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-700 dark:hover:text-blue-400 transition-all disabled:opacity-50">
-                  <IconRefresh className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-                  Refresh
-                </button>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-[11px] font-bold">
-                  <IconAward className="w-3 h-3" />
-                  {totalExams} Exams
-                </span>
-              </div>/*/}
+              
             </div>
 
             {/* Exams Grid */}
@@ -613,8 +678,8 @@ export default function CpctExamsPage() {
                       <div className="h-px flex-1 bg-gradient-to-l from-blue-200 dark:from-blue-900 to-transparent" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {months.map(m => (
-                        <ExamMonthCard key={m.month} month={m} year={year} count={m.exams.length} />
+                      {months.map((m, i) => (
+                        <ExamMonthCard key={m.month} month={m} year={year} count={m.exams.length} index={i} />
                       ))}
                     </div>
                   </section>
@@ -646,6 +711,7 @@ export default function CpctExamsPage() {
                       href={`/cpct/${encodeURIComponent(topic.name)}`}
                       icon={topicIcons[i % topicIcons.length]}
                       color={topicColors[i % topicColors.length]}
+                      index={i}
                     />
                   ))}
                 </div>
