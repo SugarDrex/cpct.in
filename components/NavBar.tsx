@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { RxCross2 } from "react-icons/rx";
@@ -11,11 +11,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoPerson } from "react-icons/io5";
 import { jwtDecode } from "jwt-decode";
 
-
 type UserToken = {
   username: string;
   email: string;
-  role: string; // add this
+  role: string;
 };
 
 const desktopLinks = [
@@ -26,37 +25,62 @@ const desktopLinks = [
   { name: "Contact", href: "/cpct-in-contact" },
 ];
 
+// Runs before the browser paints on the client, which removes the
+// "flash of logged-out state" you get with a plain useEffect.
+// Falls back to useEffect on the server so Next.js doesn't warn.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+// Dispatch this event right after you set/remove the token wherever
+// login/logout happens, e.g. in your login page:
+//   localStorage.setItem("token", token);
+//   window.dispatchEvent(new Event(AUTH_EVENT));
+export const AUTH_EVENT = "cpct-auth-change";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
-
   const [user, setUser] = useState<UserToken | null>(null);
 
-  useEffect(() => setMounted(true), []);
-
-  const toggleTheme = () =>
-    setTheme(theme === "dark" ? "light" : "dark");
-
-  useEffect(() => {
-    setMounted(true);
-
+  const readUserFromToken = useCallback(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode<UserToken>(token);
-        setUser(decoded);
-      } catch {
-        setUser(null);
-      }
+    if (!token) {
+      setUser(null);
+      return;
+    }
+    try {
+      setUser(jwtDecode<UserToken>(token));
+    } catch {
+      setUser(null);
     }
   }, []);
+
+  // Read once, synchronously, before paint - removes the Login/Admin
+  // button flicker on first load.
+  useIsomorphicLayoutEffect(() => {
+    readUserFromToken();
+  }, [readUserFromToken]);
+
+  // Keep the navbar in sync the instant login/logout happens anywhere:
+  // - "storage" fires when the token changes in another tab
+  // - AUTH_EVENT fires in the SAME tab (you dispatch it manually, see above)
+  useEffect(() => {
+    window.addEventListener("storage", readUserFromToken);
+    window.addEventListener(AUTH_EVENT, readUserFromToken);
+    return () => {
+      window.removeEventListener("storage", readUserFromToken);
+      window.removeEventListener(AUTH_EVENT, readUserFromToken);
+    };
+  }, [readUserFromToken]);
+
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    window.dispatchEvent(new Event(AUTH_EVENT));
     setUser(null);
     window.location.href = "/";
   };
-
 
   return (
     <motion.div
@@ -71,21 +95,17 @@ export default function Navbar() {
       "
     >
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-
-
-        <Link href="/" className="flex items-center gap-1 group md:ml-15 sm:-ml-20   ">
+        <Link href="/" className="flex items-center gap-1 group md:ml-15 sm:-ml-20">
           <Image src="/cpct-logo.jpg" alt="CPCT Logo" className="rounded-md" width={40} height={40} />
           <div>
-            <p className="font-semibold text-slate-700 tracking-[0.20em] text-lg dark:text-white m-1 ">
+            <p className="font-semibold text-slate-700 tracking-[0.20em] text-lg dark:text-white m-1">
               CPCT.IN
             </p>
             <p className="text-xs tracking-[0.04em] text-indigo-500">
               LET'S PRACTICE
             </p>
           </div>
-
         </Link>
-
 
         <ul className="hidden md:flex items-center gap-10 tracking-[0.05em]">
           {desktopLinks.map((item) => (
@@ -125,7 +145,6 @@ export default function Navbar() {
             </Link>
           )}
 
-
           {user?.role === "admin" && (
             <Link
               href="/admin"
@@ -134,18 +153,22 @@ export default function Navbar() {
               Admin
             </Link>
           )}
-          {/* THEME TOGGLE */}  {mounted && (
-            <button
-              onClick={toggleTheme}
-              className="
-                p-2 rounded-md border
-                hover:bg-gray-100 dark:hover:bg-zinc-800
-                transition cursor-pointer
-              "
-            >
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          )}
+
+          {/* THEME TOGGLE - both icons always render; the "dark:" CSS
+              variant decides which one shows, so there's no waiting
+              on JS/mount at all */}
+          <button
+            onClick={toggleTheme}
+            className="
+              p-2 rounded-md border
+              hover:bg-gray-100 dark:hover:bg-zinc-800
+              transition cursor-pointer
+            "
+            aria-label="Toggle theme"
+          >
+            <Sun size={18} className="hidden dark:block" />
+            <Moon size={18} className="block dark:hidden" />
+          </button>
         </ul>
 
         {/* MOBILE BUTTON */}
@@ -161,7 +184,6 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.4 }}
@@ -169,8 +191,6 @@ export default function Navbar() {
               className="fixed inset-0 bg-black z-40"
               onClick={() => setIsOpen(false)}
             />
-
-            {/* drawer */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -219,7 +239,9 @@ export default function Navbar() {
                   >
                     Login
                   </Link>
-                )}{user?.role === "admin" && (
+                )}
+
+                {user?.role === "admin" && (
                   <Link
                     href="/admin"
                     onClick={() => setIsOpen(false)}
@@ -229,23 +251,20 @@ export default function Navbar() {
                   </Link>
                 )}
 
-
-                {/* MOBILE THEME TOGGLE */}
-                {mounted && (
-                  <button
-                    onClick={toggleTheme}
-                    className="
-                      flex items-center gap-2
-                      px-5 py-2 border rounded-md
-                      dark:border-zinc-700
-                      hover:bg-gray-100 dark:hover:bg-zinc-800
-                      transition cursor-pointer borderd-xl border-red-200
-                    "
-                  >
-                    {theme === "dark" ? <Sun size={38} /> : <Moon size={38} />}
-
-                  </button>
-                )}
+                <button
+                  onClick={toggleTheme}
+                  className="
+                    flex items-center gap-2
+                    px-5 py-2 border rounded-md
+                    dark:border-zinc-700
+                    hover:bg-gray-100 dark:hover:bg-zinc-800
+                    transition cursor-pointer border-red-200
+                  "
+                  aria-label="Toggle theme"
+                >
+                  <Sun size={38} className="hidden dark:block" />
+                  <Moon size={38} className="block dark:hidden" />
+                </button>
               </ul>
             </motion.div>
           </>
@@ -254,4 +273,3 @@ export default function Navbar() {
     </motion.div>
   );
 }
-
