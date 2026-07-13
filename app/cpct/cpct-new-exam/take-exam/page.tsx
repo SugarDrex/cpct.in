@@ -167,16 +167,6 @@ function useTranslatedQuestion(question: Question | undefined, targetLang: LangC
       return;
     }
 
-    if (targetLang === "hi") {
-      setTranslated({
-        question: cleanText(question.question_hi || question.question_en),
-        options: question.options.map((o) => cleanText(o.text)),
-      });
-      setIsTranslating(false);
-      setQuotaExceeded(false);
-      return;
-    }
-
     let cancelled = false;
     setIsTranslating(true);
 
