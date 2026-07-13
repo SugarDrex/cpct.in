@@ -286,7 +286,7 @@ function ResultsPage({
         </button>
       <button
   onClick={() => {
-    const base = `/admin/superadmin/exam/${encodeURIComponent(examTitle)}${encodeURIComponent(month||year)}`;
+    const base = `/exam/${encodeURIComponent(examTitle)}${encodeURIComponent(month||year)}`;
     const qs = new URLSearchParams();
     if (year && year !== "0") qs.set("year", year);
     if (month && month !== "0") qs.set("month", month);
