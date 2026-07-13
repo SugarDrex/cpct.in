@@ -11,7 +11,9 @@ import { FaRegFilePowerpoint, FaRegFileWord } from 'react-icons/fa';
 import { LucideNetwork } from 'lucide-react';
 import { BsGlobeAmericasFill } from 'react-icons/bs';
 import { MdDevicesOther } from 'react-icons/md';
-import { color } from 'framer-motion';
+import { motion } from "framer-motion";
+import { HiOutlineMegaphone } from "react-icons/hi2";
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Exam {
   id: string;
@@ -645,7 +647,8 @@ export default function CpctExamsPage() {
   }, []);
 
   const totalExams = grouped.reduce((a, g) => a + g.months.reduce((b, m) => b + m.exams.length, 0), 0);
-
+ const message =
+  "🚀 Latest CPCT Exam Papers & Mock Tests Available Now • Practice Real CPCT Exam Pattern Questions • Previous Year Papers & Latest Exam Updates • English, Hindi, Gujarati, Punjabi & Bengali Language Support • New CPCT Typing Test Paragraphs Added • Improve Your Typing Speed & Accuracy • Topic-Wise Practice Sets • Prepare Smarter, Score Higher with CPCT.in";
   // Icons/colors are cycled across the dynamically fetched topics
   const topicIcons = [IconLayers,  FaRegFileWord, RiFileExcel2Fill , FaRegFilePowerpoint, FcAcceptDatabase, LucideNetwork, BsGlobeAmericasFill, MdDevicesOther];
   const topicColors = [
@@ -662,18 +665,40 @@ export default function CpctExamsPage() {
   return (
     <div  className="min-h-screen bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-gray-100">
       <div  className="max-w-7xl mx-auto px-4 sm:px-6 -mt-22 mb-8">
-        {/* Hero */}
+     
         <HeroSection />
         <div className="flex gap-6">
           {/* Main Content */}
           <main className="flex-1 min-w-0 space-y-6">
-            {/* Header row */}
+            {/* Header row */}<div className="relative overflow-hidden rounded-xl border border-blue-200/30 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 py-3 shadow-lg">
+      <div className="flex items-center gap-3">
+        <div className="z-10 flex items-center gap-2 px-4 text-white font-semibold bg-black/20 h-full">
+          <HiOutlineMegaphone size={22} />
+          Updates
+        </div>
+
+        <motion.div
+          className="flex whitespace-nowrap text-white font-medium"
+          animate={{
+            x: ["20%", "-60%"],
+          }}
+          transition={{
+            duration: 35,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        >
+          {message}
+        </motion.div>
+      </div>
+    </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <IconCalendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                
                 <h2 className="text-sm font-bold text-slate-900 dark:text-gray-100">CPCT Exams</h2>
               </div>
-            </div>
+            </div> 
             {/* Exams Grid */}
             {loading ? (
               <Skeleton />
