@@ -18,16 +18,11 @@ import {
   RotateCcw,
   Home,
   X,
-  FileText,
-  Menu,
-  Moon,
-  Sun,
-  User,
-  LogOut,
-  Shield,
-  RefreshCw,
+  Languages,
+  Loader2,
 } from "lucide-react";
 import { getExam, getExamQuestions, submitExam, type ExamResult, type Exam } from "@/app/actions/getExamData";
+import { translateWithDeepL } from "@/app/actions/translate";
 
 // ============================================
 // SECURITY MIDDLEWARE
@@ -101,6 +96,160 @@ function cleanText(text: string = "") {
 }
 
 // ============================================
+// TRANSLATOR — languages, cache, hook, selector
+// ============================================
+type LangCode = "en" | "hi" | "gu" | "bn" | "pa";
+
+const LANGUAGES: { code: LangCode; label: string }[] = [
+  { code: "en", label: "English" },
+  { code: "hi", label: "हिंदी" },
+  { code: "gu", label: "ગુજરાતી" },
+  { code: "bn", label: "বাংলা" },
+  { code: "pa", label: "ਪੰਜਾਬੀ" },
+];
+
+// In-memory cache shared across the whole session: `${lang}:${text}` -> translated text
+const translationCache = new Map<string, string>();
+
+type TranslateResult = { text: string; quotaExceeded: boolean };
+
+async function translateText(text: string, targetLang: LangCode): Promise<TranslateResult> {
+  if (!text) return { text, quotaExceeded: false };
+  const cacheKey = `${targetLang}:${text}`;
+  if (translationCache.has(cacheKey)) {
+    return { text: translationCache.get(cacheKey)!, quotaExceeded: false };
+  }
+
+  // Call server action instead of direct fetch
+  try {
+    const { translations, quotaExceeded } = await translateWithDeepL([text], targetLang);
+    const translated = translations[0] || text;
+
+    if (!translated || translated === text) {
+      return { text, quotaExceeded: false };
+    }
+
+    translationCache.set(cacheKey, translated);
+    return { text: translated, quotaExceeded };
+  } catch (err: any) {
+    console.error("Translation failed:", err.message);
+    return { text, quotaExceeded: false };
+  }
+}
+
+type TranslatedQuestion = {
+  question: string;
+  options: string[];
+};
+
+// Translates one question's text + options into the target language.
+// English and Hindi come straight from the DB fields (no API calls, never fails).
+// Gujarati / Bangla / Punjabi are machine-translated via DeepL server action and cached.
+function useTranslatedQuestion(question: Question | undefined, targetLang: LangCode) {
+  const [translated, setTranslated] = useState<TranslatedQuestion | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
+
+  useEffect(() => {
+    if (!question) {
+      setTranslated(null);
+      setQuotaExceeded(false);
+      return;
+    }
+
+    if (targetLang === "en") {
+      setTranslated({
+        question: cleanText(question.question_en),
+        options: question.options.map((o) => cleanText(o.text)),
+      });
+      setIsTranslating(false);
+      setQuotaExceeded(false);
+      return;
+    }
+
+    if (targetLang === "hi") {
+      setTranslated({
+        question: cleanText(question.question_hi || question.question_en),
+        options: question.options.map((o) => cleanText(o.text)),
+      });
+      setIsTranslating(false);
+      setQuotaExceeded(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsTranslating(true);
+
+    async function run() {
+      const sourceQuestion = cleanText(question!.question_en);
+      const sourceOptions = question!.options.map((o) => cleanText(o.text));
+
+      // Batch translate all texts in one server call for efficiency
+      const allTexts = [sourceQuestion, ...sourceOptions];
+      try {
+        const { translations, quotaExceeded } = await translateWithDeepL(allTexts, targetLang);
+
+        if (!cancelled) {
+          const [qText, ...optTexts] = translations;
+          setTranslated({
+            question: qText || sourceQuestion,
+            options: sourceOptions.map((_, i) => optTexts[i] || sourceOptions[i]),
+          });
+          setQuotaExceeded(quotaExceeded);
+          setIsTranslating(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setTranslated({
+            question: sourceQuestion,
+            options: sourceOptions,
+          });
+          setIsTranslating(false);
+        }
+      }
+    }
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question, targetLang]);
+
+  return { translated, isTranslating, quotaExceeded };
+}
+
+function LanguageSelector({ lang, setLang }: { lang: LangCode; setLang: (l: LangCode) => void }) {
+  return (
+    <div className="relative">
+      <select
+        value={lang}
+        onChange={(e) => setLang(e.target.value as LangCode)}
+        aria-label="Select language"
+        className="h-9 pl-8 pr-7 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-bold text-gray-600 dark:text-gray-300 cursor-pointer select-none appearance-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        {LANGUAGES.map((l) => (
+          <option key={l.code} value={l.code}>
+            {l.label}
+          </option>
+        ))}
+      </select>
+      <Languages size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+      <ChevronRight size={11} className="absolute right-2.5 top-1/2 -translate-y-1/2 rotate-90 text-gray-400 pointer-events-none" />
+    </div>
+  );
+}
+
+function QuotaNotice() {
+  return (
+    <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+      <AlertTriangle size={12} />
+      Translation limit reached — showing English
+    </span>
+  );
+}
+
+// ============================================
 // LUX LOADING ANIMATION COMPONENT
 // ============================================
 function LuxLoader() {
@@ -150,51 +299,98 @@ function LuxLoader() {
 }
 
 // ============================================
-// NAVBAR COMPONENT
+// REVIEW QUESTION CARD (used inside ResultsPage)
 // ============================================
-function Navbar({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMode: () => void }) {
+function ReviewQuestionCard({
+  question,
+  index,
+  status,
+  breakdown,
+  lang,
+}: {
+  question: Question;
+  index: number;
+  status: "correct" | "incorrect" | "skipped";
+  breakdown: { selected?: string; correctAnswer?: string } | undefined;
+  lang: LangCode;
+}) {
+  const { translated, isTranslating, quotaExceeded } = useTranslatedQuestion(question, lang);
+  const userAnswer = breakdown?.selected ?? "";
+
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 select-none sticky top-0 z-40">
-      <div className="max-w-[1400px] mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer select-none">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 flex items-center justify-center">
-            <FileText size={18} className="text-blue-600 dark:text-blue-400" />
-          </div>
-          <div>
-            <h1 className="text-sm font-bold text-[#1e293b] dark:text-white leading-tight tracking-widest">C P C T . I N</h1>
-            <p className="text-[10px] text-blue-600 dark:text-blue-400 tracking-wider uppercase">Let's Practice</p>
-          </div>
-        </div>
-
-        <div className="hidden md:flex items-center gap-8">
-          <a href="/" className="text-sm font-medium text-[#1e293b] dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer select-none">Home</a>
-          <a href="/about" className="text-sm font-medium text-[#1e293b] dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer select-none">About</a>
-          <a href="/notes" className="text-sm font-medium text-[#1e293b] dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer select-none">Notes</a>
-          <a href="/typing-test" className="text-sm font-medium text-[#1e293b] dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer select-none">Typing-Test</a>
-          <a href="/contact" className="text-sm font-medium text-[#1e293b] dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer select-none">Contact</a>
-        </div>
-
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+      <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <button className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition cursor-pointer select-none shadow-sm">
-            <LogOut size={16} />
-            Logout
-          </button>
-          <button className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition cursor-pointer select-none shadow-sm">
-            <Shield size={16} />
-            Admin
-          </button>
-          <button 
-            onClick={toggleDarkMode}
-            className="w-9 h-9 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
-          >
-            {darkMode ? <Sun size={16} /> : <RefreshCw size={16} />}
-          </button>
-          <button className="md:hidden w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none">
-            <Menu size={16} />
-          </button>
+          <div className="w-10 h-10 rounded-xl bg-blue-600 dark:bg-blue-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
+            {index + 1}
+          </div>
+          <h3 className="text-sm font-bold text-[#1e293b] dark:text-white leading-relaxed max-w-xl flex items-center gap-2">
+            {translated ? translated.question : cleanText(question.question_en)}
+            {isTranslating && <Loader2 size={12} className="animate-spin text-gray-400 shrink-0" />}
+          </h3>
         </div>
+        <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1 shrink-0 ${
+          status === "correct"
+            ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+            : status === "incorrect"
+              ? "bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800"
+              : "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+        }`}>
+          {status === "correct" ? (
+            <><CheckCircle2 size={14} /> CORRECT</>
+          ) : status === "incorrect" ? (
+            <><XCircle size={14} /> INCORRECT</>
+          ) : (
+            <><AlertCircle size={14} /> SKIPPED</>
+          )}
+        </span>
       </div>
-    </nav>
+
+      {quotaExceeded && <div className="mb-3"><QuotaNotice /></div>}
+
+      <div className="space-y-2 ml-13">
+        {question.options.map((option, optIdx) => {
+          const isCorrect = option.value === breakdown?.correctAnswer;
+          const isSelected = userAnswer === option.value;
+          const letter = ["A", "B", "C", "D"][optIdx] || String(optIdx + 1);
+          const displayText = translated ? translated.options[optIdx] ?? cleanText(option.text) : cleanText(option.text);
+
+          return (
+            <div
+              key={optIdx}
+              className={`flex items-center gap-3 p-3 rounded-xl border-2 text-sm ${
+                isCorrect
+                  ? "border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20"
+                  : isSelected && status === "incorrect"
+                    ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20"
+                    : "border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
+              }`}
+            >
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
+                isCorrect
+                  ? "bg-emerald-500 dark:bg-emerald-600 text-white"
+                  : isSelected && status === "incorrect"
+                    ? "bg-red-500 dark:bg-red-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+              }`}>
+                {letter}
+              </div>
+              <p className={`font-medium flex-1 ${
+                isCorrect
+                  ? "text-emerald-700 dark:text-emerald-400"
+                  : isSelected
+                    ? "text-red-700 dark:text-red-400"
+                    : "text-gray-600 dark:text-gray-300"
+              }`}>
+                {displayText}
+              </p>
+              {isCorrect && <CheckCircle2 size={18} className="text-emerald-500 dark:text-emerald-400 shrink-0" />}
+              {isSelected && status === "incorrect" && <XCircle size={18} className="text-red-500 dark:text-red-400 shrink-0" />}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -209,8 +405,8 @@ function ResultsPage({
   year,
   month,
   onRetry,
-  darkMode,
-  toggleDarkMode,
+  lang,
+  setLang,
 }: {
   result: ExamResult;
   questions: Question[];
@@ -219,29 +415,29 @@ function ResultsPage({
   year: string;
   month: string;
   onRetry: () => void;
-  darkMode: boolean;
-  toggleDarkMode: () => void;
+  lang: LangCode;
+  setLang: (l: LangCode) => void;
 }) {
   const percentage = Math.round(result.score);
   const resultMap = new Map(result.breakdown.map((b) => [b.questionNumber - 1, b]));
 
   const getAnswerStatus = (index: number) => {
     const breakdown = resultMap.get(index);
-    if (!breakdown || !breakdown.selected) return "skipped";
-    if (breakdown.isCorrect) return "correct";
-    return "incorrect";
+    if (!breakdown || !breakdown.selected) return "skipped" as const;
+    if (breakdown.isCorrect) return "correct" as const;
+    return "incorrect" as const;
   };
 
-  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   return (
     <div className="min-h-screen bg-[#f0f0e8] dark:bg-gray-950 text-[#1e293b] dark:text-white select-none">
-      <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <div className="max-w-[1400px] mx-auto px-4 pt-4 flex justify-end">
+        <LanguageSelector lang={lang} setLang={setLang} />
+      </div>
 
-      {/* Top Score Bar */}
       <div className="max-w-[1400px] mx-auto px-4 mt-4">
         <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between flex-wrap gap-4">
@@ -275,7 +471,6 @@ function ResultsPage({
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="max-w-[1400px] mx-auto px-4 mt-4 grid grid-cols-2 gap-4">
         <button
           onClick={onRetry}
@@ -300,83 +495,86 @@ function ResultsPage({
 </button>
       </div>
 
-      {/* Answer Review */}
       <div className="max-w-[1400px] mx-auto px-4 mt-4 pb-8 space-y-4">
-        {questions.map((question, index) => {
-          const status = getAnswerStatus(index);
-          const breakdown = resultMap.get(index);
-          const userAnswer = breakdown?.selected ?? "";
+        {questions.map((question, index) => (
+          <ReviewQuestionCard
+            key={index}
+            question={question}
+            index={index}
+            status={getAnswerStatus(index)}
+            breakdown={resultMap.get(index)}
+            lang={lang}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
+// ============================================
+// QUESTION BODY
+// ============================================
+function QuestionBody({
+  currentQuestion,
+  lang,
+  current,
+  answers,
+  handleSelect,
+}: {
+  currentQuestion: Question;
+  lang: LangCode;
+  current: number;
+  answers: Record<number, string>;
+  handleSelect: (value: string) => void;
+}) {
+  const { translated, isTranslating, quotaExceeded } = useTranslatedQuestion(currentQuestion, lang);
+
+  return (
+    <div className="px-6 pb-2 pt-4">
+      <h2 className="text-base font-bold text-[#1e293b] dark:text-white leading-relaxed mb-1 flex items-start gap-2">
+        <span>{translated ? translated.question : cleanText(currentQuestion.question_en)}</span>
+        {isTranslating && <Loader2 size={14} className="animate-spin text-gray-400 shrink-0 mt-0.5" />}
+      </h2>
+      {lang === "en" && (
+        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-3">
+          {cleanText(currentQuestion.question_hi)}
+        </p>
+      )}
+      {quotaExceeded && (
+        <div className="mb-3">
+          <QuotaNotice />
+        </div>
+      )}
+      {lang === "en" ? null : !quotaExceeded && <div className="mb-6" />}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {currentQuestion.options.map((option, i) => {
+          const selected = answers[current] === option.value;
+          const letter = ["A", "B", "C", "D"][i] || String(i + 1);
+          const displayText = translated ? translated.options[i] ?? cleanText(option.text) : cleanText(option.text);
           return (
-            <div key={index} className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 dark:bg-blue-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                    {index + 1}
-                  </div>
-                  <h3 className="text-sm font-bold text-[#1e293b] dark:text-white leading-relaxed max-w-xl">
-                    {cleanText(question.question_en)}
-                  </h3>
-                </div>
-                <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1 shrink-0 ${
-                  status === "correct"
-                    ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
-                    : status === "incorrect"
-                      ? "bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800"
-                      : "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                }`}>
-                  {status === "correct" ? (
-                    <><CheckCircle2 size={14} /> CORRECT</>
-                  ) : status === "incorrect" ? (
-                    <><XCircle size={14} /> INCORRECT</>
-                  ) : (
-                    <><AlertCircle size={14} /> SKIPPED</>
-                  )}
-                </span>
+            <button
+              key={i}
+              onClick={() => handleSelect(option.value)}
+              className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all duration-200 cursor-pointer select-none ${
+                selected
+                  ? "border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                  : "border-gray-100 dark:border-gray-700 bg-[#f8fafc] dark:bg-gray-800/50 hover:border-gray-200 dark:hover:border-gray-600"
+              }`}
+            >
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
+                selected
+                  ? "bg-blue-500 dark:bg-blue-600 text-white"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+              }`}>
+                {letter}
               </div>
-
-              <div className="space-y-2 ml-13">
-                {question.options.map((option, optIdx) => {
-                  const isCorrect = option.value === breakdown?.correctAnswer;
-                  const isSelected = userAnswer === option.value;
-                  const letter = ["A", "B", "C", "D"][optIdx] || String(optIdx + 1);
-
-                  return (
-                    <div
-                      key={optIdx}
-                      className={`flex items-center gap-3 p-3 rounded-xl border-2 text-sm ${
-                        isCorrect
-                          ? "border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20"
-                          : isSelected && status === "incorrect"
-                            ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20"
-                            : "border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
-                      }`}
-                    >
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
-                        isCorrect
-                          ? "bg-emerald-500 dark:bg-emerald-600 text-white"
-                          : isSelected && status === "incorrect"
-                            ? "bg-red-500 dark:bg-red-600 text-white"
-                            : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-                      }`}>
-                        {letter}
-                      </div>
-                      <p className={`font-medium flex-1 ${
-                        isCorrect
-                          ? "text-emerald-700 dark:text-emerald-400"
-                          : isSelected
-                            ? "text-red-700 dark:text-red-400"
-                            : "text-gray-600 dark:text-gray-300"
-                      }`}>
-                        {cleanText(option.text)}
-                      </p>
-                      {isCorrect && <CheckCircle2 size={18} className="text-emerald-500 dark:text-emerald-400 shrink-0" />}
-                      {isSelected && status === "incorrect" && <XCircle size={18} className="text-red-500 dark:text-red-400 shrink-0" />}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+              <p className={`text-sm font-medium ${
+                selected ? "text-blue-700 dark:text-blue-300" : "text-gray-700 dark:text-gray-300"
+              }`}>
+                {displayText}
+              </p>
+            </button>
           );
         })}
       </div>
@@ -385,7 +583,7 @@ function ResultsPage({
 }
 
 // ============================================
-// MAIN EXAM PAGE CONTENT (uses useSearchParams)
+// MAIN EXAM PAGE CONTENT
 // ============================================
 function NewExamPageContent() {
   const searchParams = useSearchParams();
@@ -395,41 +593,26 @@ function NewExamPageContent() {
 
   const [mounted, setMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [lang, setLang] = useState<LangCode>("en");
 
-  // Data loading states
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [exam, setExam] = useState<Exam | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
 
-  // Exam state
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [marked, setMarked] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(3600); // 1 hour fixed
+  const [timeLeft, setTimeLeft] = useState(3600);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [result, setResult] = useState<ExamResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const toggleDarkMode = () => {
-    setDarkMode(prev => {
-      const next = !prev;
-      if (next) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-      return next;
-    });
-  };
-
-  // Fetch exam data on mount
   useEffect(() => {
     applySecurityMeasures();
     setMounted(true);
 
-    // Check system preference
     if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
@@ -456,7 +639,6 @@ function NewExamPageContent() {
 
         setExam(examData);
         setQuestions(questionsData as Question[]);
-        // Fixed 1 hour timer (3600 seconds)
         setTimeLeft(3600);
         setLoading(false);
       } catch (err) {
@@ -468,7 +650,6 @@ function NewExamPageContent() {
     loadExam();
   }, [examId]);
 
-  // Timer logic
   useEffect(() => {
     if (submitted || timeLeft <= 0) return;
     const timer = setInterval(() => {
@@ -542,17 +723,15 @@ function NewExamPageContent() {
     setAnswers({});
     setMarked([]);
     setCurrent(0);
-    setTimeLeft(3600); // Reset to 1 hour
+    setTimeLeft(3600);
     setSubmitted(false);
     setResult(null);
   };
 
-  // Loading state
   if (!mounted || loading) {
     return <LuxLoader />;
   }
 
-  // Error state
   if (loadError) {
     return (
       <div className="min-h-screen bg-[#f0f0e8] dark:bg-gray-950 flex items-center justify-center select-none">
@@ -565,7 +744,6 @@ function NewExamPageContent() {
     );
   }
 
-  // Submitted state
  if (submitted && result) {
   return (
     <ResultsPage
@@ -576,8 +754,8 @@ function NewExamPageContent() {
       year={year || String(year || "")}
       month={month || String(month || "")}
       onRetry={handleRetry}
-      darkMode={darkMode}
-      toggleDarkMode={toggleDarkMode}
+      lang={lang}
+      setLang={setLang}
     />
   );
 }
@@ -601,9 +779,6 @@ function NewExamPageContent() {
       className="min-h-screen bg-[#f0f0e8] dark:bg-gray-950 text-[#1e293b] dark:text-white select-none"
       style={{ userSelect: "none", WebkitUserSelect: "none" } as any}
     >
-      <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-
-      {/* Submit Modal */}
       {showSubmitModal && (
         <div className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 select-none">
           <div className="bg-[#fffef5] dark:bg-gray-900 rounded-3xl p-8 max-w-lg w-full shadow-2xl border border-amber-100 dark:border-gray-700">
@@ -662,12 +837,9 @@ function NewExamPageContent() {
         </div>
       )}
 
-      {/* Main Content */}
-      <main className="max-w-[1400px] mx-auto p-4 lg:p-6">
+      <main className="max-w-[1400px] mx-auto p-4 lg:p-6 mt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* LEFT SIDEBAR */}
           <aside className="lg:col-span-3 space-y-4">
-            {/* Indicators */}
             <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
               <div className="bg-[#1e293b] dark:bg-gray-950 px-4 py-3">
                 <h3 className="text-xs font-bold text-white uppercase tracking-widest">Indicators</h3>
@@ -697,7 +869,6 @@ function NewExamPageContent() {
               </div>
             </div>
 
-            {/* Counting */}
             <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
               <div className="bg-[#1e293b] dark:bg-gray-950 px-4 py-3">
                 <h3 className="text-xs font-bold text-white uppercase tracking-widest">Counting</h3>
@@ -722,7 +893,6 @@ function NewExamPageContent() {
               </div>
             </div>
 
-            {/* Instructions */}
             <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
               <div className="flex items-start gap-3">
                 <Check size={16} className="text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
@@ -739,22 +909,23 @@ function NewExamPageContent() {
             </div>
           </aside>
 
-          {/* CENTER - Question Card */}
           <main className="lg:col-span-6 space-y-4">
             <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-              {/* Title */}
-              <div className="px-6 pt-6 pb-2 text-center">
+              
+              <div className="px-6 pt-3 pb-2 text-center">
                 <h1 className="text-xl font-black text-purple-500 dark:text-purple-400 uppercase tracking-wider">
                   {exam?.title || "Examination"}
                 </h1>
               </div>
 
-              {/* Question Info Bar */}
               <div className="px-6 py-3 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-100 dark:border-gray-700 flex items-center justify-between">
                 <span className="px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold">
                   Question {current + 1} of {questions.length}
-                </span>
-                <button
+                </span>  <span className=" ">
+                 <LanguageSelector lang={lang} setLang={setLang} />
+                </span> 
+
+                <button 
                   onClick={() => toggleReview(current)}
                   className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition border cursor-pointer select-none ${
                     marked.includes(current)
@@ -770,49 +941,16 @@ function NewExamPageContent() {
                 </button>
               </div>
 
-              {/* Question Body */}
-              <div className="p-6">
-                <h2 className="text-base font-bold text-[#1e293b] dark:text-white leading-relaxed mb-1">
-                  {cleanText(currentQuestion.question_en)}
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
-                  {cleanText(currentQuestion.question_hi)}
-                </p>
+              <QuestionBody
+                currentQuestion={currentQuestion}
+                lang={lang}
+                current={current}
+                answers={answers}
+                handleSelect={handleSelect}
+              />
 
-                {/* Options - 2x2 Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {currentQuestion.options.map((option, i) => {
-                    const selected = answers[current] === option.value;
-                    const letter = ["A", "B", "C", "D"][i] || String(i + 1);
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => handleSelect(option.value)}
-                        className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all duration-200 cursor-pointer select-none ${
-                          selected
-                            ? "border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
-                            : "border-gray-100 dark:border-gray-700 bg-[#f8fafc] dark:bg-gray-800/50 hover:border-gray-200 dark:hover:border-gray-600"
-                        }`}
-                      >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
-                          selected
-                            ? "bg-blue-500 dark:bg-blue-600 text-white"
-                            : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-                        }`}>
-                          {letter}
-                        </div>
-                        <p className={`text-sm font-medium ${
-                          selected ? "text-blue-700 dark:text-blue-300" : "text-gray-700 dark:text-gray-300"
-                        }`}>
-                          {cleanText(option.text)}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Bottom Action Bar */}
-                <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <div className="px-6 pb-6">
+                <div className="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                        <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
                     {answeredCount}/{questions.length} Answered
@@ -846,9 +984,7 @@ function NewExamPageContent() {
             </div>
           </main>
 
-          {/* RIGHT SIDEBAR */}
           <aside className="lg:col-span-3 space-y-4">
-            {/* Timer */}
             <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 flex items-center justify-center">
                 <Clock size={22} className="text-amber-500 dark:text-amber-400" />
@@ -865,7 +1001,6 @@ function NewExamPageContent() {
               </div>
             </div>
 
-            {/* Questions Grid with Scrollbar */}
             <div className="bg-white h-auto  dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
               <div className="px-4 py-1 border-b border-gray-100 dark:border-gray-700">
                 <h3 className="text-sm font-bold text-[#1e293b] dark:text-white">Questions</h3>
@@ -902,7 +1037,6 @@ function NewExamPageContent() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               onClick={openSubmitModal}
               disabled={isSubmitting}
@@ -918,10 +1052,6 @@ function NewExamPageContent() {
   );
 }
 
-// ============================================
-// DEFAULT EXPORT — wraps content in Suspense
-// (required because ExamPageContent uses useSearchParams)
-// ============================================
 export default function NewExamPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
