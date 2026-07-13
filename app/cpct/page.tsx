@@ -519,14 +519,13 @@ function TopicCard({ title, href, icon: Icon, color, index }: { title: string; h
     </Link>
   );
 }
-
 // ── Study Resources Sidebar ────────────────────────────────────────────────────
 function StudyResources() {
   const items = [
-    { icon: IconBookOpen, label: 'Practice Questions', desc: 'Topic-wise practice sets', color: 'text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/40 dark:border-blue-900' },
-    { icon: IconFileText, label: 'Important Notes', desc: 'Key points & summaries', color: 'text-amber-600 bg-amber-50 border-amber-100 dark:text-amber-400 dark:bg-amber-950/40 dark:border-amber-900' },
-    { icon: IconLightbulb, label: 'Tips & Tricks', desc: 'Smart strategies to crack', color: 'text-rose-600 bg-rose-50 border-rose-100 dark:text-rose-400 dark:bg-rose-950/40 dark:border-rose-900' },
-    { icon: IconKeyboard, label: 'Typing Test', desc: 'Improve your speed', color: 'text-emerald-600 bg-emerald-50 border-emerald-100 dark:text-emerald-400 dark:bg-emerald-950/40 dark:border-emerald-900' },
+    { icon: IconBookOpen, label: 'Cpct Old Papers', desc: 'Topic-wise practice sets', color: 'text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/40 dark:border-blue-900', link: '/cpct/old-papers' },
+    { icon: IconFileText, label: 'Important Notes', desc: 'Key points & summaries', color: 'text-amber-600 bg-amber-50 border-amber-100 dark:text-amber-400 dark:bg-amber-950/40 dark:border-amber-900', link: '/cpct-notes' },
+    { icon: IconLightbulb, label: 'Tips & Tricks', desc: 'Smart strategies to crack', color: 'text-rose-600 bg-rose-50 border-rose-100 dark:text-rose-400 dark:bg-rose-950/40 dark:border-rose-900', link: '/cpct-tips' },
+    { icon: IconKeyboard, label: 'Typing Test', desc: 'Improve your speed', color: 'text-emerald-600 bg-emerald-50 border-emerald-100 dark:text-emerald-400 dark:bg-emerald-950/40 dark:border-emerald-900', link: '/cpct-practice' },
   ];
 
   return (
@@ -538,7 +537,7 @@ function StudyResources() {
       <ul className="space-y-1">
         {items.map(it => (
           <li key={it.label}>
-            <Link href="/" className="flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-800 hover:shadow-md hover:shadow-blue-100/40 dark:hover:shadow-blue-950/20 transition-all duration-300 group">
+            <Link href={it.link} className="flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-800 hover:shadow-md hover:shadow-blue-100/40 dark:hover:shadow-blue-950/20 transition-all duration-300 group">
               <div className={`w-8 h-8 rounded-lg border flex items-center justify-center ${it.color} group-hover:scale-110 transition-transform duration-300`}>
                 <it.icon className="w-4 h-4" />
               </div>
@@ -582,7 +581,7 @@ function AboutCpct() {
       <p className="text-[12px] text-slate-500 dark:text-gray-400 leading-relaxed mb-2">
         Computer Proficiency Certification Test conducted by NIC/MP Government.
       </p>
-      <Link href="/about" className="inline-flex items-center gap-1 text-[12px] font-semibold text-blue-600 dark:text-blue-400 hover:underline group">
+      <Link href="/faq" className="inline-flex items-center gap-1 text-[12px] font-semibold text-blue-600 dark:text-blue-400 hover:underline group">
         Learn More <IconChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-300" />
       </Link>
     </div>
