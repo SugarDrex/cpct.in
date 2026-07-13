@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   ChevronLeft,
@@ -296,7 +296,7 @@ function ResultsPage({
   className="h-14 rounded-xl bg-gradient-to-b from-slate-600 to-slate-700 dark:from-slate-700 dark:to-slate-800 text-white font-bold text-sm uppercase tracking-wider shadow-lg hover:from-slate-700 hover:to-slate-800 dark:hover:from-slate-600 dark:hover:to-slate-700 transition flex items-center justify-center gap-2 cursor-pointer select-none"
 >
   <Home size={18} />
-  BACK TO {examTitle || "EXAM"}
+ Try Old {month || "EXAM papers"}
 </button>
       </div>
 
@@ -385,13 +385,13 @@ function ResultsPage({
 }
 
 // ============================================
-// MAIN EXAM PAGE COMPONENT
+// MAIN EXAM PAGE CONTENT (uses useSearchParams)
 // ============================================
-export default function SecureExamPage() {
+function NewExamPageContent() {
   const searchParams = useSearchParams();
   const examId = searchParams.get("examId") || "";
- const year  = searchParams.get("year")  || "";   // ← add this
-  const month = searchParams.get("month") || "";   // ← add this
+  const year = searchParams.get("year") || "";
+  const month = searchParams.get("month") || "";
 
   const [mounted, setMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -915,5 +915,17 @@ export default function SecureExamPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+// ============================================
+// DEFAULT EXPORT — wraps content in Suspense
+// (required because ExamPageContent uses useSearchParams)
+// ============================================
+export default function NewExamPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewExamPageContent />
+    </Suspense>
   );
 }

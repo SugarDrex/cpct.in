@@ -2047,8 +2047,6 @@ export default function ExamDashboard() {
           loading={loading}
         />
       )}
-
-      {/* ── Footer ────────────────────────────────────────────────────────────── */}
       <footer style={{marginTop:48,padding:'20px 24px',textAlign:'center',borderTop:`1px solid ${C.gray}`,color:C.textMuted,fontSize:'0.74rem',background:C.white,fontWeight:600}}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:10,flexWrap:'wrap',marginBottom:8}}>
           <Chip label="Supabase Realtime" color={C.primary} bg={C.infoBg}/>
@@ -2058,7 +2056,6 @@ export default function ExamDashboard() {
         </div>
         <p style={{margin:0}}>Competitive Exam Portal — Government Examination Database Management System</p>
       </footer>
-
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         * { box-sizing: border-box; }

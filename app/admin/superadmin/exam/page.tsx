@@ -11,6 +11,7 @@ import { FaRegFilePowerpoint, FaRegFileWord } from 'react-icons/fa';
 import { LucideNetwork } from 'lucide-react';
 import { BsGlobeAmericasFill } from 'react-icons/bs';
 import { MdDevicesOther } from 'react-icons/md';
+import { color } from 'framer-motion';
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Exam {
   id: string;
@@ -39,6 +40,20 @@ const MONTH_NAMES = [
   '', 'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
+
+/**
+ * Check if an exam was created within the last 2 weeks
+ */
+function isRecentlyUploaded(createdAtString: string): boolean {
+  try {
+    const createdAt = new Date(createdAtString);
+    const now = new Date();
+    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    return createdAt >= twoWeeksAgo;
+  } catch {
+    return false;
+  }
+}
 
 function groupByYearMonth(exams: Exam[]): GroupedYear[] {
   const map = new Map<number, Map<number, Exam[]>>();
@@ -454,11 +469,14 @@ function ExamMonthCard({ month, year, count, index }: { month: { label: string; 
   const colorClass = iconColors[month.month % iconColors.length];
   const glowClass = glowColors[month.month % glowColors.length];
 
+  // Check if any exam in this month is recently uploaded
+  const hasRecentExam = month.exams.some(exam => isRecentlyUploaded(exam.created_at));
+
   return (
     <Link
       href={href}
       style={{ animationDelay: `${index * 60}ms` }}
-      className={`animate-fade-in-up group relative flex items-start gap-3 rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl ${glowClass} hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300`}>
+      className={`animate-fade-in-up group relative flex shadow-md items-start gap-3 rounded-xl border border-blue-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl ${glowClass} hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300`}>
       {/* Icon */}
       <div className={`shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center ${colorClass} group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
         <IconCalendar className="w-5 h-5" />
@@ -468,7 +486,11 @@ function ExamMonthCard({ month, year, count, index }: { month: { label: string; 
       <div className="flex-1 min-w-0 pt-0.5">
         <div className="flex items-center justify-between mb-0.5">
           <h3 className="text-[13px] font-bold text-slate-900 dark:text-gray-100 leading-tight">{month.label} {year}</h3>
-          <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold group-hover:animate-pulse">NEW</span>
+          {hasRecentExam && (
+            <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-emerald-100 to-emerald-50 dark:from-emerald-950/60 dark:to-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold animate-pulse hover:animate-none transition-all shadow-sm shadow-emerald-200/50 dark:shadow-emerald-950/30">
+              NEW
+            </span>
+          )}
         </div>
         <p className="text-[11px] text-slate-500 dark:text-gray-400 mb-2">CPCT Exam {year}</p>
         <div className="flex items-center justify-between">
@@ -488,7 +510,7 @@ function TopicCard({ title, href, icon: Icon, color, index }: { title: string; h
     <Link
       href={href}
       style={{ animationDelay: `${index * 60}ms` }}
-      className="animate-fade-in-up group flex items-center gap-3 rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl hover:shadow-blue-200/50 dark:hover:shadow-blue-950/30 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300">
+      className="animate-fade-in-up group flex items-center gap-3 rounded-xl border border-blue-200 dark:border-blue-200 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 shadow-md hover:shadow-xl hover:shadow-blue-200/50 dark:hover:shadow-blue-950/30 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300">
       <div className={`shrink-0 w-11 h-9 rounded-lg border flex items-center justify-center ${color} group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300`}>
         <Icon className="w-10 h-10" />
       </div>
@@ -635,8 +657,7 @@ export default function CpctExamsPage() {
     'text-cyan-800 bg-cyan-50 border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-800',
     'text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/40 dark:border-rose-800',
     'text-cyan-800 bg-cyan-50 border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-800',
-    'text-red-800 bg-red-100 border-red-200 dark:text-red-400 dark:bg-red-950/40 dark:border-red-800',
-    
+    'text-red-800 bg-red-100 border-red-200 dark:text-red-400 dark:bg-red-950/40 dark:border-red-800', 
   ];
 
   return (
@@ -644,7 +665,6 @@ export default function CpctExamsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-22 pb-12">
         {/* Hero */}
         <HeroSection />
-
         <div className="flex gap-6">
           {/* Main Content */}
           <main className="flex-1 min-w-0 space-y-6">
@@ -654,9 +674,7 @@ export default function CpctExamsPage() {
                 <IconCalendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <h2 className="text-sm font-bold text-slate-900 dark:text-gray-100">CPCT Exams</h2>
               </div>
-              
             </div>
-
             {/* Exams Grid */}
             {loading ? (
               <Skeleton />
@@ -667,19 +685,19 @@ export default function CpctExamsPage() {
                 <p className="text-[11px]">Check back later or contact your administrator.</p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-6 ">
                 {grouped.map(({ year, months }) => (
                   <section key={year}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 mb-3 ">
                       <div className="h-px flex-1 bg-gradient-to-r from-blue-200 dark:from-blue-900 to-transparent" />
                       <h3 className="text-[13px] font-extrabold text-slate-700 dark:text-gray-300 tracking-wide px-1">
                         CPCT Exam {year}
                       </h3>
                       <div className="h-px flex-1 bg-gradient-to-l from-blue-200 dark:from-blue-900 to-transparent" />
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 ">
                       {months.map((m, i) => (
-                        <ExamMonthCard key={m.month} month={m} year={year} count={m.exams.length} index={i} />
+                        <ExamMonthCard key={m.month} month={m} year={year} count={m.exams.length} index={i}  />
                       ))}
                     </div>
                   </section>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import {
@@ -257,8 +257,19 @@ function Skeleton() {
   );
 }
 
-// ── Main Page ──────────────────────────────────────────────────────────────
-export default function ExamShiftsPage() {
+// ── Full-page loading fallback (shown while Suspense resolves search params) ─
+function PageLoadingFallback() {
+  return (
+    <div className="min-h-screen flex bg-slate-50 dark:bg-[#0a0f1e]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 w-full">
+        <Skeleton />
+      </div>
+    </div>
+  );
+}
+
+// ── Page content (uses useSearchParams / useParams) ────────────────────────
+function ExamShiftsPageContent() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -433,5 +444,15 @@ export default function ExamShiftsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Default export — wraps content in Suspense ──────────────────────────────
+// Required because ExamShiftsPageContent uses useSearchParams()
+export default function ExamShiftsPage() {
+  return (
+    <Suspense fallback={<PageLoadingFallback />}>
+      <ExamShiftsPageContent />
+    </Suspense>
   );
 }
