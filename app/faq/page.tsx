@@ -58,11 +58,7 @@ export default function FaqPage() {
     <div className="border-b border-gray-300 dark:border-slate-700 px-6 py-6">
       <h1 className="text-3xl md:text-4xl font-bold text-[#0f2a78] dark:text-blue-400">
         CPCT Frequently Asked Questions
-      </h1>
-      <p className="mt-3 text-gray-600 dark:text-gray-300 text-base md:text-lg">
-        regarding CPCT Exam , typing practice,
-        exam pattern, eligibility criteria and preparation strategy.
-      </p>
+      </h1>    
     </div>
 
     {/* FAQ List */}
