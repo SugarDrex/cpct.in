@@ -1,811 +1,810 @@
-"use client"
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import {
-    Clock,
-    FileText,
-    BarChart3,
-    RotateCcw,
-    Languages,
-    KeyRound,
-    AlertTriangle,
-    CheckCircle2,
-    XCircle,
-    ShieldCheck,
-    ClockAlertIcon,
-    Download,
-    Printer,
-    Award,
-    TrendingUp,
-} from "lucide-react"
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
- 
+// ─────────────────────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────────────────────
 
-const HINDI_FONT_OPTIONS = [
-    { id: "mangal", label: "Mangal (Unicode)", family: "'Mangal','Noto Sans Devanagari',sans-serif" },
-    { id: "noto", label: "Noto Sans Devanagari", family: "'Noto Sans Devanagari','Mangal',sans-serif" },
-    { id: "tiro", label: "Tiro Devanagari Hindi", family: "'Tiro Devanagari Hindi','Mangal',serif" },
-    { id: "krutidev", label: "Kruti Dev 010 (legacy)", family: "'Kruti Dev 010','Mangal',sans-serif" },
-    { id: "devlys", label: "DevLys 010 (legacy)", family: "'DevLys 010','Mangal',sans-serif" },
-    { id: "shree", label: "Shree-Dev 0714 (legacy)", family: "'Shree-Dev-0714','Mangal',sans-serif" },
-] as const
-
-type FontId = (typeof HINDI_FONT_OPTIONS)[number]["id"]
-type Language = "english" | "hindi"
-type Difficulty = "easy" | "medium" | "hard"
-
-const DIFFICULTY_LEVELS: Record<Difficulty, { duration: number; label: string; labelHi: string; note: string }> = {
-    easy: { duration: 5, label: "Easy", labelHi: "सरल", note: "5 min · relaxed pace" },
-    medium: { duration: 10, label: "Medium", labelHi: "मध्यम", note: "10 min · standard exam pace" },
-    hard: { duration: 15, label: "Hard", labelHi: "कठिन", note: "15 min · full exam simulation" },
+interface ParagraphSet {
+  [timeLimit: number]: string;
 }
 
-const KEYS_PER_MINUTE_TARGET = 200
-
-const FALLBACK_TEXTS: Record<Language, Record<Difficulty, string>> = {
-    english: {
-    easy: `Reading is one of the simplest habits that can change a person's life. It opens the mind to new ideas, improves vocabulary, strengthens memory, and develops the ability to think clearly and logically. People who read regularly often become better communicators because they are exposed to different styles of writing and expression. Even spending fifteen to twenty minutes each day with a good book can make a noticeable difference over time in overall personality development. Reading also reduces stress by allowing the mind to focus on meaningful content instead of constant distractions from social media and daily worries. Public libraries, schools, and digital platforms have made books available to people from every background and economic condition. Fiction encourages imagination and creativity, while biographies teach valuable life lessons through the experiences of successful individuals who overcame challenges. Newspapers and educational magazines help readers stay informed about current events and important developments happening around the world. Students preparing for competitive examinations benefit greatly from regular reading because it improves comprehension, concentration, analytical thinking, and overall academic performance. Parents who encourage reading at home create a positive learning environment for children that supports their growth. Developing the habit at an early age builds confidence and curiosity that continue throughout life and help in achieving goals. Although technology has changed the way people consume information through various digital means, books remain one of the most reliable sources of knowledge and wisdom. Choosing meaningful content and reading consistently can improve both personal and professional growth, making reading a lifelong investment in education and self-development that brings immense satisfaction.`,
-
-    medium: `Technology has transformed the way students learn and teachers deliver education in modern times. Traditional classrooms that once depended only on blackboards and printed books now use smart boards, online learning platforms, digital assignments, and interactive educational software that make classes lively. These improvements have made learning more engaging and accessible for students living in both urban and rural areas across the country. Educational videos, virtual classrooms, and recorded lectures allow learners to revise topics whenever necessary, reducing dependence on physical attendance alone and providing flexibility. Teachers now act not only as instructors but also as mentors who help students evaluate information, develop critical thinking, and solve practical problems effectively. Government institutions across the country have introduced computer education and digital literacy as essential parts of the curriculum because most workplaces now require employees to use technology confidently and efficiently. Typing proficiency, document preparation, spreadsheet management, and basic internet skills are increasingly becoming standard qualifications for many government and private sector jobs in various fields. Online examinations, digital certificates, and electronic document verification have significantly reduced paperwork while improving efficiency and transparency in administrative processes. However, responsible use of technology is equally important to avoid negative effects. Students should balance screen time with reading physical books, physical activity, outdoor sports, and face-to-face communication with family and friends. Schools also educate learners about online safety, cyber security, ethical use of digital resources, and ways to protect personal information from threats. Continuous learning has become easier than ever because educational content is available through mobile phones, computers, and online libraries at any time. Individuals who regularly update their technical skills remain competitive in today's rapidly changing job market and adapt quickly to new challenges. Lifelong learning, supported by technology and disciplined practice, has become one of the strongest foundations for career growth, professional success, personal development, and overall well-being in society.`,
-
-    hard: `Artificial intelligence is steadily transforming modern workplaces, including government departments, educational institutions, healthcare systems, financial organizations, and private businesses across various sectors. Tasks that once required significant manual effort, such as document verification, appointment scheduling, data entry, report generation, and preliminary application screening, can now be completed more efficiently with the assistance of intelligent software systems and advanced algorithms. This technological progress allows employees to dedicate more time to decision-making, problem-solving, creative tasks, and public service instead of repetitive administrative work that consumes hours. Despite these advantages, the adoption of artificial intelligence introduces important responsibilities related to transparency, accountability, privacy, and data security that cannot be ignored. Government agencies handling sensitive citizen information must ensure that automated systems operate fairly, accurately, and without discrimination based on any factors. Employees working alongside these technologies require continuous training to understand new software, recognize potential errors, maintain human oversight whenever necessary, and make ethical decisions. Digital literacy has therefore become an essential professional skill rather than an optional qualification for everyone in the workforce. Competence in typing, document formatting, spreadsheet management, email communication, and online collaboration remains fundamental because nearly every administrative process now depends on electronic records and digital systems. Competitive examinations increasingly evaluate candidates on computer awareness and typing speed to ensure they can perform effectively in digital workplaces and contribute productively. Organizations also encourage continuous learning through workshops, online certification programs, and professional development courses that keep employees updated with emerging technologies and industry trends. While automation improves efficiency and reduces costs, human qualities such as creativity, ethical judgment, empathy, emotional intelligence, and communication continue to play an irreplaceable role in public administration and business management. The future workforce will succeed by combining technical knowledge with adaptability, critical thinking, teamwork abilities, and a willingness to learn throughout their careers. Individuals who embrace innovation while maintaining strong foundational skills will be better prepared to contribute meaningfully to modern organizations and to serve society with greater efficiency, accuracy, and responsibility in an increasingly digital world full of opportunities and challenges.`
-},
-
-     hindi: {
-    easy: `भारत अपनी समृद्ध संस्कृति, विविध परंपराओं और अनेक भाषाओं के कारण पूरे विश्व में विशेष पहचान रखता है। यहाँ विभिन्न धर्मों, रीति-रिवाजों और जीवन शैलियों के लोग आपसी सम्मान और सहयोग के साथ सद्भावपूर्वक रहते हैं। प्रत्येक राज्य की अपनी अलग संस्कृति, वेशभूषा, भोजन और लोककला है, जो भारत की सांस्कृतिक धरोहर को और भी समृद्ध बनाती है तथा पर्यटकों को आकर्षित करती है। दीपावली, होली, ईद, क्रिसमस, गुरुपर्व और अन्य अनेक त्योहार लोगों को एक-दूसरे के निकट लाते हैं तथा सामाजिक सद्भाव को मजबूत करते हैं। विद्यालयों में विद्यार्थियों को हमारी सांस्कृतिक विरासत, राष्ट्रीय प्रतीकों और महान व्यक्तित्वों के बारे में पढ़ाया जाता है ताकि उनमें देश के प्रति सम्मान और जिम्मेदारी की भावना विकसित हो सके तथा वे अच्छे नागरिक बनें। परिवार में बड़े-बुजुर्ग बच्चों को नैतिक मूल्यों, अनुशासन और ईमानदारी का महत्व समझाते हैं जो उनके चरित्र निर्माण में सहायक होते हैं। पुस्तकों का अध्ययन, अच्छे विचारों का पालन और नियमित अभ्यास व्यक्ति के व्यक्तित्व को निखारते हैं तथा ज्ञान की वृद्धि करते हैं। अपनी संस्कृति का सम्मान करते हुए आधुनिक शिक्षा और विज्ञान को अपनाना समय की आवश्यकता है। यही संतुलन व्यक्ति को सफल, जागरूक और जिम्मेदार नागरिक बनने में सहायता करता है तथा समाज के विकास में योगदान देता है। भारत की यही विविधता, एकता और सांस्कृतिक समृद्धि उसे विश्व के सबसे महान देशों में स्थान दिलाती है तथा गर्व की भावना जगाती है।`,
-
-    medium: `प्रौद्योगिकी ने शिक्षा के क्षेत्र में अभूतपूर्व परिवर्तन किया है। आज विद्यार्थी कंप्यूटर, इंटरनेट और डिजिटल संसाधनों की सहायता से देश और दुनिया की जानकारी बहुत कम समय में प्राप्त कर सकते हैं। ऑनलाइन कक्षाएँ, वीडियो व्याख्यान, डिजिटल पुस्तकालय और अभ्यास परीक्षाएँ सीखने की प्रक्रिया को अधिक सरल, प्रभावी और रोचक बना रही हैं। ग्रामीण क्षेत्रों के विद्यार्थियों को भी अब गुणवत्तापूर्ण शिक्षा तक पहुँचने के नए अवसर मिल रहे हैं जो पहले सीमित थे। शिक्षक केवल जानकारी देने वाले व्यक्ति नहीं रहे, बल्कि वे विद्यार्थियों का मार्गदर्शन करने वाले सलाहकार की भूमिका निभा रहे हैं तथा व्यक्तिगत ध्यान देते हैं। सरकारी संस्थानों ने भी डिजिटल साक्षरता, कंप्यूटर प्रशिक्षण और टंकण कौशल को शिक्षा का महत्वपूर्ण भाग बनाया है क्योंकि अधिकांश सरकारी तथा निजी कार्यालयों में कार्य अब कंप्यूटर आधारित हो चुका है। दस्तावेज़ तैयार करना, ईमेल भेजना, ऑनलाइन आवेदन भरना और डिजिटल अभिलेखों का प्रबंधन दैनिक कार्यों का हिस्सा बन चुके हैं। इसलिए विद्यार्थियों को नियमित रूप से टाइपिंग का अभ्यास करने, कंप्यूटर के मूलभूत ज्ञान को मजबूत करने और नई तकनीकों को सीखने की सलाह दी जाती है। साथ ही उन्हें इंटरनेट का सुरक्षित और जिम्मेदारीपूर्ण उपयोग, साइबर सुरक्षा तथा व्यक्तिगत जानकारी की सुरक्षा के बारे में भी जागरूक किया जाता है ताकि वे सुरक्षित रहें। आधुनिक शिक्षा का उद्देश्य केवल परीक्षा उत्तीर्ण करना नहीं बल्कि ऐसे सक्षम, आत्मविश्वासी और तकनीकी रूप से दक्ष नागरिक तैयार करना है जो बदलती दुनिया की आवश्यकताओं के अनुसार स्वयं को निरंतर विकसित कर सकें तथा राष्ट्र की प्रगति में योगदान दें।`,
-
-    hard: `भविष्य की दुनिया में कृत्रिम बुद्धिमत्ता, स्वचालन और डिजिटल प्रौद्योगिकी का प्रभाव लगभग प्रत्येक क्षेत्र में स्पष्ट रूप से दिखाई देगा। सरकारी विभाग, बैंक, शैक्षणिक संस्थान, स्वास्थ्य सेवाएँ तथा निजी कंपनियाँ दस्तावेज़ों के सत्यापन, डेटा विश्लेषण, समय-निर्धारण, आवेदन पत्रों की प्रारंभिक जाँच तथा अन्य प्रशासनिक कार्यों के लिए आधुनिक स्वचालित प्रणालियों का उपयोग तेजी से बढ़ा रही हैं। इससे कार्यों की गति बढ़ती है, त्रुटियाँ कम होती हैं और नागरिकों को सेवाएँ पहले की अपेक्षा अधिक शीघ्र प्राप्त होती हैं। हालांकि इस परिवर्तन के साथ डेटा सुरक्षा, गोपनीयता, पारदर्शिता और जवाबदेही जैसे महत्वपूर्ण प्रश्न भी जुड़े हुए हैं जिनका समाधान आवश्यक है। किसी भी स्वचालित प्रणाली की विश्वसनीयता सुनिश्चित करने के लिए प्रशिक्षित कर्मचारियों की आवश्यकता बनी रहती है जो परिणामों का परीक्षण कर सकें और आवश्यकतानुसार उचित निर्णय ले सकें। इसलिए आज के समय में डिजिटल साक्षरता, कंप्यूटर संचालन, दस्तावेज़ प्रबंधन, ईमेल संचार, स्प्रेडशीट का उपयोग तथा तेज़ और शुद्ध टंकण जैसी क्षमताएँ प्रत्येक कर्मचारी के लिए अत्यंत महत्वपूर्ण हो गई हैं। विभिन्न प्रतियोगी परीक्षाओं में भी कंप्यूटर ज्ञान और टंकण दक्षता का मूल्यांकन किया जाता है ताकि अभ्यर्थी आधुनिक कार्यालयों में प्रभावी ढंग से कार्य कर सकें। नई तकनीकों को अपनाने के साथ-साथ निरंतर सीखते रहना, नैतिक मूल्यों का पालन करना, समस्या समाधान की क्षमता विकसित करना और टीम के साथ प्रभावी संवाद बनाए रखना भी समान रूप से आवश्यक है। जो व्यक्ति तकनीकी ज्ञान के साथ अनुशासन, ईमानदारी, सटीकता और सीखने की इच्छा बनाए रखते हैं, वे भविष्य के डिजिटल कार्यस्थलों में अधिक सफल सिद्ध होंगे तथा समाज और राष्ट्र के विकास में महत्वपूर्ण योगदान देंगे।
-    प्रौद्योगिकी ने शिक्षा के क्षेत्र में अभूतपूर्व परिवर्तन किया है। आज विद्यार्थी कंप्यूटर, इंटरनेट और डिजिटल संसाधनों की सहायता से देश और दुनिया की जानकारी बहुत कम समय में प्राप्त कर सकते हैं। ऑनलाइन कक्षाएँ, वीडियो व्याख्यान, डिजिटल पुस्तकालय और अभ्यास परीक्षाएँ सीखने की प्रक्रिया को अधिक सरल, प्रभावी और रोचक बना रही हैं। ग्रामीण क्षेत्रों के विद्यार्थियों को भी अब गुणवत्तापूर्ण शिक्षा तक पहुँचने के नए अवसर मिल रहे हैं जो पहले सीमित थे। शिक्षक केवल जानकारी देने वाले व्यक्ति नहीं रहे, बल्कि वे विद्यार्थियों का मार्गदर्शन करने वाले सलाहकार की भूमिका निभा रहे हैं तथा व्यक्तिगत ध्यान देते हैं। सरकारी संस्थानों ने भी डिजिटल साक्षरता, कंप्यूटर प्रशिक्षण और टंकण कौशल को शिक्षा का महत्वपूर्ण भाग बनाया है क्योंकि अधिकांश सरकारी तथा निजी कार्यालयों में कार्य अब कंप्यूटर आधारित हो चुका है। दस्तावेज़ तैयार करना, ईमेल भेजना, ऑनलाइन आवेदन भरना और डिजिटल अभिलेखों का प्रबंधन दैनिक कार्यों का हिस्सा बन चुके हैं। इसलिए विद्यार्थियों को नियमित रूप से टाइपिंग का अभ्यास करने, कंप्यूटर के मूलभूत ज्ञान को मजबूत करने और नई तकनीकों को सीखने की सलाह दी जाती है। साथ ही उन्हें इंटरनेट का सुरक्षित और जिम्मेदारीपूर्ण उपयोग, साइबर सुरक्षा तथा व्यक्तिगत जानकारी की सुरक्षा के बारे में भी जागरूक किया जाता है ताकि वे सुरक्षित रहें। आधुनिक शिक्षा का उद्देश्य केवल परीक्षा उत्तीर्ण करना नहीं बल्कि ऐसे सक्षम, आत्मविश्वासी और तकनीकी रूप से दक्ष नागरिक तैयार करना है जो बदलती दुनिया की आवश्यकताओं के अनुसार स्वयं को निरंतर विकसित कर सकें तथा राष्ट्र की प्रगति में योगदान दें।`,
-
-}
+interface ParagraphData {
+  english: ParagraphSet;
+  hindi: ParagraphSet;
 }
 
-interface TestResult {
-    candidateId: string
-    timestamp: string
-    date: string
-    time: string
-    language: string
-    difficulty: string
-    grossSpeed: string
-    netSpeed: string
-    accuracy: string
-    keyDepressions: number
-    totalTyped: number
-    correctChars: number
-    wrongChars: number
-    qualification: string
-    timeUsed: number
-    examId: string
-    centreCode: string
+interface TestStats {
+  nwpm: number;
+  gwpm: number;
+  accuracy: number;
+  correctWords: number;
+  wrongWords: number;
+  totalTypedWords: number;
+  missingWords: number;
+  timeTaken: number;
+  passed: boolean;
+  passThreshold: number;
 }
 
-const STORAGE_KEY = "typingTestSession"
+// ─────────────────────────────────────────────────────────────
+// PARAGRAPHS DATA
+// ─────────────────────────────────────────────────────────────
+const PARAGRAPHS: ParagraphData = {
+  english: {
+    5: `The history of computers is a fascinating journey that spans thousands of years, beginning with simple mechanical tools and evolving into the sophisticated digital devices we rely on today. This story is not just about the machines themselves but also about the visionaries and inventors who imagined new possibilities and transformed those ideas into reality. Early civilizations created tools like the abacus to assist with mathematical calculations. The abacus consisted of beads sliding on rods within a wooden frame and allowed users to perform arithmetic operations efficiently. As societies advanced, the need for more complex calculation tools became apparent. In the nineteenth century, Charles Babbage designed the Difference Engine and Analytical Engine, which are considered the first mechanical computers. Although these machines were never fully built during his lifetime, they laid the groundwork for modern computing concepts. Ada Lovelace worked with Babbage and is often regarded as the first computer programmer for her work on the Analytical Engine. She envisioned that computers could do more than just calculate numbers. The twentieth century brought revolutionary changes with the invention of electronic computers. During World War Two, computers were developed to decode enemy messages and calculate ballistic trajectories. These early electronic computers used vacuum tubes and occupied entire rooms. The invention of the transistor in the late nineteen forties marked a turning point, enabling smaller and more reliable computers. Integrated circuits further miniaturized computer components, leading to the microprocessor revolution. Today, computers are everywhere, from smartphones to supercomputers, and they continue to shape every aspect of modern life. The internet has connected billions of people worldwide, enabling instant communication and access to vast amounts of information. Digital technology has transformed education, healthcare, business, and entertainment in profound ways.`,
+    10: `Artificial Intelligence is transforming technology and industries worldwide in unprecedented ways. AI systems can learn from data and make decisions that were previously thought to require human intelligence. Machine learning allows computers to improve their performance over time without being explicitly programmed for every scenario. Deep learning, a subset of machine learning, uses neural networks with many layers to analyze complex patterns in large datasets. AI is used in smartphones, automobiles, healthcare, and finance to enhance efficiency and accuracy. Virtual assistants like Siri and Alexa use natural language processing to understand and respond to user queries. In healthcare, AI algorithms can analyze medical images to detect diseases earlier than human doctors. Self-driving cars use computer vision and sensor fusion to navigate roads safely. The future will see more AI integration in everyday applications and services. However, the rise of AI also raises important ethical questions about privacy, job displacement, and algorithmic bias. As AI systems become more autonomous, ensuring they make fair and transparent decisions becomes crucial. Researchers are working on explainable AI to make machine learning models more interpretable. Governments and organizations are developing regulations to govern AI development and deployment. Education systems are adapting to prepare students for an AI-driven economy. The collaboration between humans and AI will likely define the next phase of technological progress. Businesses that successfully integrate AI into their operations will gain significant competitive advantages. The technology continues to evolve rapidly, creating new opportunities and challenges every day. Cloud computing platforms provide the infrastructure necessary for training complex AI models at scale. Data privacy and security remain paramount concerns as AI systems handle increasingly sensitive information across global networks. Natural language processing has enabled machines to understand and generate human language with remarkable accuracy. Computer vision technology allows machines to interpret and analyze visual information from the world around them. Robotics and automation are reshaping manufacturing and logistics industries worldwide.`,
+    15: `Cloud computing allows users to access data and applications over the internet from anywhere in the world. Instead of storing information locally on personal computers, users can store it on remote servers maintained by cloud service providers. This technology offers scalability, flexibility, and cost effectiveness for businesses of all sizes. Major companies like Amazon, Google, and Microsoft provide comprehensive cloud solutions that power millions of applications. Cloud technology enables businesses to operate efficiently and securely without investing heavily in physical infrastructure. There are three main types of cloud services: Infrastructure as a Service, Platform as a Service, and Software as a Service. Infrastructure as a Service provides virtualized computing resources over the internet. Platform as a Service offers a platform allowing customers to develop, run, and manage applications. Software as a Service delivers software applications over the internet on a subscription basis. Cloud computing has revolutionized how organizations approach information technology. Small startups can now access the same powerful computing resources as large enterprises. The pay-as-you-go model allows businesses to scale their operations up or down based on demand. Disaster recovery becomes more manageable with automated backups and redundant systems. Collaboration tools hosted in the cloud enable teams to work together regardless of physical location. Security remains a top concern for cloud adoption, though providers invest heavily in protection measures. Data encryption, access controls, and compliance certifications help ensure information safety. Hybrid cloud solutions combine private and public cloud infrastructure for optimal flexibility. Edge computing extends cloud capabilities closer to data sources for faster processing. The environmental impact of large data centers is an ongoing consideration for the industry. Renewable energy sources are increasingly powering cloud facilities. As more devices connect to the internet, the demand for cloud services continues to grow exponentially across all sectors. Organizations worldwide are migrating their workloads to cloud platforms to achieve greater operational efficiency and reduce capital expenditure. Serverless computing allows developers to build applications without managing underlying infrastructure. Containerization technologies like Docker and Kubernetes have simplified application deployment and management. Multi-cloud strategies help organizations avoid vendor lock-in and improve resilience. Cloud native development practices are becoming the standard for modern software engineering.`,
+    20: `Blockchain technology serves as the foundational infrastructure for decentralized applications and cryptocurrencies. It operates as a distributed ledger system where transactions are recorded in blocks and cryptographically linked in a chain. Each block contains data, a timestamp, and a reference to the previous block, creating an immutable record of all transactions. The consensus mechanisms used in blockchain networks ensure that all participants agree on the validity of transactions without requiring a central authority. This decentralization eliminates single points of failure and reduces the risk of fraud. Blockchain applications extend beyond cryptocurrencies to supply chain management, digital identity verification, smart contracts, and healthcare records management. In supply chain management, blockchain provides transparency and traceability from manufacturer to consumer. Every handoff in the supply chain can be recorded permanently, reducing counterfeiting and improving quality control. Smart contracts are self-executing agreements with terms directly written into code. They automatically enforce and execute contractual obligations when predetermined conditions are met. This reduces the need for intermediaries and lowers transaction costs. Digital identity verification using blockchain gives individuals control over their personal information. Users can selectively share credentials without revealing unnecessary data. Healthcare records management benefits from blockchain by creating secure, interoperable systems for patient data. Medical records can be accessed instantly by authorized providers while maintaining patient privacy. The technology faces challenges including scalability limitations, energy consumption, and regulatory uncertainty. Public blockchains like Bitcoin process transactions slowly compared to traditional payment networks. Private and consortium blockchains offer faster processing for enterprise applications. Researchers are developing new consensus algorithms that reduce energy usage while maintaining security. Layer two solutions process transactions off the main blockchain to improve speed and reduce costs. Governments worldwide are exploring central bank digital currencies built on blockchain technology. The intersection of blockchain with artificial intelligence and Internet of Things creates new possibilities for autonomous systems. As the technology matures, standards and interoperability protocols are emerging to connect different blockchain networks. Education and awareness about blockchain capabilities and limitations remain important for widespread adoption. The future will likely see hybrid systems that combine blockchain with traditional databases for optimal performance.`
+  },
+  hindi: {
+    5: `कंप्यूटर का इतिहास हजारों वर्षों की एक आकर्षक यात्रा है, जो सरल यांत्रिक उपकरणों से शुरू होकर आधुनिक डिजिटल उपकरणों में विकसित हुई है। यह कहानी केवल मशीनों के बारे में नहीं है, बल्कि उन दूरदर्शी और आविष्कारकों के बारे में भी है जिन्होंने नई संभावनाओं की कल्पना की और उन विचारों को वास्तविकता में बदल दिया। प्रारंभिक सभ्यताओं ने गणितीय गणना में सहायता के लिए अबेकस जैसे उपकरण बनाए। अबेकस में लकड़ी के फ्रेम के भीतर रॉड पर खिसकने वाले मोतिये होते थे जो उपयोगकर्ताओं को अंकगणितीय संचालन कुशलता से करने की अनुमति देते थे। जैसे-जैसे समाज उन्नत हुए, अधिक जटिल गणना उपकरणों की आवश्यकता स्पष्ट हो गई। उन्नीसवीं शताब्दी में, चार्ल्स बैबेज ने डिफरेंस इंजन और एनालिटिकल इंजन डिजाइन किए, जिन्हें पहले यांत्रिक कंप्यूटर माना जाता है। हालांकि ये मशीनें उनके जीवनकाल के दौरान कभी पूरी तरह से नहीं बनीं, लेकिन उन्होंने आधुनिक कंप्यूटिंग अवधारणाओं की नींव रखी। एडा लवलेस बैबेज के साथ काम करती थीं और एनालिटिकल इंजन पर उनके काम के लिए उन्हें अक्सर पहली कंप्यूटर प्रोग्रामर माना जाता है। उन्होंने कल्पना की कि कंप्यूटर केवल संख्याओं की गणना से अधिक कर सकते हैं। बीसवीं शताब्दी ने इलेक्ट्रॉनिक कंप्यूटरों के आविष्कार के साथ क्रांतिकारी बदलाव लाए। द्वितीय विश्व युद्ध के दौरान, कंप्यूटरों को दुश्मन के संदेशों को डिकोड करने और बैलिस्टिक प्रक्षेपवक्रों की गणना करने के लिए विकसित किया गया था। आज कंप्यूटर हर जगह मौजूद हैं और आधुनिक जीवन के हर पहलू को आकार दे रहे हैं। इंटरनेट ने दुनिया भर में अरबों लोगों को जोड़ा है। डिजिटल तकनीक ने शिक्षा, स्वास्थ्य सेवा, व्यवसाय और मनोरंजन को गहराई से बदल दिया है।`,
+    10: `कृत्रिम बुद्धिमत्ता दुनिया भर में प्रौद्योगिकी और उद्योगों को अभूतपूर्व तरीकों से बदल रही है। एआई सिस्टम डेटा से सीख सकते हैं और निर्णय ले सकते हैं जो पहले मानव बुद्धिमत्ता की आवश्यकता वाले माने जाते थे। मशीन लर्निंग कंप्यूटर को समय के साथ अपने प्रदर्शन में सुधार करने की अनुमति देती है बिना हर परिदृश्य के लिए स्पष्ट रूप से प्रोग्राम किए बिना। डीप लर्निंग, मशीन लर्निंग का एक उपसमुच्चय, बड़े डेटासेट में जटिल पैटर्न का विश्लेषण करने के लिए कई परतों वाले न्यूरल नेटवर्क का उपयोग करता है। एआई स्मार्टफोन, ऑटोमोबाइल, स्वास्थ्य सेवा और वित्त में दक्षता और सटीकता बढ़ाने के लिए उपयोग किया जाता है। वर्चुअल सहायक जैसे सिरी और एलेक्सा उपयोगकर्ता के प्रश्नों को समझने और उत्तर देने के लिए प्राकृतिक भाषा प्रसंस्करण का उपयोग करते हैं। स्वास्थ्य सेवा में, एआई एल्गोरिदम मानव डॉक्टरों से पहले बीमारियों का पता लगाने के लिए चिकित्सा छवियों का विश्लेषण कर सकते हैं। स्वचालित कारें सुरक्षित रूप से सड़कों पर नेविगेट करने के लिए कंप्यूटर विजन और सेंसर फ्यूजन का उपयोग करती हैं। भविष्य में रोजमर्रा के अनुप्रयोगों और सेवाओं में अधिक एआई एकीकरण देखा जाएगा। हालांकि, एआई के उदय से गोपनीयता, नौकरी विस्थापन और एल्गोरिदमिक पूर्वाग्रह के बारे में महत्वपूर्ण नैतिक सवाल भी उठते हैं। जैसे-जैसे एआई सिस्टम अधिक स्वायत्त होते हैं, यह सुनिश्चित करना महत्वपूर्ण हो जाता है कि वे निष्पक्ष और पारदर्शी निर्णय लें। शोधकर्ता व्याख्या योग्य एआई पर काम कर रहे हैं ताकि मशीन लर्निंग मॉडल को अधिक व्याख्यात्मक बनाया जा सके। सरकारें और संगठन एआई विकास और परिनियोजन को नियंत्रित करने के लिए विनियम विकसित कर रहे हैं। शिक्षा प्रणाली एक एआई-संचालित अर्थव्यवस्था के लिए छात्रों को तैयार करने के लिए अनुकूलन कर रही हैं। मानव और एआई के बीच सहयोग भविष्य की प्रौद्योगिकी प्रगति को परिभाषित करेगा। व्यवसाय जो एआई को सफलतापूर्वक एकीकृत करते हैं वे महत्वपूर्ण प्रतिस्पर्धात्मक लाभ प्राप्त करेंगे। प्राकृतिक भाषा प्रसंस्करण ने मशीनों को मानव भाषा को समझने और उत्पन्न करने में सक्षम बनाया है। कंप्यूटर विजन तकनीक मशीनों को दृश्य जानकारी की व्याख्या करने की अनुमति देती है। रोबोटिक्स और स्वचालन विनिर्माण और रसद उद्योगों को पुनर्निर्मित कर रहे हैं।`,
+    15: `क्लाउड कंप्यूटिंग उपयोगकर्ताओं को दुनिया में कहीं से भी इंटरनेट पर डेटा और अनुप्रयोगों तक पहुंचने की अनुमति देती है। व्यक्तिगत कंप्यूटर पर स्थानीय रूप से जानकारी संग्रहीत करने के बजाय, उपयोगकर्ता इसे क्लाउड सेवा प्रदाताओं द्वारा बनाए रखे दूरस्थ सर्वर पर संग्रहीत कर सकते हैं। यह तकनीक सभी आकारों के व्यवसायों के लिए स्केलेबिलिटी, लचीलापन और लागत प्रभावशीलता प्रदान करती है। अमेज़ॅन, गूगल और माइक्रोसॉफ्ट जैसी प्रमुख कंपनियां क्लाउड समाधान प्रदान करती हैं जो लाखों अनुप्रयोगों को शक्ति प्रदान करते हैं। क्लाउड प्रौद्योगिकी व्यवसायों को भारी भौतिक बुनियादी ढांचे में निवेश किए बिना कुशलता और सुरक्षा से संचालित करने में सक्षम बनाती है। क्लाउड सेवाओं के तीन मुख्य प्रकार हैं: इंफ्रास्ट्रक्चर एज ए सर्विस, प्लेटफॉर्म एज ए सर्विस, और सॉफ्टवेयर एज ए सर्विस। इंफ्रास्ट्रक्चर एज ए सर्विस इंटरनेट पर वर्चुअलाइज्ड कंप्यूटिंग संसाधन प्रदान करता है। प्लेटफॉर्म एज ए सर्विस ग्राहकों को अनुप्रयोग विकसित, चलाने और प्रबंधित करने की अनुमति देने वाला एक मंच प्रदान करता है। सॉफ्टवेयर एज ए सर्विस सदस्यता आधार पर इंटरनेट पर सॉफ्टवेयर अनुप्रयोग वितरित करता है। क्लाउड कंप्यूटिंग ने संगठनों के सूचना प्रौद्योगिकी के दृष्टिकोण को क्रांतिकारी बना दिया है। छोटे स्टार्टअप अब बड़े उद्यमों के समान शक्तिशाली कंप्यूटिंग संसाधनों तक पहुंच सकते हैं। पे-एज-यू-गो मॉडल व्यवसायों को मांग के आधार पर अपने संचालन को ऊपर या नीचे स्केल करने की अनुमति देता है। स्वचालित बैकअप और अतिरिक्त प्रणालियों के साथ आपदा पुनर्प्राप्ति अधिक प्रबंधनीय हो जाती है। क्लाउड में होस्ट किए गए सहयोग उपकरण टीमों को भौतिक स्थान की परवाह किए बिना एक साथ काम करने में सक्षम बनाते हैं। सुरक्षा क्लाउड अपनाने के लिए एक शीर्ष चिंता बनी हुई है, हालांकि प्रदाता सुरक्षा उपायों में भारी निवेश करते हैं। डेटा एन्क्रिप्शन, पहुंच नियंत्रण और अनुपालन प्रमाणपत्र जानकारी की सुरक्षा सुनिश्चित करने में मदद करते हैं। हाइब्रिड क्लाउड समाधान इष्टतम लचीलापन के लिए निजी और सार्वजनिक क्लाउड बुनियादी ढांचे को जोड़ते हैं। क्लाउड सेवाओं की मांग सभी क्षेत्रों में लगातार बढ़ रही है। संगठन अपने कार्यभार को क्लाउड प्लेटफॉर्म पर स्थानांतरित कर रहे हैं। सर्वरलेस कंप्यूटिंग डेवलपर्स को बुनियादी ढांचे का प्रबंधन किए बिना अनुप्रयोग बनाने की अनुमति देता है। कंटेनरीकरण तकनीकों ने अनुप्रयोग परिनियोजन को सरल बनाया है। मल्टी-क्लाउड रणनीतियां विक्रेता लॉक-इन से बचने में मदद करती हैं।`,
+    20: `ब्लॉकचेन तकनीक विकेंद्रीकृत अनुप्रयोगों और क्रिप्टोकरेंसी के लिए मूल बुनियादी ढांचा के रूप में कार्य करती है। यह एक वितरित खाता प्रणाली के रूप में काम करता है जहां लेनदेन ब्लॉक में दर्ज किए जाते हैं और एक श्रृंखला में क्रिप्टोग्राफिकली जुड़े होते हैं। प्रत्येक ब्लॉक में डेटा, एक टाइमस्टैम्प और पिछले ब्लॉक का संदर्भ होता है, जो सभी लेनदेन का एक अपरिवर्तनीय रिकॉर्ड बनाता है। ब्लॉकचेन नेटवर्क में उपयोग की जाने वाली सहमति तंत्र सभी प्रतिभागियों को केंद्रीय प्राधिकरण की आवश्यकता के बिना लेनदेन की वैधता पर सहमत होने के लिए सुनिश्चित करती है। यह विकेंद्रीकरण एकल विफलता बिंदुओं को समाप्त करता है और धोखाधड़ी के जोखिम को कम करता है। ब्लॉकचेन अनुप्रयोग क्रिप्टोकरेंसी से परे आपूर्ति श्रृंखला प्रबंधन, डिजिटल पहचान सत्यापन, स्मार्ट अनुबंध और स्वास्थ्य सेवा रिकॉर्ड प्रबंधन तक फैलते हैं। आपूर्ति श्रृंखला प्रबंधन में, ब्लॉकचेन निर्माता से उपभोक्ता तक पारदर्शिता और ट्रेसेबिलिटी प्रदान करता है। आपूर्ति श्रृंखला में हर हैंडऑफ स्थायी रूप से दर्ज किया जा सकता है, जो नकली उत्पादों को कम करता है और गुणवत्ता नियंत्रण में सुधार करता है। स्मार्ट अनुबंध कोड में सीधे लिखी शर्तों वाले स्वयं निष्पादित समझौते हैं। वे पूर्व निर्धारित शर्तों को पूरा होने पर अनुबंध दायित्वों को स्वचालित रूप से लागू और निष्पादित करते हैं। यह मध्यस्थों की आवश्यकता को कम करता है और लेनदेन लागत को कम करता है। ब्लॉकचेन का उपयोग करके डिजिटल पहचान सत्यापन व्यक्तियों को उनकी व्यक्तिगत जानकारी पर नियंत्रण देता है। उपयोगकर्ता बिना अनावश्यक डेटा प्रकट किए क्रेडेंशियल को चयनात्मक रूप से साझा कर सकते हैं। स्वास्थ्य सेवा रिकॉर्ड प्रबंधन ब्लॉकचेन से लाभान्वित होता है रोगी डेटा के लिए सुरक्षित, इंटरऑपरेबल सिस्टम बनाकर। अधिकृत प्रदाता रोगी गोपनीयता बनाए रखते हुए चिकित्सा रिकॉर्ड तक तुरंत पहुंच सकते हैं। तकनीक को स्केलेबिलिटी सीमाओं, ऊर्जा खपत और नियामक अनिश्चितता सहित चुनौतियों का सामना करना पड़ता है। पब्लिक ब्लॉकचेन जैसे बिटकॉइन पारंपरिक भुगतान नेटवर्क की तुलना में धीरे-धीरे लेनदेन संसाधित करते हैं। निजी और कंसोर्टियम ब्लॉकचेन एंटरप्राइज अनुप्रयोगों के लिए तेज़ प्रसंस्करण प्रदान करते हैं। शोधकर्ते ऊर्जा उपयोग को कम करते हुए सुरक्षा बनाए रखने वाले नए सहमति एल्गोरिदम विकसित कर रहे हैं। लेयर टू समाधान गति में सुधार और लागत कम करने के लिए मुख्य ब्लॉकचेन से बाहर लेनदेन संसाधित करते हैं। दुनिया भर की सरकारें ब्लॉकचेन तकनीक पर बने केंद्रीय बैंक डिजिटल मुद्राओं का पता लगा रही हैं।`
+  }
+};
 
- 
+const WORD_COUNTS: Record<number, number> = {
+  5: 280,
+  10: 380,
+  15: 480,
+  20: 530
+};
 
-const generateCandidateId = () => {
-    const year = new Date().getFullYear()
-    const random = Math.floor(Math.random() * 10000)
-        .toString()
-        .padStart(5, "0")
-    return `CAND${year}${random}`
+// ─── PARAGRAPH NUMBER MAPPING ───
+// 5 min -> Paragraph-5, 10 min -> Paragraph-2, 15 min -> Paragraph-3, 20 min -> Paragraph-4
+const PARAGRAPH_NUMBER_MAP: Record<number, number> = {
+  5: 1,
+  10: 2,
+  15: 3,
+  20: 4
+};
+
+// ─────────────────────────────────────────────────────────────
+// HELPER: Toggle Switch Component
+// ─────────────────────────────────────────────────────────────
+
+interface ToggleSwitchProps {
+  label: string;
+  checked: boolean;
+  onChange: () => void;
+  count?: number;
 }
 
-const generateExamId = (index: number) => {
-    const year = new Date().getFullYear()
-    const month = String(new Date().getMonth() + 1).padStart(2, "0")
-    const day = String(new Date().getDate()).padStart(2, "0")
-    return `EXAM${year}${month}${day}${String(index + 1).padStart(3, "0")}`
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, checked, onChange, count }) => (
+  <div className="flex items-center gap-2">
+    <label className="relative inline-block w-11 h-6 cursor-pointer">
+      <input
+        type="checkbox"
+        className="sr-only peer"
+        checked={checked}
+        onChange={onChange}
+      />
+      <div className="w-11 h-6 bg-gray-300 dark:bg-slate-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+    </label>
+    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 select-none">{label}</span>
+    {count !== undefined && (
+      <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-bold px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800 min-w-[1.5rem] text-center">
+        {count}
+      </span>
+    )}
+  </div>
+);
+
+// ─────────────────────────────────────────────────────────────
+// WELCOME MODAL COMPONENT
+// ─────────────────────────────────────────────────────────────
+
+interface WelcomeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (config: {
+    timeLimit: number;
+    language: 'english' | 'hindi';
+    backspaceEnabled: boolean;
+    autoScroll: boolean;
+    showColor: boolean;
+    highlighter: boolean;
+  }) => void;
 }
 
-const generateCentreCode = () => {
-    return `CENTRE${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`
-}
- 
+const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose, onConfirm }) => {
+  const [modalTimeLimit, setModalTimeLimit] = useState<number>(5);
+  const [modalLanguage, setModalLanguage] = useState<'english' | 'hindi'>('english');
+  const [modalBackspace, setModalBackspace] = useState<boolean>(true);
+  const [modalAutoScroll, setModalAutoScroll] = useState<boolean>(true);
+  const [modalShowColor, setModalShowColor] = useState<boolean>(true);
+  const [modalHighlighter, setModalHighlighter] = useState<boolean>(true);
 
-export default function PracticePage() {
-    // Setup
-    const [language, setLanguage] = useState<Language>("english")
-    const [difficulty, setDifficulty] = useState<Difficulty>("easy")
-    const [fontId, setFontId] = useState<FontId>("mangal")
-    const [candidateId, setCandidateId] = useState("")
+  if (!isOpen) return null;
 
-    // Test state
-    const [timeLimit, setTimeLimit] = useState(DIFFICULTY_LEVELS.easy.duration)
-    const [timeLeft, setTimeLeft] = useState(DIFFICULTY_LEVELS.easy.duration * 60)
-    const [started, setStarted] = useState(false)
-    const [submitted, setSubmitted] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [input, setInput] = useState("")
-    const [text, setText] = useState("")
-
-    // Metrics
-    const [keyDepressions, setKeyDepressions] = useState(0)
-    const [backspaceCount, setBackspaceCount] = useState(0)
-    const [liveErrors, setLiveErrors] = useState(0)
-
-    // Session history
-    const [results, setResults] = useState<TestResult[]>([])
-    const [showResults, setShowResults] = useState(false)
-    const [centreCode] = useState(generateCentreCode())
-
-    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-    const textareaRef = useRef<HTMLTextAreaElement>(null)
-
-    const requiredKeys = timeLimit * KEYS_PER_MINUTE_TARGET
-    const fontFamily = HINDI_FONT_OPTIONS.find((f) => f.id === fontId)?.family ?? HINDI_FONT_OPTIONS[0].family
-
-   
-
-    useEffect(() => {
-        const newCandidateId = generateCandidateId()
-        setCandidateId(newCandidateId)
-        try {
-            window.localStorage.removeItem(STORAGE_KEY)
-        } catch {
-            // ignore
-        }
-    }, [])
-
-    const persistSession = useCallback((nextResults: TestResult[]) => {
-        try {
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ results: nextResults, candidateId }))
-        } catch {
-            // storage unavailable
-        }
-    }, [candidateId])
-
- 
-
-    const generateText = useCallback(async () => {
-        setLoading(true)
-        try {
-            const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY
-            if (!apiKey) throw new Error("Missing NEXT_PUBLIC_GEMINI_API_KEY")
-
-            const topicEnglish =
-                difficulty === "easy" ? "the benefits of reading" : difficulty === "medium" ? "technology in education" : "artificial intelligence and the future of work"
-            const topicHindi =
-                difficulty === "easy" ? "भारत की संस्कृति" : difficulty === "medium" ? "प्रौद्योगिकी और शिक्षा" : "भविष्य की दुनिया और कृत्रिम बुद्धिमत्ता"
-
-            const prompt =
-                language === "english"
-                    ? `Write 3-4 plain, clear paragraphs (300-320 words total) about "${topicEnglish}", suitable as a typing-test passage. Plain prose only, no headings, no markdown, no bullet points.`
-                    : `निम्नलिखित विषय पर शुद्ध हिंदी (यूनिकोड) में 3-4 सरल अनुच्छेद लिखें (कुल 300-320 शब्द), जो टंकण अभ्यास हेतु उपयुक्त हों: "${topicHindi}"। कोई शीर्षक, मार्कडाउन या बुलेट पॉइंट न दें, केवल सामान्य गद्य।`
-
-            const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                    }),
-                }
-            )
-
-            if (!response.ok) throw new Error(`Gemini API error: ${response.status}`)
-
-            const data = await response.json()
-            const generated = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-            if (!generated) throw new Error("Empty response from Gemini")
-            setText(generated)
-        } catch (error) {
-            console.error("Falling back to local passage:", error)
-            setText(FALLBACK_TEXTS[language][difficulty])
-        } finally {
-            setLoading(false)
-        }
-    }, [language, difficulty])
-
-    useEffect(() => {
-        generateText()
-    }, [language, difficulty, generateText])
-
-    /* ================================================================ */
-    /*  TIMER                                                          */
-    /* ================================================================ */
-
-    useEffect(() => {
-        if (started && timeLeft > 0 && !submitted) {
-            intervalRef.current = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev <= 1) {
-                        clearInterval(intervalRef.current!)
-                        handleSubmit()
-                        return 0
-                    }
-                    return prev - 1
-                })
-            }, 1000)
-        }
-        return () => clearInterval(intervalRef.current!)
-    }, [started, submitted])
-
-
-    const handleChange = (value: string) => {
-        if (!started && value.length > 0) setStarted(true)
-        setKeyDepressions((prev) => prev + 1)
-        setInput(value)
-        const correct = value.split("").filter((char, i) => char === text[i]).length
-        setLiveErrors(value.length - correct)
-    }
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Backspace") {
-            setBackspaceCount((prev) => prev + 1)
-            setKeyDepressions((prev) => prev + 1)
-        }
-    }
-
-    const handleSubmit = () => {
-        clearInterval(intervalRef.current!)
-        setSubmitted(true)
-
-        const totalTyped = input.length
-        const correctChars = input.split("").filter((char, i) => char === text[i]).length
-        const wrongChars = totalTyped - correctChars
-        const minutesUsed = Math.max((timeLimit * 60 - timeLeft) / 60, 0.01)
-
-        const grossSpeed = (keyDepressions / 5 / minutesUsed).toFixed(2)
-        const errorPenalty = (wrongChars / 5).toFixed(2)
-        const netSpeed = Math.max(Number(grossSpeed) - Number(errorPenalty), 0).toFixed(2)
-        const accuracy = totalTyped === 0 ? "100" : ((correctChars / totalTyped) * 100).toFixed(2)
-        const qualification = keyDepressions >= requiredKeys ? "Qualified" : "Not Qualified"
-        const now = new Date()
-        const date = now.toLocaleDateString("en-IN", { year: "numeric", month: "2-digit", day: "2-digit" })
-        const time = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
-
-        const result: TestResult = {
-            candidateId,
-            timestamp: now.toLocaleString("en-IN"),
-            date,
-            time,
-            language: language.toUpperCase(),
-            difficulty: difficulty.toUpperCase(),
-            grossSpeed: `${grossSpeed} WPM`,
-            netSpeed: `${netSpeed} WPM`,
-            accuracy: `${accuracy}%`,
-            keyDepressions,
-            totalTyped,
-            correctChars,
-            wrongChars,
-            qualification,
-            timeUsed: Math.floor((timeLimit * 60 - timeLeft) / 60),
-            examId: generateExamId(results.length),
-            centreCode,
-        }
-
-        const nextResults = [result, ...results].slice(0, 20)
-        setResults(nextResults)
-        persistSession(nextResults)
-        setShowResults(true)
-    }
-
-    const handleRetake = () => {
-        setStarted(false)
-        setSubmitted(false)
-        setInput("")
-        setKeyDepressions(0)
-        setBackspaceCount(0)
-        setLiveErrors(0)
-        setTimeLeft(timeLimit * 60)
-        setShowResults(false)
-        generateText()
-        setTimeout(() => textareaRef.current?.focus(), 100)
-    }
-
-    const handleDifficultyChange = (next: Difficulty) => {
-        setDifficulty(next)
-        const duration = DIFFICULTY_LEVELS[next].duration
-        setTimeLimit(duration)
-        setTimeLeft(duration * 60)
-    }
-
-
-    const totalTyped = input.length
-    const correctChars = input.split("").filter((char, i) => char === text[i]).length
-    const wrongChars = totalTyped - correctChars
-    const minutesUsed = Math.max((timeLimit * 60 - timeLeft) / 60, 0.01)
-    const grossSpeed = (keyDepressions / 5 / minutesUsed).toFixed(2)
-    const errorPenalty = (wrongChars / 5).toFixed(2)
-    const netSpeed = Math.max(Number(grossSpeed) - Number(errorPenalty), 0).toFixed(2)
-    const accuracy = totalTyped === 0 ? "100" : ((correctChars / totalTyped) * 100).toFixed(2)
-    const qualified = keyDepressions >= requiredKeys
-    const minutesLabel = String(Math.floor(timeLeft / 60)).padStart(2, "0")
-    const secondsLabel = String(timeLeft % 60).padStart(2, "0")
-    const timeCritical = started && !submitted && timeLeft <= 30
-
-    const latestResult = results.length > 0 ? results[0] : null
-
-    return (
-        <div className="min-h-screen bg-[#F6F4EE] text-[#1B2A4A] dark:bg-[#10141C] dark:text-[#E8E4DA]">
-            <main className="mx-auto max-w-9xl px-4 py-8 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
-
-                    <div className="space-y-2 lg:col-span-2">
-
-
-                        <motion.section
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.05 }}
-                            className="rounded-sm border mt-15 border-[#1B2A4A]/15 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#161B26] sm:p-6"
-                        >
-                            <h2 className="mb-4 flex items-center gap-2 font-serif text-lg font-semibold">
-                                <FileText className="h-5 w-5 text-[#1B2A4A] dark:text-[#E8E4DA]" /> Exam Configuration
-                            </h2>
-
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-                                <div>
-                                    <label className="mb-2 flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                        <Languages className="h-3.5 w-3.5" /> Language
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => setLanguage("english")}
-                                            disabled={started}
-                                            className={`flex-1 rounded-sm border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${language === "english"
-                                                ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
-                                                : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
-                                                }`}
-                                        >
-                                            English
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setLanguage("hindi")}
-                                            disabled={started}
-                                            className={`flex-1 rounded-sm border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${language === "hindi"
-                                                ? "border-[#1B2A4A] bg-[#1B2A4A] text-white dark:border-[#E8E4DA] dark:bg-[#E8E4DA] dark:text-[#10141C]"
-                                                : "border-[#1B2A4A]/20 text-[#1B2A4A] hover:bg-[#1B2A4A]/5 dark:border-white/15 dark:text-[#E8E4DA] dark:hover:bg-white/5"
-                                                }`}
-                                        >
-                                            हिंदी
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Difficulty */}
-                                <div>
-                                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                        Difficulty Level
-                                    </label>
-                                    <select
-                                        value={difficulty}
-                                        onChange={(e) => handleDifficultyChange(e.target.value as Difficulty)}
-                                        disabled={started}
-                                        className="w-full rounded-sm border border-[#1B2A4A]/20 bg-white px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15 dark:bg-[#10141C] dark:text-[#E8E4DA]"
-                                    >
-                                        {Object.entries(DIFFICULTY_LEVELS).map(([key, val]) => (
-                                            <option key={key} value={key}>
-                                                {val.label} — {val.note}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Hindi font */}
-                                {language === "hindi" ? (
-                                    <div>
-                                        <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                            Typeface
-                                        </label>
-                                        <select
-                                            value={fontId}
-                                            onChange={(e) => setFontId(e.target.value as FontId)}
-                                            disabled={started}
-                                            className="w-full rounded-sm border border-[#1B2A4A]/20 bg-white px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15 dark:bg-[#10141C] dark:text-[#E8E4DA]"
-                                        >
-                                            {HINDI_FONT_OPTIONS.map((f) => (
-                                                <option key={f.id} value={f.id}>
-                                                    {f.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col justify-end gap-1 text-xs text-[#5B6472] dark:text-[#9AA3B2]">
-                                        <span className="font-semibold uppercase tracking-wide">Qualifying Limit</span>
-                                        <span className="font-mono font-bold">{requiredKeys.toLocaleString("en-IN")} keys</span>
-                                    </div>
-                                )}
-                            </div>
-                        </motion.section>
-
-                        {/* Live dashboard */}
-                        <motion.section
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.05 }}
-                            className="grid grid-cols-2 gap-2 sm:grid-cols-4"
-                        >
-                            {[
-                                { label: "Key Depressions", value: keyDepressions },
-                                { label: "Live Errors", value: liveErrors },
-                                { label: "Backspace Count", value: backspaceCount },
-                                { label: "Required Keys", value: requiredKeys.toLocaleString("en-IN") },
-                            ].map((m) => (
-                                <div
-                                    key={m.label}
-                                    className="rounded-sm border border-[#1B2A4A]/15 bg-white p-2 text-center dark:border-white/10 dark:bg-[#161B26]"
-                                >
-                                    <div className="text-[11px] font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                        {m.label}
-                                    </div>
-                                    <div className="font-mono text-2xl font-bold tabular-nums text-[#1B2A4A] dark:text-[#E8E4DA]">{m.value}</div>
-                                </div>
-                            ))}
-                        </motion.section>
-                        <motion.section
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className=" relative h-50 -mt-1 overflow-y-auto rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-2 text-base leading-8 scroll-smooth dark:border-white/10 dark:bg-[#10141C] sm:text-lg rounded-sm border border-[#1B2A4A]/15 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#161B26] sm:p-6"
-                        >
-                            <h3 className="-mt-4 font-serif text-base font-semibold p-1  ">Passage to Type</h3>
-
-                            <div
-                                style={{ fontFamily: language === "hindi" ? fontFamily : undefined }}
-                                className=" select-none overflow-auto rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-2 text-base leading-8 dark:border-white/10 dark:bg-[#10141C] sm:text-lg"
-                            >
-                                {loading ? (
-                                    <div className="flex h-20 items-center justify-center">
-                                        <motion.div
-                                            animate={{ rotate: 360 }}
-                                            transition={{ duration: 1.1, repeat: Infinity, ease: "linear" }}
-                                            className="h-8 w-8 rounded-full border-3 border-[#1B2A4A]/20 border-t-[#1B2A4A] dark:border-white/15 dark:border-t-white"
-                                        />
-                                    </div>
-                                ) : (
-                                    text.split("").map((char, index) => {
-                                        let cls = "text-[#3A4256] dark:text-[#C8C2B4]"
-                                        if (index < input.length) {
-                                            cls =
-                                                input[index] === char
-                                                    ? "text-[#2F6B4F] font-medium dark:text-[#7BC9A0]"
-                                                    : "text-[#8C2F39] font-medium underline dark:text-[#E0918C]"
-                                        } else if (index === input.length) {
-                                            cls = "bg-[#B08D2B]/80 text-white"
-                                        }
-                                        return (
-                                            <span key={index} className={cls}>
-                                                {char}
-                                            </span>
-                                        )
-                                    })
-                                )}
-                            </div>
-                        </motion.section>
-
-                        {/* Typing area */}
-                        <motion.section
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.15 }}
-                            className="rounded-sm border border-[#1B2A4A]/15 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#161B26] sm:p-6"
-                        >
-                            <h3 className="mb-3 font-serif text-base font-semibold">Answer Sheet</h3>
-                            <textarea
-                                ref={textareaRef}
-                                value={input}
-                                disabled={submitted || loading}
-                                onChange={(e) => handleChange(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Click here and begin typing — the timer starts on your first keystroke."
-                                style={{ fontFamily: language === "hindi" ? fontFamily : undefined }}
-                                className="h-40 w-full resize-none rounded-sm border-2 border-[#1B2A4A]/20 bg-[#FBFAF6] p-4 font-mono text-base focus:border-[#1B2A4A] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/15 dark:bg-[#10141C] dark:text-[#E8E4DA] dark:focus:border-white/40"
-                            />
-                        </motion.section>
-
-                        {/* Result Certificate */}
-                        <AnimatePresence>
-                            {submitted && showResults && latestResult && (
-                                <motion.section
-                                    id="result-card"
-                                    initial={{ opacity: 0, y: 16 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -16 }}
-                                    className="relative overflow-hidden rounded-sm border-2 border-[#1B2A4A]/25 bg-gradient-to-br from-[#FBFAF6] to-white p-6 shadow-lg dark:border-white/15 dark:from-[#161B26] dark:to-[#10141C] sm:p-8"
-                                >
-                                    {/* Certificate Header */}
-                                    <div className="mb-6 border-b-2 border-dashed border-[#1B2A4A]/20 pb-6 dark:border-white/15">
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <div>
-                                                <h2 className="flex items-center gap-2 font-serif text-2xl font-bold sm:text-3xl">
-                                                    <Award className="h-6 w-6 text-[#2F6B4F]" /> Typing Proficiency Certificate
-                                                </h2>
-                                                <p className="mt-1 text-xs text-[#5B6472] dark:text-[#9AA3B2]">Issued by Government Typing Test Portal</p>
-                                            </div>
-
-                                        </div>
-
-                                        {/* Certification Info */}
-                                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-
-
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                                    Exam Date
-                                                </p>
-                                                <p className="font-mono text-sm font-bold">{latestResult.date}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                                    Exam Time
-                                                </p>
-                                                <p className="font-mono text-sm font-bold">{latestResult.time}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Results Grid */}
-                                    <div className="mb-6">
-                                        <h3 className="mb-4 font-serif text-lg font-semibold">Typing Test Results</h3>
-                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                            {[
-                                                { label: "Net Speed (WPM)", value: latestResult.netSpeed, highlight: true },
-                                                { label: "Gross Speed (WPM)", value: latestResult.grossSpeed },
-                                                { label: "Accuracy", value: latestResult.accuracy },
-                                                { label: "Total Characters Typed", value: `${latestResult.totalTyped}` },
-                                                { label: "Correct Characters", value: `${latestResult.correctChars}` },
-                                                { label: "Error Characters", value: `${latestResult.wrongChars}` },
-                                                { label: "Key Depressions", value: `${latestResult.keyDepressions}` },
-                                                { label: "Error Penalty (WPM)", value: errorPenalty },
-                                                { label: "Time Duration", value: `${latestResult.timeUsed} min` },
-                                            ].map((row) => (
-                                                <div
-                                                    key={row.label}
-                                                    className={`rounded-sm border p-4 ${row.highlight
-                                                        ? "border-[#2F6B4F]/30 bg-[#E8F5F1] dark:border-[#7BC9A0]/30 dark:bg-[#0A3D2F]/40"
-                                                        : "border-[#1B2A4A]/15 bg-white dark:border-white/10 dark:bg-[#10141C]"
-                                                        }`}
-                                                >
-                                                    <div className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                                        {row.label}
-                                                    </div>
-                                                    <div className={`font-mono text-2xl font-bold tabular-nums ${row.highlight ? "text-[#2F6B4F] dark:text-[#7BC9A0]" : ""
-                                                        }`}>
-                                                        {row.value}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Marked Answer Sheet */}
-                                    <div className="mb-6 rounded-sm border border-[#1B2A4A]/15 bg-white p-4 dark:border-white/10 dark:bg-[#10141C]">
-                                        <h3 className="mb-3 font-semibold">Transcribed Text (Marked Answer)</h3>
-                                        <div
-                                            style={{ fontFamily: language === "hindi" ? fontFamily : undefined }}
-                                            className="max-h-44 overflow-y-auto whitespace-pre-wrap break-words rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-4 text-sm leading-7 dark:border-white/10 dark:bg-[#0A0E16]"
-                                        >
-                                            {text.split("").map((char, index) => {
-                                                if (index >= input.length) return null
-                                                return (
-                                                    <span
-                                                        key={index}
-                                                        className={
-                                                            input[index] === char
-                                                                ? "text-[#2F6B4F] font-semibold dark:text-[#7BC9A0]"
-                                                                : "bg-[#8C2F39]/10 text-[#8C2F39] underline dark:bg-[#E0918C]/10 dark:text-[#E0918C]"
-                                                        }
-                                                    >
-                                                        {input[index]}
-                                                    </span>
-                                                )
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    {/* Exam Details Footer */}
-                                    <div className="mb-6 grid grid-cols-2 gap-3 border-t border-dashed border-[#1B2A4A]/20 pt-4 sm:grid-cols-4 dark:border-white/15">
-                                        <div>
-                                            <p className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                                Language
-                                            </p>
-                                            <p className="font-mono text-sm font-bold">{latestResult.language}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                                Difficulty
-                                            </p>
-                                            <p className="font-mono text-sm font-bold">{latestResult.difficulty}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                                Status
-                                            </p>
-                                            <p
-                                                className={`font-mono text-sm font-bold flex items-center gap-1 ${latestResult.qualification === "Qualified"
-                                                    ? "text-[#2F6B4F]"
-                                                    : "text-[#8C2F39]"
-                                                    }`}
-                                            >
-                                                {latestResult.qualification === "Qualified" ? (
-                                                    <CheckCircle2 className="h-4 w-4" />
-                                                ) : (
-                                                    <XCircle className="h-4 w-4" />
-                                                )}
-                                                {latestResult.qualification}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-semibold uppercase tracking-wide text-[#5B6472] dark:text-[#9AA3B2]">
-                                                Required Keys
-                                            </p>
-                                            <p className="font-mono text-sm font-bold">{requiredKeys.toLocaleString("en-IN")}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Qualification Stamp */}
-                                    <div
-                                        className={`pointer-events-none absolute right-4 top-48 rotate-16 select-none rounded-sm border-4 px-6 py-2 text-sm font-bold uppercase tracking-widest sm:right-8 ${latestResult.qualification === "Qualified"
-                                            ? "border-[#2F6B4F] text-[#2F6B4F]"
-                                            : "border-[#8C2F39] text-[#8C2F39]"
-                                            }`}
-                                        style={{ opacity: 0.75 }}
-                                    >
-                                        {latestResult.qualification === "Qualified" ? "✓ Qualified" : "✗ Not Qualified"}
-                                    </div>
-
-                                    {/* Footer Actions */}
-                                    <div className="mt-8 flex flex-wrap gap-2 border-t border-dashed border-[#1B2A4A]/20 pt-4 dark:border-white/15">
-                                        <button
-                                            onClick={() => window.print()}
-                                            className="flex items-center gap-2 rounded-sm bg-[#1B2A4A] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#16213B] dark:bg-[#E8E4DA] dark:text-[#10141C] dark:hover:bg-white"
-                                        >
-                                            <Printer className="h-4 w-4" /> Print Certificate
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                const link = document.createElement("a")
-                                                link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(
-                                                    `TYPING TEST RESULT\n\nCandidate ID: ${latestResult.candidateId}\nExam ID: ${latestResult.examId}\nCentre Code: ${latestResult.centreCode}\n\nNet Speed: ${latestResult.netSpeed}\nGross Speed: ${latestResult.grossSpeed}\nAccuracy: ${latestResult.accuracy}\nStatus: ${latestResult.qualification}\n\nDate: ${latestResult.date}\nTime: ${latestResult.time}`
-                                                )}`
-                                                link.download = `typing_result_${latestResult.examId}.txt`
-                                                link.click()
-                                            }}
-                                            className="flex items-center gap-2 rounded-sm border border-[#1B2A4A]/30 px-4 py-2 text-sm font-semibold text-[#1B2A4A] transition hover:bg-[#1B2A4A]/5 dark:border-white/30 dark:text-[#E8E4DA] dark:hover:bg-white/5"
-                                        >
-                                            <Download className="h-4 w-4" /> Download Result
-                                        </button>
-                                    </div>
-                                </motion.section>
-                            )}
-                        </AnimatePresence>
-                    </div>
-
-               
-                    {/* SIDEBAR                                                    */}
-                   
-                    <motion.aside
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="h-fit space-y-5 mt-15 lg:sticky lg:top-6"
-                    >
-                        {/* Timer Section */}
-                        <section className="rounded-sm border border-[#1B2A4A]/15 bg-white p-5 dark:border-white/10 dark:bg-[#161B26]">
-                            <h3 className="mb-3 flex items-center gap-2 font-serif text-sm font-semibold">
-                                <ClockAlertIcon className="h-4 w-4" /> Exam Timer
-                            </h3>
-                            <div
-                                className={`flex w-full items-center justify-center gap-2 rounded-sm border-2 px-4 py-4 font-mono text-3xl font-bold tabular-nums transition-colors ${timeCritical
-                                    ? "border-[#8C2F39] bg-[#8C2F39] text-white"
-                                    : "border-[#1B2A4A]/20 bg-[#1B2A4A]/5 text-[#1B2A4A] dark:border-white/15 dark:bg-white/5 dark:text-[#E8E4DA]"
-                                    }`}
-                            >
-                                <Clock className="h-6 w-6" />
-                                {minutesLabel}:{secondsLabel}
-                            </div>
-                            {timeCritical && (
-                                <p className="mt-2 text-xs font-semibold text-[#8C2F39] dark:text-[#E0918C]">⚠ Time critical: 30 seconds or less</p>
-                            )}
-                        </section>
-
-                        {/* Session History */}
-                        <section className="rounded-sm border border-[#1B2A4A]/15 bg-white p-5 dark:border-white/10 dark:bg-[#161B26]">
-                            <h2 className="mb-1 flex items-center gap-2 font-serif text-base font-semibold">
-                                <TrendingUp className="h-4 w-4" /> Session History
-                            </h2>
-                            <p className="mb-4 text-xs text-[#5B6472] dark:text-[#9AA3B2]">Session attempts — cleared on page refresh</p>
-
-                            {results.length === 0 ? (
-                                <p className="py-6 text-center text-sm text-[#5B6472] dark:text-[#9AA3B2]">No test attempts yet</p>
-                            ) : (
-                                <div className="max-h-96 space-y-2 overflow-y-auto">
-                                    {results.map((r, i) => (
-                                        <div
-                                            key={i}
-                                            className="rounded-sm border border-[#1B2A4A]/10 bg-[#FBFAF6] p-3 text-sm dark:border-white/10 dark:bg-[#10141C]"
-                                        >
-                                            <div className="mb-2 flex items-center justify-between">
-                                                <span className="font-mono font-bold text-[#1B2A4A] dark:text-[#E8E4DA]">{r.netSpeed}</span>
-                                                <span
-                                                    className={`flex items-center gap-1 text-xs font-semibold ${r.qualification === "Qualified"
-                                                        ? "text-[#2F6B4F]"
-                                                        : "text-[#8C2F39]"
-                                                        }`}
-                                                >
-                                                    {r.qualification === "Qualified" ? (
-                                                        <CheckCircle2 className="h-3.5 w-3.5" />
-                                                    ) : (
-                                                        <XCircle className="h-3.5 w-3.5" />
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-1 text-xs text-[#5B6472] dark:text-[#9AA3B2]">
-                                                <span>{r.language}</span>
-                                                <span>{r.difficulty}</span>
-                                                <span>Acc {r.accuracy}</span>
-                                                <span className="font-mono">{r.examId}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {results.length > 0 && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        try {
-                                            window.localStorage.removeItem(STORAGE_KEY)
-                                        } catch {
-                                            /* ignore */
-                                        }
-                                        setResults([])
-                                    }}
-                                    className="mt-4 w-full rounded-sm border border-[#8C2F39]/40 py-2 text-sm font-semibold text-[#8C2F39] transition hover:bg-[#8C2F39]/5 dark:border-[#E0918C]/40 dark:text-[#E0918C]"
-                                >
-                                    Clear History
-                                </button>
-                            )}
-                        </section>
-
-                        {/* Action Buttons */}
-                        <div className="space-y-2">
-                            <motion.button
-                                whileTap={{ scale: 0.99 }}
-                                onClick={() => {
-                                    handleSubmit()
-                                    setTimeout(() => {
-                                        document
-                                            .getElementById("result-card")
-                                            ?.scrollIntoView({
-                                                behavior: "smooth",
-                                                block: "start",
-                                            })
-                                    }, 300)
-                                }}
-                                disabled={loading || !started}
-                                className="w-full rounded-sm bg-[#1B2A4A] py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-[#16213B] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#E8E4DA] dark:text-[#10141C] dark:hover:bg-white"
-                            >
-                                Submit Test
-                            </motion.button>
-
-                            {submitted && (
-                                <motion.button
-                                    whileTap={{ scale: 0.99 }}
-                                    onClick={handleRetake}
-                                    initial={{ opacity: 0, y: 8 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="w-full flex items-center justify-center gap-2 rounded-sm border border-[#1B2A4A]/30 py-3 text-sm font-semibold text-[#1B2A4A] transition hover:bg-[#1B2A4A]/5 dark:border-white/30 dark:text-[#E8E4DA] dark:hover:bg-white/5"
-                                >
-                                    <RotateCcw className="h-4 w-4" /> Retake Test
-                                </motion.button>
-                            )}
-                        </div>
-                    </motion.aside>
-                </div>
-            </main>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-fade-in border border-slate-200 dark:border-slate-700">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="4 17 10 11 4 5" />
+              <line x1="12" y1="19" x2="20" y2="19" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome to CPCT Typing Test</h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">Customize your exam settings before you begin</p>
         </div>
-    )
+
+        {/* Exam Configuration */}
+        <div className="space-y-5 mb-6">
+          {/* Time Limit */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">⏱️ Time Limit</label>
+            <div className="grid grid-cols-4 gap-2">
+              {[5, 10, 15, 20].map((time) => (
+                <button
+                  key={time}
+                  onClick={() => setModalTimeLimit(time)}
+                  className={`py-2 px-3 rounded-lg text-sm font-semibold transition border-2 ${modalTimeLimit === time
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                    }`}
+                >
+                  {time} Min
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Words: {WORD_COUNTS[modalTimeLimit]}</p>
+          </div>
+
+          {/* Language */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">🌐 Language</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setModalLanguage('english')}
+                className={`py-2 px-3 rounded-lg text-sm font-semibold transition border-2 ${modalLanguage === 'english'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                  }`}
+              >
+                🇮🇳 English
+              </button>
+              <button
+                onClick={() => setModalLanguage('hindi')}
+                className={`py-2 px-3 rounded-lg text-sm font-semibold transition border-2 ${modalLanguage === 'hindi'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                  }`}
+              >
+                🇮🇳 Hindi (हिंदी)
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Pass Threshold: {modalLanguage === 'english' ? '30 NWPM' : '20 NWPM'}
+            </p>
+          </div>
+
+          {/* Toggle Options */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">⚙️ Options</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
+              <ToggleSwitch
+                label="Backspace"
+                checked={modalBackspace}
+                onChange={() => setModalBackspace(!modalBackspace)}
+              />
+              <ToggleSwitch
+                label="AutoScroll"
+                checked={modalAutoScroll}
+                onChange={() => setModalAutoScroll(!modalAutoScroll)}
+              />
+              <ToggleSwitch
+                label="Color Coding"
+                checked={modalShowColor}
+                onChange={() => setModalShowColor(!modalShowColor)}
+              />
+              <ToggleSwitch
+                label="Highlighter"
+                checked={modalHighlighter}
+                onChange={() => setModalHighlighter(!modalHighlighter)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => {
+              onConfirm({
+                timeLimit: modalTimeLimit,
+                language: modalLanguage,
+                backspaceEnabled: modalBackspace,
+                autoScroll: modalAutoScroll,
+                showColor: modalShowColor,
+                highlighter: modalHighlighter,
+              });
+              onClose();
+            }}
+            className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition shadow-lg shadow-blue-200 dark:shadow-blue-900/20"
+          >
+            🚀 Start Exam
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// MAIN COMPONENT
+// ─────────────────────────────────────────────────────────────
+
+export default function TypingTest() {
+  // ─── Welcome Modal State ───
+  const [showWelcomeModal, setShowWelcomeModal] = useState<boolean>(true);
+
+  // ─── Configuration State ───
+  const [timeLimit, setTimeLimit] = useState<number>(5);
+  const [language, setLanguage] = useState<'english' | 'hindi'>('english');
+
+  // ─── Test State ───
+  const [testState, setTestState] = useState<'idle' | 'running' | 'paused' | 'finished'>('idle');
+  const [timeLeft, setTimeLeft] = useState<number>(5 * 60);
+  const [timeTaken, setTimeTaken] = useState<number>(0);
+  const [userInput, setUserInput] = useState<string>('');
+  const [backspaceCount, setBackspaceCount] = useState<number>(0);
+
+  // ─── Toggles ───
+  const [backspaceEnabled, setBackspaceEnabled] = useState<boolean>(true);
+  const [autoScroll, setAutoScroll] = useState<boolean>(true);
+  const [showColor, setShowColor] = useState<boolean>(true);
+  const [highlighter, setHighlighter] = useState<boolean>(true);
+  const [fullscreen, setFullscreen] = useState<boolean>(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+  // ─── Display ───
+  const [fontSize, setFontSize] = useState<number>(18);
+
+  // ─── Stats ───
+  const [stats, setStats] = useState<TestStats | null>(null);
+
+  // ─── Refs ───
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const textDisplayRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number | null>(null);
+
+  // ─── Derived Data ───
+  const currentParagraph = useMemo(() => PARAGRAPHS[language][timeLimit], [language, timeLimit]);
+  const displayWords = useMemo(() => currentParagraph.split(/\s+/).filter(w => w.length > 0), [currentParagraph]);
+  const userWords = useMemo(() => userInput.trim().split(/\s+/).filter(w => w.length > 0), [userInput]);
+
+  // ─── Dynamic Paragraph Number ───
+  const paragraphDisplayNumber = useMemo(() => PARAGRAPH_NUMBER_MAP[timeLimit] || 1, [timeLimit]);
+
+  // ─── Handle Modal Confirm ───
+  const handleModalConfirm = useCallback((config: {
+    timeLimit: number;
+    language: 'english' | 'hindi';
+    backspaceEnabled: boolean;
+    autoScroll: boolean;
+    showColor: boolean;
+    highlighter: boolean;
+  }) => {
+    setTimeLimit(config.timeLimit);
+    setTimeLeft(config.timeLimit * 60);
+    setLanguage(config.language);
+    setBackspaceEnabled(config.backspaceEnabled);
+    setAutoScroll(config.autoScroll);
+    setShowColor(config.showColor);
+    setHighlighter(config.highlighter);
+  }, []);
+
+  // ─── Timer Logic ───
+  useEffect(() => {
+    if (testState === 'running') {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            handleTestComplete(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+        setTimeTaken((prev) => prev + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [testState]);
+
+  // ─── Auto Scroll ───
+  useEffect(() => {
+    if (autoScroll && textDisplayRef.current && testState === 'running') {
+      const currentWordIndex = Math.max(0, userWords.length - 1);
+      const wordElements = textDisplayRef.current.querySelectorAll('[data-word-index]');
+      if (wordElements[currentWordIndex]) {
+        wordElements[currentWordIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [userWords.length, autoScroll, testState]);
+
+  // ─── Handlers ───
+  const handleStart = useCallback(() => {
+    setTestState('running');
+    setTimeLeft(timeLimit * 60);
+    setTimeTaken(0);
+    setUserInput('');
+    setBackspaceCount(0);
+    setStats(null);
+    startTimeRef.current = Date.now();
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, [timeLimit]);
+
+  const handlePause = useCallback(() => {
+    setTestState('paused');
+  }, []);
+
+  const handleResume = useCallback(() => {
+    setTestState('running');
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, []);
+
+  const handleReset = useCallback(() => {
+    setTestState('idle');
+    setTimeLeft(timeLimit * 60);
+    setTimeTaken(0);
+    setUserInput('');
+    setBackspaceCount(0);
+    setStats(null);
+  }, [timeLimit]);
+
+  const handleTestComplete = useCallback((auto: boolean = false) => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setTestState('finished');
+
+    const actualTimeMinutes = auto ? timeLimit : timeTaken / 60 || timeLimit / 60;
+    const totalTypedWords = userWords.length;
+
+    let correctWords = 0;
+    let wrongWords = 0;
+
+    userWords.forEach((word, idx) => {
+      if (displayWords[idx] === word) {
+        correctWords++;
+      } else {
+        wrongWords++;
+      }
+    });
+
+    const missingWords = Math.max(0, displayWords.length - userWords.length);
+    wrongWords += missingWords;
+
+    const nwpm = Math.round((correctWords / actualTimeMinutes) * 10) / 10;
+    const gwpm = Math.round((totalTypedWords / actualTimeMinutes) * 10) / 10;
+    const accuracy = gwpm > 0 ? Math.round((nwpm * 100 / gwpm) * 10) / 10 : 0;
+
+    const passThreshold = language === 'english' ? 30 : 20;
+    const passed = nwpm >= passThreshold;
+
+    setStats({
+      nwpm,
+      gwpm,
+      accuracy,
+      correctWords,
+      wrongWords,
+      totalTypedWords,
+      missingWords,
+      timeTaken: Math.round(actualTimeMinutes * 100) / 100,
+      passed,
+      passThreshold
+    });
+  }, [displayWords, language, timeLimit, timeTaken, userWords]);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (testState !== 'running') return;
+
+    const newValue = e.target.value;
+    const diff = newValue.length - userInput.length;
+
+    if (diff < 0) {
+      setBackspaceCount((b) => b + Math.abs(diff));
+    }
+
+    setUserInput(newValue);
+  }, [testState, userInput]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!backspaceEnabled && (e.key === 'Backspace' || e.key === 'Delete')) {
+      e.preventDefault();
+      return;
+    }
+  }, [backspaceEnabled]);
+
+  // ─── Fullscreen Toggle ───
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => { });
+      setFullscreen(true);
+    } else {
+      document.exitFullscreen().catch(() => { });
+      setFullscreen(false);
+    }
+  }, []);
+
+  // ─── Format Time ───
+  const formatTime = useCallback((seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }, []);
+
+  // ─── Live Stats ───
+  const liveCorrect = useMemo(() => userWords.filter((w, i) => displayWords[i] === w).length, [userWords, displayWords]);
+  const liveWrong = useMemo(() => Math.max(0, userWords.length - liveCorrect), [userWords.length, liveCorrect]);
+  const liveTotal = userWords.length;
+  const liveTime = (timeTaken / 60) || 0.1;
+  const liveNwpm = useMemo(() => Math.round((liveCorrect / liveTime) * 10) / 10, [liveCorrect, liveTime]);
+
+  // ─── Render Paragraph with Colors ───
+  const renderParagraph = useCallback(() => {
+    if (!showColor) {
+      return <span className="text-gray-800 dark:text-gray-200">{currentParagraph}</span>;
+    }
+
+    return displayWords.map((word, idx) => {
+      let className = 'text-gray-400 dark:text-gray-500';
+      let bgClass = '';
+
+      if (idx < userWords.length) {
+        if (userWords[idx] === word) {
+          className = 'text-green-600 dark:text-green-400 font-medium';
+        } else {
+          className = 'text-red-600 dark:text-red-400 font-medium';
+        }
+      } else if (idx === userWords.length && highlighter && testState === 'running') {
+        bgClass = 'bg-yellow-200 dark:bg-yellow-600/30';
+        className = 'text-gray-800 dark:text-gray-200 font-medium';
+      }
+
+      return (
+        <span key={idx} data-word-index={idx} className={`${className} ${bgClass} px-0.5 rounded`}>
+          {word}
+          {idx < displayWords.length - 1 ? ' ' : ''}
+        </span>
+      );
+    });
+  }, [showColor, currentParagraph, displayWords, userWords, highlighter, testState]);
+
+  // ═════════════════════════════════════════════════════════════
+  // RESULTS SCREEN
+  // ═════════════════════════════════════════════════════════════
+  if (testState === 'finished' && stats) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#f4f8ff] via-[#c8ddff] to-[#a8c8f5] dark:from-[#0f172a] dark:via-[#1e293b] dark:to-[#0f172a] p-2 md:p-4 transition-colors duration-300">
+        <div style={{ transform: 'scale(0.9)', transformOrigin: 'top center', width: '111.11%', marginLeft: '-5.555%' }}>
+          <div className="flex items-center justify-center p-4 mt-19">
+            <div className="h-full bg-white dark:bg-slate-800 rounded-2xl shadow-blue-300 dark:shadow-blue-900/20 shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+              <div className="p-8">
+                {/* Result Status */}
+                <div className={`flex gap-3 p-5 text-center rounded-xl border-2 mb-8 ${stats.passed ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-red-500 bg-red-50 dark:bg-red-900/20'}`}>
+                  <div className="text-3xl mb-3">{stats.passed ? '✅' : '😊'}</div>
+                  <h2 className={`text-2xl font-bold ${stats.passed ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>
+                    {stats.passed ? 'PASSED' : 'better luck next time '}
+                  </h2>
+                  {!stats.passed && (
+                    <p className="text-red-600 dark:text-red-400 mt-2">Required: {stats.passThreshold} NWPM • Scored: {stats.nwpm}</p>
+                  )}
+                </div>
+
+                {/* Score Cards */}
+                <div className="grid grid-cols-2 gap-4 mb-0">
+                  <div className="bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 p-6 rounded-xl text-center">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">NET WPM</p>
+                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-400 mt-2">{stats.nwpm}</p>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 p-6 rounded-xl text-center">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">GROSS WPM</p>
+                    <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 mt-2">{stats.gwpm}</p>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 p-6 rounded-xl text-center">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">ACCURACY</p>
+                    <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 mt-2">{stats.accuracy}%</p>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 p-6 rounded-xl text-center">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">TIME TAKEN</p>
+                    <p className="text-2xl font-bold text-amber-700 dark:text-amber-400 mt-2">{stats.timeTaken} min</p>
+
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-300 mb-5 text-center">WORD SUMMARY</h3>
+                    <div className="flex justify-between text-center">
+                      <div>
+                        <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{stats.correctWords}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">CORRECT</p>
+                      </div>
+                      <div>
+                        <p className="text-3xl font-bold text-red-600 dark:text-red-400">{stats.wrongWords}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">WRONG</p>
+                      </div>
+                      <div>
+                        <p className="text-3xl font-bold text-slate-700 dark:text-slate-300">{stats.totalTypedWords}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">TOTAL</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Formula */}
+                <div className="text-sm bg-slate-50 dark:bg-slate-700/50 p-5 rounded-xl -mt-30 px-1 border border-slate-100 dark:border-slate-600 mb-2">
+                  <p><strong>NWPM:</strong> {stats.correctWords} / {stats.timeTaken} = <span className="text-blue-600 dark:text-blue-400 font-medium">{stats.nwpm}</span></p>
+                  <p><strong>GWPM:</strong> {stats.totalTypedWords} / {stats.timeTaken} = <span className="text-indigo-600 dark:text-indigo-400 font-medium">{stats.gwpm}</span></p>
+                  <p><strong>Accuracy:</strong> ({stats.nwpm} × 100) / {stats.gwpm} = <span className="text-emerald-600 dark:text-emerald-400 font-medium">{stats.accuracy}%</span></p>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={handleReset}
+                    className="flex-1 py-4 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 rounded-xl font-medium text-slate-700 dark:text-slate-300 transition"
+                  >
+                    🔄 Try Again
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleReset();
+                      setShowWelcomeModal(true);
+                    }}
+                    className="flex-1 py-4 bg-[#0F172A] dark:bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 dark:hover:bg-slate-950 transition"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#f4f8ff] via-[#c8ddff] to-[#a8c8f5] dark:from-[#0f172a] dark:via-[#1e293b] dark:to-[#0f172a] p-2 md:p-4 transition-colors duration-300">
+      {/* 90% Zoom Wrapper */}
+      <div style={{ transform: 'scale(0.9)', transformOrigin: 'top center', width: '111.11%', marginLeft: '-5.555%' }}>
+        {/* Welcome Modal */}
+        <WelcomeModal
+          isOpen={showWelcomeModal}
+          onClose={() => setShowWelcomeModal(false)}
+          onConfirm={handleModalConfirm}
+        />
+
+        <div className="max-w-7xl mx-auto">
+          {/* Main Card */}
+          <div className="bg-gray-100 dark:bg-slate-800 rounded-lg shadow-2xl overflow-hidden mt-22 border border-gray-200 dark:border-slate-700">
+
+            {/* Top Info Bar */}
+            <div className="bg-gray-200 dark:bg-slate-700 px-4 py-2 flex justify-between items-center border-b border-gray-300 dark:border-slate-600">
+              <div className="w-20"></div>
+              <div className="flex gap-6 md:gap-12 text-sm font-semibold text-gray-800 dark:text-gray-200">
+                <span>Paragraph-{paragraphDisplayNumber}</span>
+                <span>{timeLimit} Min.</span>
+                <span className="hidden md:inline">{language === 'english' ? 'English' : 'Hindi'}</span>
+              </div>
+              <div className="w-20 text-right">
+                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{formatTime(timeLeft)}</span>
+              </div>
+            </div>
+
+            {/* Toggles Bar */}
+            <div className="bg-gray-100 dark:bg-slate-800 px-4 py-3 flex flex-wrap gap-4 md:gap-6 border-b border-gray-300 dark:border-slate-600">
+              <ToggleSwitch
+                label="Backspace"
+                checked={backspaceEnabled}
+                onChange={() => setBackspaceEnabled(!backspaceEnabled)}
+                count={backspaceCount}
+              />
+              <ToggleSwitch
+                label="AutoScroll"
+                checked={autoScroll}
+                onChange={() => setAutoScroll(!autoScroll)}
+              />
+              <ToggleSwitch
+                label="Color"
+                checked={showColor}
+                onChange={() => setShowColor(!showColor)}
+              />
+              <ToggleSwitch
+                label="Highlighter"
+                checked={highlighter}
+                onChange={() => setHighlighter(!highlighter)}
+              />
+              <ToggleSwitch
+                label="Fullscreen"
+                checked={fullscreen}
+                onChange={toggleFullscreen}
+              />
+              <ToggleSwitch
+                label="Menu"
+                checked={menuOpen}
+                onChange={() => setMenuOpen(!menuOpen)}
+              />
+            </div>
+
+            {/* Menu Panel */}
+            {menuOpen && (
+              <div className="bg-gray-50 dark:bg-slate-700/50 px-4 py-3 border-b border-gray-300 dark:border-slate-600">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Time Limit</label>
+                    <select
+                      value={timeLimit}
+                      onChange={(e) => {
+                        const t = Number(e.target.value);
+                        setTimeLimit(t);
+                        setTimeLeft(t * 60);
+                      }}
+                      className="w-full px-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      disabled={testState !== 'idle'}
+                    >
+                      <option value={5}>5 Minutes ({WORD_COUNTS[5]} words)</option>
+                      <option value={10}>10 Minutes ({WORD_COUNTS[10]} words)</option>
+                      <option value={15}>15 Minutes ({WORD_COUNTS[15]} words)</option>
+                      <option value={20}>20 Minutes ({WORD_COUNTS[20]} words)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Language</label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => { setLanguage('english'); }}
+                        className={`flex-1 py-1.5 rounded text-sm font-semibold transition ${language === 'english' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-500'}`}
+                        disabled={testState !== 'idle'}
+                      >
+                        English
+                      </button>
+                      <button
+                        onClick={() => { setLanguage('hindi'); }}
+                        className={`flex-1 py-1.5 rounded text-sm font-semibold transition ${language === 'hindi' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-500'}`}
+                        disabled={testState !== 'idle'}
+                      >
+                        Hindi
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Font Size</label>
+                    <div className="flex gap-2">
+                      <button onClick={() => setFontSize(Math.max(12, fontSize - 2))} className="px-3 py-1 bg-gray-200 dark:bg-slate-600 rounded hover:bg-gray-300 dark:hover:bg-slate-500 text-sm dark:text-gray-200">A-</button>
+                      <span className="px-3 py-1 bg-white dark:bg-slate-800 border dark:border-slate-600 rounded text-sm dark:text-gray-200">{fontSize}px</span>
+                      <button onClick={() => setFontSize(Math.min(32, fontSize + 2))} className="px-3 py-1 bg-gray-200 dark:bg-slate-600 rounded hover:bg-gray-300 dark:hover:bg-slate-500 text-sm dark:text-gray-200">A+</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Paragraph Display */}
+            <div className="px-4 py-4">
+              <div
+                ref={textDisplayRef}
+                className="bg-white dark:bg-slate-900 border border-gray-400 dark:border-slate-600 rounded p-4 h-40 overflow-y-auto"
+                style={{ fontSize: `${fontSize}px` }}
+              >
+                <p className={`leading-relaxed ${language === 'hindi' ? 'font-sans' : ''}`}>
+                  {renderParagraph()}
+                </p>
+              </div>
+            </div>
+
+            {/* Stats Bar */}
+            <div className="px-2 pb-2">
+              <div className="bg-blue-100 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded py-2 px-4 flex justify-center gap-8 md:gap-16">
+                <span className="text-green-600 dark:text-green-400 font-bold text-lg">K: {liveCorrect}</span>
+                <span className="text-red-600 dark:text-red-400 font-bold text-lg">K: {liveWrong}</span>
+                <span className="text-green-600 dark:text-green-400 font-bold text-lg">W: {liveTotal}</span>
+                <span className="text-red-600 dark:text-red-400 font-bold text-lg">W: {liveNwpm}</span>
+              </div>
+            </div>
+
+            {/* Input Area */}
+            <div className="px-4 py-2">
+              <textarea
+                ref={inputRef}
+                value={userInput}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                disabled={testState !== 'running'}
+                placeholder={
+                  testState === 'idle'
+                    ? 'Click Start to begin typing...'
+                    : testState === 'paused'
+                      ? 'Test Paused - Click Resume to continue'
+                      : 'Start typing here...'
+                }
+                className={`w-full h-32 md:h-40 p-4 border-2 border-gray-400 dark:border-slate-600 rounded resize-none focus:outline-none focus:border-blue-500 text-base ${language === 'hindi' ? 'font-sans' : ''} ${testState !== 'running' ? 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400' : 'bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100'}`}
+                style={{ fontSize: `${fontSize}px` }}
+                spellCheck={false}
+              />
+            </div>
+
+            {/* Bottom Controls */}
+            <div className="px-4 py-4 bg-gray-100 dark:bg-slate-800 border-t border-gray-300 dark:border-slate-600 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex gap-2">
+                {testState === 'idle' && (
+                  <button
+                    onClick={handleStart}
+                    className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-semibold transition flex items-center gap-2"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                    Start
+                  </button>
+                )}
+                {testState === 'running' && (
+                  <button
+                    onClick={handlePause}
+                    className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-semibold transition flex items-center gap-2"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+                    Pause
+                  </button>
+                )}
+                {testState === 'paused' && (
+                  <button
+                    onClick={handleResume}
+                    className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-semibold transition flex items-center gap-2"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                    Resume
+                  </button>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setFontSize(Math.min(32, fontSize + 2))}
+                  className="p-2 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 rounded border border-gray-300 dark:border-slate-600"
+                  title="Zoom In"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" /></svg>
+                </button>
+                <button
+                  onClick={() => setFontSize(Math.max(12, fontSize - 2))}
+                  className="p-2 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 rounded border border-gray-300 dark:border-slate-600"
+                  title="Zoom Out"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg>
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded font-semibold transition flex items-center gap-2"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+                  Reset
+                </button>
+              </div>
+
+              <button
+                onClick={() => handleTestComplete(false)}
+                disabled={testState === 'idle'}
+                className="px-8 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-slate-600 text-white rounded font-semibold transition flex items-center gap-2"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                Submit
+              </button>
+            </div>
+          </div>
+
+          {/* Footer Info */}
+          <div className="mt-4 text-center text-gray-400 dark:text-gray-500 text-sm">
+            <p>CPCT Typing Test | {language === 'english' ? 'Min 30 NWPM to Pass' : 'Min 20 NWPM to Pass'} | Backspace Allowed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
