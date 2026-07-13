@@ -401,7 +401,7 @@ function HeroSection() {
 
             {/* Book stack (bottom-right) */}
             <div className="absolute -bottom-17 -right-2 flex flex-col items-center gap-[2px]">
-              <span className="text-lg leading-none select-none ">
+              <span id="takeone" className="text-lg leading-none select-none ">
                 <img style={{
                   mixBlendMode: isDark ? "darken" : "multiply",
                   userSelect: "none",
@@ -660,8 +660,8 @@ export default function CpctExamsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-22 mb-8">
+    <div  className="min-h-screen bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-gray-100">
+      <div  className="max-w-7xl mx-auto px-4 sm:px-6 -mt-22 mb-8">
         {/* Hero */}
         <HeroSection />
         <div className="flex gap-6">
@@ -687,7 +687,7 @@ export default function CpctExamsPage() {
               <div className="space-y-6 ">
                 {grouped.map(({ year, months }) => (
                   <section key={year}>
-                    <div className="flex items-center gap-2 mb-3 ">
+                    <div  className="flex items-center gap-2 mb-3 ">
                       <div className="h-px flex-1 bg-gradient-to-r from-blue-200 dark:from-blue-900 to-transparent" />
                       <h3 className="text-[13px] font-extrabold text-slate-700 dark:text-gray-300 tracking-wide px-1">
                         CPCT Exam {year}
