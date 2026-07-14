@@ -27,10 +27,7 @@ interface TestStats {
   passed: boolean;
   passThreshold: number;
 }
-
-// ─────────────────────────────────────────────────────────────
-// PARAGRAPHS DATA
-// ─────────────────────────────────────────────────────────────
+ 
 const PARAGRAPHS: ParagraphData = {
   english: {
     5: `The history of computers is a fascinating journey that spans thousands of years, beginning with simple mechanical tools and evolving into the sophisticated digital devices we rely on today. This story is not just about the machines themselves but also about the visionaries and inventors who imagined new possibilities and transformed those ideas into reality. Early civilizations created tools like the abacus to assist with mathematical calculations. The abacus consisted of beads sliding on rods within a wooden frame and allowed users to perform arithmetic operations efficiently. As societies advanced, the need for more complex calculation tools became apparent. In the nineteenth century, Charles Babbage designed the Difference Engine and Analytical Engine, which are considered the first mechanical computers. Although these machines were never fully built during his lifetime, they laid the groundwork for modern computing concepts. Ada Lovelace worked with Babbage and is often regarded as the first computer programmer for her work on the Analytical Engine. She envisioned that computers could do more than just calculate numbers. The twentieth century brought revolutionary changes with the invention of electronic computers. During World War Two, computers were developed to decode enemy messages and calculate ballistic trajectories. These early electronic computers used vacuum tubes and occupied entire rooms. The invention of the transistor in the late nineteen forties marked a turning point, enabling smaller and more reliable computers. Integrated circuits further miniaturized computer components, leading to the microprocessor revolution. Today, computers are everywhere, from smartphones to supercomputers, and they continue to shape every aspect of modern life. The internet has connected billions of people worldwide, enabling instant communication and access to vast amounts of information. Digital technology has transformed education, healthcare, business, and entertainment in profound ways.`,
@@ -458,19 +455,35 @@ export default function TypingTest() {
       return <span className="text-gray-800 dark:text-gray-200">{currentParagraph}</span>;
     }
 
+    // Are we actively mid-word (haven't finished it with a trailing space)?
+    const isMidWord = userInput.length > 0 && !userInput.endsWith(' ');
+    // Index of the word currently being typed / about to be typed
+    const currentWordIdx = isMidWord ? userWords.length - 1 : userWords.length;
+
     return displayWords.map((word, idx) => {
       let className = 'text-gray-400 dark:text-gray-500';
       let bgClass = '';
 
-      if (idx < userWords.length) {
+      const isCompleted = idx < userWords.length && (idx < currentWordIdx || !isMidWord);
+
+      if (isCompleted) {
         if (userWords[idx] === word) {
           className = 'text-green-600 dark:text-green-400 font-medium';
         } else {
           className = 'text-red-600 dark:text-red-400 font-medium';
         }
-      } else if (idx === userWords.length && highlighter && testState === 'running') {
+      }
+
+      if (highlighter && testState === 'running' && idx === currentWordIdx) {
         bgClass = 'bg-yellow-200 dark:bg-yellow-600/30';
-        className = 'text-gray-800 dark:text-gray-200 font-medium';
+        if (isMidWord) {
+          const typedSoFar = userWords[currentWordIdx] ?? '';
+          className = word.startsWith(typedSoFar)
+            ? 'text-gray-800 dark:text-gray-200 font-medium'
+            : 'text-red-600 dark:text-red-400 font-medium';
+        } else {
+          className = 'text-gray-800 dark:text-gray-200 font-medium';
+        }
       }
 
       return (
@@ -480,7 +493,7 @@ export default function TypingTest() {
         </span>
       );
     });
-  }, [showColor, currentParagraph, displayWords, userWords, highlighter, testState]);
+  }, [showColor, currentParagraph, displayWords, userWords, highlighter, userInput, testState]);
 
   // ═════════════════════════════════════════════════════════════
   // RESULTS SCREEN
