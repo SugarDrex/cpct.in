@@ -1313,9 +1313,20 @@ export default function ProfessionalExamDashboard() {
     try {
       setLoading(true);
       setError("");
+      // FIX: explicitly generate the primary key here since the "exams" table's
+      // "id" column has no DB-level default (gen_random_uuid()) configured yet.
+      // Without this, Postgres was receiving NULL for "id" and throwing:
+      //   null value in column "id" of relation "exams" violates not-null constraint
       const { data: examData, error: err1 } = await supabase
         .from("exams")
-        .insert([{ exam_title: examTitle, exam_code: examCode, topic, total_questions: uploadQuestions.length, raw_json: uploadQuestions }])
+        .insert([{
+          id: crypto.randomUUID(),
+          exam_title: examTitle,
+          exam_code: examCode,
+          topic,
+          total_questions: uploadQuestions.length,
+          raw_json: uploadQuestions,
+        }])
         .select()
         .single();
 
