@@ -41,8 +41,7 @@ export default function robots(): MetadataRoute.Robots {
           "/*?*utm_",
           "/*?*session=",
         ],
-        crawlDelay: 1,
-        requestRate: "30/1m",
+        crawlDelay: 1     
       },
 
       // ═══════════════════════════════════════════════════════════════════
@@ -53,18 +52,15 @@ export default function robots(): MetadataRoute.Robots {
         allow: ["/"],
         disallow: ["/admin", "/api", "/login", "/_not-found"],
         crawlDelay: 0,
-        requestRate: "100/1m",
+        
       },
-
-      // ═══════════════════════════════════════════════════════════════════
-      // ══════════════ BING BOT ═══════════════════════════════════════════
-      // ═══════════════════════════════════════════════════════════════════
+ 
       {
         userAgent: "Bingbot",
         allow: ["/"],
         disallow: ["/admin", "/api", "/login", "/_not-found"],
         crawlDelay: 1,
-        requestRate: "30/1m",
+        
       },
 
       // ═══════════════════════════════════════════════════════════════════
@@ -75,7 +71,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: ["/"],
         disallow: ["/admin", "/api", "/login", "/_not-found"],
         crawlDelay: 2,
-        requestRate: "20/1m",
+   
       },
 
       // ═══════════════════════════════════════════════════════════════════
