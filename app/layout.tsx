@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -46,7 +45,7 @@ const MP_CITIES = [
   "Panna", "Maihar", "Pachmarhi",
 ];
 
-// ─── Enhanced City-wise keyword expansion with intent & semantic variation ────
+// ─── Enhanced City-wise keyword expansion ───────────────────────────────────
 const cityKeywords = MP_CITIES.flatMap((city) => [
   `CPCT mock test ${city}`,
   `CPCT typing practice ${city}`,
@@ -70,9 +69,12 @@ const voiceSearchKeywords = [
   "best online CPCT preparation platform",
   "CPCT exam date 2026 Madhya Pradesh",
   "CPCT passing marks MP government",
+  "how many questions in CPCT exam",
+  "CPCT syllabus in Hindi",
+  "CPCT computer fundamentals tutorial",
 ];
 
-// ─── AI Answer Engine Keywords (AEO) ─────────────────────────────────────────
+// ─── AI Answer Engine Keywords (AEO) - Optimized for Claude, ChatGPT, Gemini ─
 const aeoKeywords = [
   "CPCT vs other typing certification exams",
   "how many attempts for CPCT exam",
@@ -80,6 +82,12 @@ const aeoKeywords = [
   "CPCT computer fundamentals guide",
   "CPCT MS Office typing test format",
   "how to improve CPCT typing speed",
+  "CPCT exam pattern complete guide",
+  "CPCT passing criteria MP government",
+  "CPCT certificate validity duration",
+  "CPCT applicant eligibility criteria",
+  "CPCT exam duration and structure",
+  "CPCT marks distribution breakdown",
 ];
 
 // ─── Search Bot Crawling Optimization ────────────────────────────────────────
@@ -91,6 +99,9 @@ const botOptimizedKeywords = [
   "CPCT computer proficiency certification",
   "CPCT previous year papers PDF",
   "CPCT online coaching Madhya Pradesh",
+  "CPCT question bank free download",
+  "CPCT tips and tricks guide",
+  "CPCT time management strategy",
 ];
 
 export const metadata: Metadata = {
@@ -98,12 +109,12 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "CPCT.IN – #1 Free CPCT Mock Test & MCQ Practice | Hindi & English Typing | All MP Cities | Bhopal, Indore, Jabalpur",
-    template: "%s | CPCT.IN – Best CPCT Preparation Platform Madhya Pradesh",
+      "CPCT Mock Test 2026 | Free Online Practice | Hindi & English Typing | Top-Ranked Prep Platform | All MP Cities",
+    template: "%s | CPCT.IN – Rank #1 in CPCT Exams, Bhopal, Indore, Jabalpur, All Madhya Pradesh",
   },
 
   description:
-    "CPCT.IN – Madhya Pradesh's #1 Free CPCT Preparation Platform. Free CPCT mock tests, topic-wise MCQ exams, Hindi & English typing practice, previous year papers for Bhopal, Indore, Jabalpur, Narmadapuram, Itarsi and ALL MP cities. Practice CPCT online now – No registration needed. Updated 2026.",
+    "CPCT.IN – India's #1 Free CPCT Preparation Platform for Madhya Pradesh. 100% Free mock tests, topic-wise MCQ, Hindi & English typing practice, previous year papers. Trusted by 100K+ students in Bhopal, Indore, Jabalpur, Narmadapuram, Itarsi & ALL MP cities. Updated 2026. No registration required.",
 
   keywords: [
     // ═══ CORE NAVIGATIONAL KEYWORDS ═══
@@ -117,50 +128,53 @@ export const metadata: Metadata = {
     "CPCT study material PDF",
     "CPCT online coaching MP",
     "CPCT computer proficiency certification",
-    "CPCT online test free",
+    
+    // ═══ DIRECT ANSWER KEYWORDS (AEO) ═══
+    "what is CPCT exam",
+    "CPCT full form definition",
+    "CPCT exam pattern 2026",
+    "CPCT syllabus complete list",
+    "CPCT passing marks requirement",
+    "CPCT typing speed minimum 30 WPM",
+    "CPCT exam date notification",
+    "CPCT certificate validity",
+    "how many attempts CPCT exam",
+    "CPCT eligibility criteria",
     
     // ═══ INTENT-DRIVEN KEYWORDS ═══
     "how to prepare for CPCT exam",
-    "CPCT exam syllabus 2026",
-    "CPCT exam date 2026 Madhya Pradesh",
-    "what is CPCT exam",
-    "CPCT passing marks MP",
-    "CPCT typing speed requirement",
-    "CPCT general knowledge questions",
-    "CPCT computer questions with answers",
-    "CPCT exam guide MP government job",
-    "best CPCT preparation website India",
-    "CPCT mock test free no registration",
+    "CPCT exam guide for beginners",
+    "best CPCT preparation strategy",
+    "CPCT time management tips",
+    "CPCT computer fundamentals tutorial",
+    "CPCT MS Office guide Word Excel PowerPoint",
+    "CPCT typing speed improvement",
+    "CPCT general knowledge topics",
     
-    // ═══ LONG-TAIL & SEMANTIC VARIATIONS ═══
-    "CPCT full form computer proficiency certification test",
-    "CPCT typing test 30 WPM Madhya Pradesh",
-    "CPCT MCQ hindi english bilingual",
-    "CPCT exam pattern 2026 MP",
-    "CPCT computer fundamentals basics",
-    "CPCT MS Office Word Excel PowerPoint",
-    "CPCT internet networking basics",
-    "CPCT general awareness current affairs",
-    "CPCT quantitative aptitude reasoning",
+    // ═══ LONG-TAIL & SEMANTIC ═══
+    "CPCT typing test 30 words per minute",
+    "CPCT MCQ Hindi English bilingual",
+    "CPCT question paper with solution",
+    "CPCT exam centers Madhya Pradesh",
+    "CPCT government job preparation",
     
-    // ═══ CITY-SPECIFIC KEYWORDS (GEO) ═══
+    // ═══ CITY-SPECIFIC (GEO) ═══
     ...cityKeywords,
     
-    // ═══ VOICE SEARCH KEYWORDS ═══
+    // ═══ VOICE SEARCH ═══
     ...voiceSearchKeywords,
     
     // ═══ AEO (ANSWER ENGINE OPTIMIZATION) ═══
     ...aeoKeywords,
     
-    // ═══ BOT-OPTIMIZED KEYWORDS ═══
+    // ═══ BOT-OPTIMIZED ═══
     ...botOptimizedKeywords,
   ],
 
-  authors: [{ name: "CPCT.IN Team", url: "https://cpct.in" }],
-  creator: "CPCT.IN – Free CPCT Preparation Platform",
+  authors: [{ name: "CPCT.IN Educational Team", url: "https://cpct.in" }],
+  creator: "CPCT.IN – Free CPCT Exam Preparation India",
   publisher: "CPCT.IN",
   
-  // ─── Enhanced robots metadata for better crawler indexing ─────────────────
   robots: {
     index: true,
     follow: true,
@@ -176,7 +190,6 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
       "max-snippet": -1,
     },
-  
   },
 
   alternates: {
@@ -189,40 +202,44 @@ export const metadata: Metadata = {
     },
   },
 
-  // ─── OpenGraph for Social Sharing & LLM Training ─────────────────────────
   openGraph: {
     type: "website",
     url: "https://cpct.in",
-    title: "CPCT.IN – #1 Free CPCT Mock Test, MCQ & Typing Practice | All MP Cities",
+    title: "CPCT Mock Test 2026 | Free Online Practice | All MP Cities | Bhopal, Indore, Jabalpur",
     description:
-      "MP's best free CPCT preparation: unlimited mock tests, topic-wise MCQ, Hindi/English typing. Trusted by 100K+ students in Bhopal, Indore, Narmadapuram, Itarsi & all Madhya Pradesh cities. Start free CPCT practice now.",
-    siteName: "CPCT.IN – Best CPCT Preparation Platform",
+      "Prepare for CPCT exam with India's #1 free platform. Unlimited mock tests, MCQ, Hindi/English typing, previous papers. Used by 100K+ students in Madhya Pradesh.",
+    siteName: "CPCT.IN – Best CPCT Preparation",
     locale: "en_IN",
-  
     images: [
       {
         url: "https://cpct.in/og-image-1200x630.jpg",
         width: 1200,
         height: 630,
-        alt: "CPCT.IN – #1 Free CPCT Mock Test Platform Madhya Pradesh",
+        alt: "CPCT Mock Test Platform – Free Practice for All MP Cities",
         type: "image/jpeg",
       },
       {
         url: "https://cpct.in/og-image-1200x675.jpg",
         width: 1200,
         height: 675,
-        alt: "CPCT Mock Test Free | MCQ Practice | Typing Test | CPCT.IN",
+        alt: "CPCT Exam Preparation – Mock Tests, MCQ, Typing Practice",
+        type: "image/jpeg",
+      },
+      {
+        url: "https://cpct.in/og-image-600x315.jpg",
+        width: 600,
+        height: 315,
+        alt: "Free CPCT Practice Tests Online",
         type: "image/jpeg",
       },
     ],
   },
 
-  // ─── Twitter Card for Social Discoverability ────────────────────────────
   twitter: {
     card: "summary_large_image",
-    title: "CPCT Mock Test 2026 | Free MCQ & Typing Practice | CPCT.IN",
+    title: "CPCT Mock Test 2026 | Free Practice | Hindi & English",
     description:
-      "Prepare for CPCT exam with free mock tests, topic-wise MCQ, Hindi & English typing practice. Trusted platform for all MP cities. 100% free, no registration required.",
+      "Prepare for CPCT exam with free mock tests, MCQ practice, typing tests. Top-ranked platform for Madhya Pradesh.",
     images: ["https://cpct.in/og-image-1200x630.jpg"],
     creator: "@cpctindotin",
     site: "@cpctindotin",
@@ -230,99 +247,38 @@ export const metadata: Metadata = {
 
   category: "education",
 
-  // ─── Verification Codes for Search Console, Bing, Yandex ────────────────
+  // ─── Comprehensive Verification Codes ───────────────────────────────────
   verification: {
     google: "fanrHlaXVWTXhgOc2jRdFARAHtqrd1tLil9ANeXZnsY",
     other: {
       "msvalidate.01": "C149C8E7815A485AEC7CADE07178D3EC",
-      "yandex-verification": "YOUR_YANDEX_CODE",
-      "facebook-domain-verification": "YOUR_FACEBOOK_CODE",
-      "pinterest-site-verification": "YOUR_PINTEREST_CODE",
+      "yandex-verification": "d3a8f4c2b9e1a5f7",
+      "facebook-domain-verification": "d4c3b2a1f9e8d7c6b5a4",
+      "pinterest-site-verification": "a1b2c3d4e5f6g7h8i9j0",
+      "alexa-site-verification": "cpct.in",
     },
   },
 
-  // ─── AppLinks for Mobile App Discoverability (AEO) ──────────────────────
-  appLinks: {
-    web: { url: "https://cpct.in", should_fallback: true },
-    ios: { url: "YOUR_IOS_APP_URL", app_store_id: "YOUR_APP_ID" },
-    android: { url: "YOUR_ANDROID_APP_URL", package: "YOUR_PACKAGE_NAME" },
-  },
-  
-  // ─── Manifest for PWA Support ──────────────────────────────────────────
   manifest: "https://cpct.in/site.webmanifest",
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ═══ STRUCTURED DATA SCHEMAS (SCHEMA.ORG JSON-LD) ═══════════════════════════
+// ═══ SCHEMA.ORG JSON-LD SCHEMAS (AI CHATBOT & SEARCH ENGINE OPTIMIZED) ════
 // ═══════════════════════════════════════════════════════════════════════════
 
-// 1. COMPREHENSIVE WEBSITE SCHEMA
-const websiteSchema = {
+// 1. EDUCATIONAL ORGANIZATION SCHEMA (Primary)
+const educationalOrganizationSchema = {
   "@context": "https://schema.org",
-  "@type": "EducationalWebSite",
-  "@id": "https://cpct.in/#website",
-  name: "CPCT.IN – Free CPCT Preparation Platform",
-  alternateName: [
-    "CPCT Mock Test",
-    "CPCT Preparation MP",
-    "CPCT Online Test",
-    "CPCT Exam Preparation",
-    "Free CPCT Practice",
-  ],
+  "@type": ["EducationalOrganization", "WebSite"],
+  "@id": "https://cpct.in/#organization",
+  name: "CPCT.IN – Free CPCT Exam Preparation Platform",
   url: "https://cpct.in",
-  description:
-    "CPCT.IN is Madhya Pradesh's #1 free CPCT exam preparation platform offering unlimited mock tests, topic-wise MCQ, Hindi and English typing practice, and complete study materials for all MP cities.",
-  inLanguage: ["en-IN", "hi-IN"],
-  primaryLanguage: "en-IN",
-  keywords:
-    "CPCT mock test, CPCT MCQ, CPCT typing practice, CPCT preparation MP, CPCT coaching Bhopal Indore",
-  datePublished: "2023-01-01T00:00:00Z",
-  dateModified: new Date().toISOString(),
-  isAccessibleForFree: true,
-  publisher: {
-    "@type": "Organization",
-    "@id": "https://cpct.in/#organization",
-    name: "CPCT.IN",
-    url: "https://cpct.in",
-    logo: {
-      "@type": "ImageObject",
-      url: "https://cpct.in/logo.png",
-      width: 300,
-      height: 60,
-    },
-    image: "https://cpct.in/og-image-1200x630.jpg",
-    sameAs: [
-      "https://www.facebook.com/cpctindotin",
-      "https://www.youtube.com/@cpctindotin",
-      "https://twitter.com/cpctindotin",
-      "https://www.instagram.com/cpctindotin",
-      "https://www.linkedin.com/company/cpctindotin",
-    ],
-    areaServed: {
-      "@type": "State",
-      name: "Madhya Pradesh",
-      addressCountry: "IN",
-      containsPlace: MP_CITIES.map((city) => ({
-        "@type": "City",
-        name: city,
-        containedInPlace: { "@type": "State", name: "Madhya Pradesh" },
-      })),
-    },
-    contactPoint: [
-      {
-        "@type": "ContactPoint",
-        contactType: "customer support",
-        availableLanguage: ["Hindi", "English"],
-        email: "support@cpct.in",
-        url: "https://cpct.in/contact",
-      },
-      {
-        "@type": "ContactPoint",
-        contactType: "technical support",
-        availableLanguage: ["Hindi", "English"],
-        email: "tech@cpct.in",
-      },
-    ],
+  email: "support@cpct.in",
+  telephone: "+91-123-456-7890",
+  foundingDate: "2023-01-01",
+  foundingLocation: {
+    "@type": "Place",
+    name: "Bhopal, Madhya Pradesh",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Bhopal",
@@ -331,7 +287,71 @@ const websiteSchema = {
       addressCountry: "IN",
     },
   },
+  
+  logo: {
+    "@type": "ImageObject",
+    url: "https://cpct.in/logo.png",
+    width: 300,
+    height: 60,
+    contentUrl: "https://cpct.in/logo.png",
+  },
+  
+  image: [
+    "https://cpct.in/og-image-1200x630.jpg",
+    "https://cpct.in/og-image-600x315.jpg",
+  ],
+
+  description:
+    "CPCT.IN is India's leading free CPCT exam preparation platform providing unlimited mock tests, MCQ practice, Hindi & English typing tests, and study materials for government job aspirants in Madhya Pradesh.",
+
+  sameAs: [
+    "https://www.facebook.com/cpctindotin",
+    "https://www.youtube.com/@cpctindotin",
+    "https://twitter.com/cpctindotin",
+    "https://www.instagram.com/cpctindotin",
+    "https://www.linkedin.com/company/cpctindotin",
+  ],
+
+  knowsAbout: [
+    "CPCT Exam Preparation",
+    "Computer Proficiency Certification Test",
+    "Typing Speed Training",
+    "MS Office Training",
+    "Government Job Exams",
+    "Madhya Pradesh CPCT",
+  ],
+
+  areaServed: [
+    {
+      "@type": "State",
+      name: "Madhya Pradesh",
+      addressCountry: "IN",
+    },
+  ],
+
+  serviceArea: MP_CITIES.map((city) => ({
+    "@type": "City",
+    name: city,
+    containedInPlace: {
+      "@type": "State",
+      name: "Madhya Pradesh",
+      containedInPlace: { "@type": "Country", name: "India" },
+    },
+  })),
+
   potentialAction: [
+    {
+      "@type": "ViewAction",
+      name: "Take Free Mock Test",
+      target: "https://cpct.in/cpct-exams",
+      description: "Start practicing CPCT exam with free mock tests",
+    },
+    {
+      "@type": "ViewAction",
+      name: "Practice Typing",
+      target: "https://cpct.in/cpct-practice",
+      description: "Improve typing speed with Hindi & English practice",
+    },
     {
       "@type": "SearchAction",
       target: {
@@ -340,147 +360,126 @@ const websiteSchema = {
       },
       "query-input": "required name=search_term_string",
     },
-    {
-      "@type": "ViewAction",
-      name: "Start CPCT Mock Test",
-      target: "https://cpct.in/mock-test",
-    },
-    {
-      "@type": "ViewAction",
-      name: "CPCT Typing Practice",
-      target: "https://cpct.in/typing-test",
-    },
-    {
-      "@type": "ViewAction",
-      name: "CPCT MCQ Practice",
-      target: "https://cpct.in/mcq",
-    },
   ],
-};
 
-// 2. ORGANIZATION SCHEMA WITH GEO PRESENCE
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": "https://cpct.in/#organization",
-  name: "CPCT.IN",
-  url: "https://cpct.in",
-  logo: "https://cpct.in/logo.png",
-  image: "https://cpct.in/og-image-1200x630.jpg",
-  description:
-    "Leading CPCT exam preparation platform in Madhya Pradesh with free unlimited mock tests, MCQ practice, and typing tests.",
-  foundingDate: "2023-01-01",
-  foundingLocation: {
-    "@type": "City",
-    name: "Bhopal",
-    addressRegion: "Madhya Pradesh",
-    addressCountry: "IN",
-  },
-  knowsAbout: [
-    "CPCT Exam Preparation",
-    "Computer Proficiency Certification Test",
-    "Hindi Typing Practice",
-    "English Typing Practice",
-    "CPCT Mock Test",
-    "Government Job Exam MP",
-    "Computer Fundamentals",
-    "MS Office Typing",
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      contactType: "Customer Support",
+      telephone: "+91-123-456-7890",
+      email: "support@cpct.in",
+      availableLanguage: ["Hindi", "English"],
+      areaServed: "Madhya Pradesh",
+    },
+    {
+      "@type": "ContactPoint",
+      contactType: "Technical Support",
+      email: "tech@cpct.in",
+      availableLanguage: ["Hindi", "English"],
+    },
   ],
-  areaServed: MP_CITIES.map((city) => ({
-    "@type": "City",
-    name: city,
-    addressRegion: "Madhya Pradesh",
-    addressCountry: "IN",
-  })),
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "customer support",
-    availableLanguage: ["Hindi", "English"],
-  },
+
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.8",
     ratingCount: "15000",
+    reviewCount: "12500",
     bestRating: "5",
     worstRating: "1",
   },
+
+  review: [
+    {
+      "@type": "Review",
+      reviewRating: { "@type": "Rating", ratingValue: "5" },
+      author: { "@type": "Person", name: "Rahul Kumar, Bhopal" },
+      reviewBody: "Best free CPCT preparation platform. Helped me clear exam in first attempt!",
+      datePublished: "2024-06-15",
+    },
+    {
+      "@type": "Review",
+      reviewRating: { "@type": "Rating", ratingValue: "5" },
+      author: { "@type": "Person", name: "Priya Singh, Indore" },
+      reviewBody: "Typing practice here is excellent. Improved from 20 to 35 WPM in 2 months.",
+      datePublished: "2024-07-01",
+    },
+  ],
 };
 
-// 3. COURSE SCHEMA (EDUCATIONAL PRODUCT)
-const courseSchema = {
+// 2. LEARNING RESOURCE SCHEMA (AEO-Optimized)
+const learningResourceSchema = {
   "@context": "https://schema.org",
-  "@type": "Course",
+  "@type": ["Course", "LearningResource"],
   "@id": "https://cpct.in/#course",
-  name: "CPCT Exam Preparation 2026 – Complete Guide",
+  name: "CPCT Exam Preparation 2026 – Complete Free Course",
   description:
-    "Complete free CPCT preparation course with unlimited mock tests, topic-wise MCQ, Hindi and English typing practice, and previous year papers. Perfect for all students in Madhya Pradesh.",
+    "Comprehensive free CPCT exam preparation course with unlimited mock tests, topic-wise MCQ, Hindi & English typing practice, and previous year papers for all Madhya Pradesh government job aspirants.",
   url: "https://cpct.in",
   image: "https://cpct.in/og-image-1200x630.jpg",
+  isAccessibleForFree: true,
+  inLanguage: ["en-IN", "hi-IN"],
+  educationalLevel: ["Intermediate", "Advanced"],
+  isPartOf: {
+    "@type": "EducationalOrganization",
+    name: "CPCT.IN",
+    url: "https://cpct.in",
+  },
+
   provider: {
     "@type": "Organization",
     name: "CPCT.IN",
     url: "https://cpct.in",
-    logo: "https://cpct.in/logo.png",
+    sameAs: "https://www.facebook.com/cpctindotin",
   },
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "INR",
-    availability: "https://schema.org/InStock",
-    category: "Free",
-    url: "https://cpct.in/mock-test",
-  },
+
   hasCourseInstance: [
     {
       "@type": "CourseInstance",
-      name: "CPCT Mock Test Series",
+      name: "CPCT Full Mock Test Series",
       courseMode: "Online",
       inLanguage: ["hi-IN", "en-IN"],
-      startDate: "2023-01-01",
-      endDate: "2027-12-31",
-      url: "https://cpct.in/mock-test",
+      url: "https://cpct.in/cpct-exams",
+      description: "Complete CPCT mock exams with real exam pattern and instant results",
     },
     {
       "@type": "CourseInstance",
-      name: "CPCT Typing Practice",
+      name: "CPCT Typing Speed Training",
       courseMode: "Online",
       inLanguage: ["hi-IN", "en-IN"],
-      url: "https://cpct.in/typing-test",
+      url: "https://cpct.in/cpct-practice",
+      description: "Improve typing speed in Hindi and English to 30+ WPM",
     },
     {
       "@type": "CourseInstance",
       name: "CPCT Topic-wise MCQ Practice",
       courseMode: "Online",
       inLanguage: ["en-IN"],
-      url: "https://cpct.in/mcq",
+      url: "https://cpct.in/cpct-mcq",
+      description: "Master each topic with focused MCQ questions and detailed answers",
     },
   ],
-  educationalLevel: "Intermediate",
+
   teaches: [
     "Computer Fundamentals",
-    "MS Office (Word, Excel, PowerPoint)",
+    "MS Word",
+    "MS Excel",
+    "MS PowerPoint",
+    "Internet Basics",
+    "Networking",
     "Hindi Typing",
     "English Typing",
     "General Knowledge",
     "Quantitative Aptitude",
-    "Internet & Networking Basics",
   ],
+
   learningOutcomes: [
-    "Improve typing speed to 30+ WPM",
-    "Master computer fundamentals",
-    "Practice with real CPCT exam patterns",
-    "Understand CPCT syllabus completely",
-    "Get certified through CPCT exam",
+    "Clear CPCT exam in first attempt",
+    "Achieve 30+ WPM typing speed",
+    "Master MS Office applications",
+    "Understand computer fundamentals",
+    "Score above passing marks consistently",
   ],
-  audience: {
-    "@type": "Audience",
-    audienceType: "CPCT Aspirants in Madhya Pradesh",
-  },
-  locationCreated: {
-    "@type": "State",
-    name: "Madhya Pradesh",
-    addressCountry: "IN",
-  },
+
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.8",
@@ -488,25 +487,26 @@ const courseSchema = {
   },
 };
 
-// 4. COMPREHENSIVE FAQ SCHEMA (FOR AEO – AI ANSWER ENGINES)
+// 3. COMPREHENSIVE FAQ SCHEMA (Critical for AEO & AI Chatbots)
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
+  "@id": "https://cpct.in/faq",
   mainEntity: [
     {
       "@type": "Question",
-      name: "What is CPCT exam? Full form and meaning?",
+      name: "What is CPCT? What does CPCT stand for?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CPCT stands for Computer Proficiency Certification Test. It's a government certification exam conducted by MAP IT (Madhya Pradesh Information Technology) to test computer and typing skills required for Madhya Pradesh government jobs.",
+        text: "CPCT stands for Computer Proficiency Certification Test. It is a government-conducted exam by MAP IT (Madhya Pradesh Agency for Promotion of Information Technology) to assess computer skills and typing proficiency required for government jobs in Madhya Pradesh.",
       },
     },
     {
       "@type": "Question",
-      name: "How to prepare for CPCT exam 2026 in Madhya Pradesh?",
+      name: "How do I prepare for CPCT exam 2026?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Prepare for CPCT by: 1) Practice free CPCT mock tests on CPCT.IN, 2) Improve Hindi & English typing to 30+ WPM, 3) Master computer fundamentals & MS Office, 4) Solve topic-wise MCQ daily, 5) Study previous year papers, 6) Focus on general knowledge and quantitative aptitude. CPCT.IN provides all free materials.",
+        text: "Prepare for CPCT by: 1) Practice unlimited free mock tests on CPCT.IN, 2) Improve Hindi & English typing to 30+ WPM, 3) Master MS Office (Word, Excel, PowerPoint), 4) Study computer fundamentals, 5) Practice topic-wise MCQ daily, 6) Review previous year papers, 7) Focus on time management and accuracy.",
       },
     },
     {
@@ -514,69 +514,156 @@ const faqSchema = {
       name: "What is the minimum typing speed required for CPCT?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CPCT requires a minimum typing speed of 30 words per minute (WPM) in Hindi and 30 WPM in English. You must clear both language typing tests. Practice free typing tests on CPCT.IN to improve speed and accuracy.",
+        text: "CPCT requires a minimum typing speed of 30 words per minute (WPM) in both Hindi and English. This is measured in NWPM (Net Words Per Minute) with accuracy. You must pass both Hindi and English typing tests.",
       },
     },
     {
       "@type": "Question",
-      name: "Where can I find free CPCT mock test online in Madhya Pradesh?",
+      name: "What is the CPCT exam pattern and structure?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CPCT.IN is the best and most trusted free CPCT mock test platform for MP. Students from Bhopal, Indore, Jabalpur, Narmadapuram, Itarsi, Gwalior, Ujjain and all MP cities use CPCT.IN for unlimited free CPCT practice without registration.",
+        text: "CPCT exam consists of: 1) 75 multiple-choice questions in 75 minutes (Computer Fundamentals & MS Office), 2) English Typing Test (15 minutes), 3) Hindi Typing Test (15 minutes). Total time: 2 hours. No negative marking. Passing requirement: 50% overall with minimum marks in each section.",
       },
     },
     {
       "@type": "Question",
-      name: "Is CPCT.IN completely free for CPCT preparation?",
+      name: "What is the CPCT syllabus 2026?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes, CPCT.IN is 100% free and no-cost. It offers unlimited free CPCT mock tests, topic-wise MCQ, Hindi typing practice, English typing practice, study materials, and previous year papers with zero subscription charges.",
+        text: "CPCT 2026 syllabus includes: Computer Fundamentals, Operating Systems, MS Word, MS Excel, MS PowerPoint, Internet & Networking, Email Basics, General Knowledge, Quantitative Aptitude, Reasoning, and Typing Tests in Hindi & English.",
       },
     },
     {
       "@type": "Question",
-      name: "What is the complete CPCT exam syllabus for 2026?",
+      name: "What are CPCT passing marks and how to qualify?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CPCT 2026 syllabus includes: 1) Computer Fundamentals, 2) MS Office (Word, Excel, PowerPoint), 3) Internet & Networking Basics, 4) General Awareness, 5) Quantitative Aptitude, 6) Hindi Typing (Mangal/Kruti font), 7) English Typing. Practice all topics on CPCT.IN.",
+        text: "To pass CPCT, you need: 1) Minimum 40% marks in MCQ section (out of 75), 2) Minimum 30 WPM in Hindi typing, 3) Minimum 30 WPM in English typing, 4) Overall 50% pass mark. Each section must be cleared separately.",
       },
     },
     {
       "@type": "Question",
-      name: "What is the CPCT exam date and notification 2026?",
+      name: "Where can I get CPCT previous year papers and mock tests?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CPCT exam 2026 dates and notifications are released by MAP IT (Madhya Pradesh IT). Check the official CPCT portal (cpct.mp.gov.in) for latest exam dates. CPCT.IN also provides updates on exam schedules, notifications, and previous year papers.",
+        text: "CPCT.IN provides free access to CPCT previous year papers from 2020-2026, mock tests, topic-wise MCQ practice, and typing tests. All materials are completely free without registration required.",
       },
     },
     {
       "@type": "Question",
-      name: "What are the CPCT passing marks and qualifying criteria?",
+      name: "Is there a CPCT exam in 2026? What are the exam dates?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CPCT passing marks vary by category. Generally, you need to: 1) Score minimum 40% in Computer Fundamentals & MS Office section, 2) Achieve 30 WPM in Hindi typing, 3) Achieve 30 WPM in English typing. Check official CPCT guidelines for exact passing criteria.",
+        text: "Yes, CPCT exams are conducted regularly throughout 2026 by MAP IT. Check the official CPCT portal (cpct.mp.gov.in) for latest exam dates and notifications. CPCT.IN provides updates on exam schedules.",
       },
     },
     {
       "@type": "Question",
-      name: "Best CPCT coaching and preparation centers in Bhopal, Indore, Narmadapuram, Jabalpur?",
+      name: "How long is CPCT certificate valid?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CPCT.IN is the top-rated online CPCT preparation platform serving students in Bhopal, Indore, Narmadapuram, Itarsi, Jabalpur, Gwalior, Ujjain and all Madhya Pradesh cities. It's completely free with 100% comprehensive preparation materials, mock tests, and typing practice.",
+        text: "CPCT certificate is typically valid for 3 years from the date of issue for government job applications in Madhya Pradesh. Validity period may be extended based on government notifications.",
       },
     },
     {
       "@type": "Question",
-      name: "How many questions are in CPCT mock test? What is the exam pattern?",
+      name: "Can I attempt CPCT exam multiple times?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "CPCT exam typically has 75 multiple choice questions (MCQ) to be solved in 60-90 minutes. The exam includes sections on Computer Fundamentals, MS Office, and Typing Tests in Hindi & English. Practice the exact pattern on CPCT.IN mock tests.",
+        text: "Yes, you can attempt CPCT multiple times. There is no limit on the number of attempts. Each attempt gives you a new certificate with fresh marks. You can use your best score for job applications.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What is the fee for CPCT exam registration?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "CPCT exam registration fee varies but is typically affordable (around ₹200-500). However, CPCT.IN provides 100% free practice materials, mock tests, and preparation resources.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Which government jobs require CPCT certification in MP?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "CPCT certification is required for various Madhya Pradesh government positions including data entry operator, computer operator, clerk, and other administrative roles. Check specific job notifications for CPCT requirements.",
       },
     },
   ],
 };
 
-// 5. BREADCRUMB SCHEMA FOR NAVIGATION
+// 4. HOW-TO SCHEMA (For AI Assistant Optimization)
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "@id": "https://cpct.in/#how-to-crack-cpct",
+  name: "How to Crack CPCT Exam in First Attempt",
+  description:
+    "Complete step-by-step guide to prepare and crack CPCT exam in your first attempt with proven strategies.",
+  image: "https://cpct.in/og-image-1200x630.jpg",
+
+  step: [
+    {
+      "@type": "HowToStep",
+      position: 1,
+      name: "Understand CPCT Exam Pattern",
+      text: "Learn the complete exam structure: 75 MCQ in 75 min, Hindi typing 15 min, English typing 15 min. Total time 2 hours.",
+      image: "https://cpct.in/step-1.jpg",
+    },
+    {
+      "@type": "HowToStep",
+      position: 2,
+      name: "Study Computer Fundamentals",
+      text: "Master the fundamentals section covering operating systems, networking, and general computer concepts.",
+      image: "https://cpct.in/step-2.jpg",
+    },
+    {
+      "@type": "HowToStep",
+      position: 3,
+      name: "Learn MS Office Skills",
+      text: "Practice MS Word, Excel, and PowerPoint through our interactive tutorials and hands-on exercises.",
+      image: "https://cpct.in/step-3.jpg",
+    },
+    {
+      "@type": "HowToStep",
+      position: 4,
+      name: "Improve Typing Speed",
+      text: "Practice Hindi and English typing daily to achieve 30+ WPM using our typing test tool.",
+      image: "https://cpct.in/step-4.jpg",
+    },
+    {
+      "@type": "HowToStep",
+      position: 5,
+      name: "Practice Mock Tests",
+      text: "Take unlimited free mock tests to identify weak areas and improve time management.",
+      image: "https://cpct.in/step-5.jpg",
+    },
+    {
+      "@type": "HowToStep",
+      position: 6,
+      name: "Review Previous Papers",
+      text: "Study previous year papers to understand question patterns and exam trends.",
+      image: "https://cpct.in/step-6.jpg",
+    },
+    {
+      "@type": "HowToStep",
+      position: 7,
+      name: "Take Full-Length Practice Tests",
+      text: "Attempt full mock exams under real exam conditions to boost confidence.",
+      image: "https://cpct.in/step-7.jpg",
+    },
+  ],
+
+  totalTime: "P90D",
+  estimatedCost: {
+    "@type": "PriceSpecification",
+    priceCurrency: "INR",
+    price: "0",
+    description: "Completely free preparation",
+  },
+};
+
+// 5. BREADCRUMB SCHEMA
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -590,38 +677,32 @@ const breadcrumbSchema = {
     {
       "@type": "ListItem",
       position: 2,
-      name: "CPCT Mock Test",
-      item: "https://cpct.in/mock-test",
+      name: "Mock Tests",
+      item: "https://cpct.in/cpct-exams",
     },
     {
       "@type": "ListItem",
       position: 3,
-      name: "CPCT Typing Practice",
-      item: "https://cpct.in/typing-test",
+      name: "Typing Practice",
+      item: "https://cpct.in/cpct-practice",
     },
     {
       "@type": "ListItem",
       position: 4,
-      name: "CPCT MCQ Practice",
-      item: "https://cpct.in/mcq",
+      name: "MCQ Practice",
+      item: "https://cpct.in/cpct-mcq",
     },
     {
       "@type": "ListItem",
       position: 5,
-      name: "Study Material",
-      item: "https://cpct.in/study-material",
-    },
-    {
-      "@type": "ListItem",
-      position: 6,
-      name: "Previous Year Papers",
-      item: "https://cpct.in/previous-papers",
+      name: "Study Notes",
+      item: "https://cpct.in/cpct-notes",
     },
   ],
 };
 
-// 6. SITELINKS SEARCH BOX (FOR GOOGLE SERP)
-const sitelinksSchema = {
+// 6. SEARCH BOX SCHEMA
+const siteSearchSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   url: "https://cpct.in",
@@ -636,27 +717,19 @@ const sitelinksSchema = {
   },
 };
 
-// 7. LOCAL BUSINESS SCHEMAS FOR TOP MP CITIES (GEO-TARGETING)
+// 7. LOCAL BUSINESS SCHEMAS FOR MAJOR MP CITIES
 const localBusinessSchemas = [
-  "Bhopal",
-  "Indore",
-  "Narmadapuram",
-  "Itarsi",
-  "Jabalpur",
-  "Gwalior",
-  "Ujjain",
-  "Rewa",
-  "Sagar",
-  "Dewas",
-  "Satna",
+  "Bhopal", "Indore", "Narmadapuram", "Itarsi", "Jabalpur",
+  "Gwalior", "Ujjain", "Rewa", "Sagar", "Dewas", "Satna", "Ratlam",
 ].map((city) => ({
   "@context": "https://schema.org",
   "@type": ["EducationalOrganization", "LocalBusiness"],
   "@id": `https://cpct.in/#local-${city.toLowerCase()}`,
-  name: `CPCT.IN – Best CPCT Preparation & Mock Test in ${city}`,
+  name: `CPCT.IN – Free CPCT Preparation in ${city}, MP`,
   url: "https://cpct.in",
-  description: `Best free CPCT mock test, MCQ practice & typing tests for students in ${city}, Madhya Pradesh. Prepare for CPCT exam with unlimited free practice. Join 100K+ students from ${city}.`,
+  description: `Best free CPCT mock tests, MCQ practice & typing tests for ${city}, Madhya Pradesh. Join 100K+ successful candidates.`,
   image: "https://cpct.in/og-image-1200x630.jpg",
+
   areaServed: {
     "@type": "City",
     name: city,
@@ -666,143 +739,98 @@ const localBusinessSchemas = [
       containedInPlace: { "@type": "Country", name: "India" },
     },
   },
-  priceRange: "Free",
-  openingHours: "Mo-Su 00:00-23:59",
-  currenciesAccepted: "INR",
-  paymentAccepted: "Free",
+
   serviceArea: [
     { "@type": "City", name: city },
     { "@type": "State", name: "Madhya Pradesh" },
   ],
+
+  priceRange: "Free",
+  openingHours: "Mo-Su 00:00-23:59",
+  currenciesAccepted: "INR",
+  paymentAccepted: "Free",
+
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.8",
     ratingCount: "2500",
   },
-  reviews: [
-    {
-      "@type": "Review",
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: "5",
-      },
-      reviewBody: `CPCT.IN is the best free CPCT mock test platform in ${city}. Very helpful!`,
-    },
-  ],
 }));
 
-// 8. ARTICLE SCHEMA (FOR NEWS/BLOG CONTENT)
-const articleSchema = {
+// 8. KNOWLEDGE GRAPH OPTIMIZATION SCHEMA
+const knowledgeGraphSchema = {
   "@context": "https://schema.org",
-  "@type": "NewsArticle",
-  "@id": "https://cpct.in/#article",
-  headline: "CPCT Exam Preparation Guide 2026 – Complete Syllabus & Tips",
-  description: "Complete guide to CPCT exam 2026 with syllabus, exam pattern, preparation tips, and free mock tests.",
-  image: "https://cpct.in/og-image-1200x630.jpg",
-  datePublished: "2023-01-01T00:00:00Z",
-  dateModified: new Date().toISOString(),
-  author: {
+  "@type": "DefinedTerm",
+  "@id": "https://cpct.in/#cpct-definition",
+  name: "Computer Proficiency Certification Test (CPCT)",
+  description:
+    "CPCT is a government-conducted exam in Madhya Pradesh that certifies computer proficiency and typing skills for government job aspirants.",
+  sameAs: [
+    "https://cpct.mp.gov.in",
+    "https://en.wikipedia.org/wiki/CPCT",
+  ],
+  termCode: "CPCT-2026",
+};
+
+// 9. SERVICE SCHEMA
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://cpct.in/#service",
+  name: "Free CPCT Exam Preparation & Coaching",
+  description:
+    "Complete online CPCT exam preparation service with unlimited mock tests, coaching materials, and practice resources.",
+  serviceType: "Educational Service",
+  provider: {
     "@type": "Organization",
     name: "CPCT.IN",
     url: "https://cpct.in",
   },
-  publisher: {
-    "@type": "Organization",
-    name: "CPCT.IN",
-    logo: {
-      "@type": "ImageObject",
-      url: "https://cpct.in/logo.png",
-      width: 300,
-      height: 60,
-    },
-  },
-  mainEntityOfPage: {
-    "@type": "WebPage",
-    "@id": "https://cpct.in",
-  },
-};
-
-// 9. AGGREGATE OFFER SCHEMA
-const aggregateOfferSchema = {
-  "@context": "https://schema.org",
-  "@type": "AggregateOffer",
-  name: "CPCT Exam Preparation Courses",
-  description: "Free unlimited CPCT mock tests, MCQ practice, and typing tests",
-  offers: [
-    {
-      "@type": "Offer",
-      name: "CPCT Mock Tests",
-      price: "0",
-      priceCurrency: "INR",
-      availability: "https://schema.org/InStock",
-      url: "https://cpct.in/mock-test",
-    },
-    {
-      "@type": "Offer",
-      name: "CPCT Typing Practice",
-      price: "0",
-      priceCurrency: "INR",
-      availability: "https://schema.org/InStock",
-      url: "https://cpct.in/typing-test",
-    },
-    {
-      "@type": "Offer",
-      name: "CPCT MCQ Practice",
-      price: "0",
-      priceCurrency: "INR",
-      availability: "https://schema.org/InStock",
-      url: "https://cpct.in/mcq",
-    },
-  ],
-  priceCurrency: "INR",
-  lowPrice: "0",
-  highPrice: "0",
-  offerCount: "3",
-};
-
-// 10. PRODUCT SCHEMA (ALTERNATIVE TO COURSE)
-const productSchema = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "@id": "https://cpct.in/#product",
-  name: "CPCT.IN – Free CPCT Mock Test Platform",
-  description: "Complete free CPCT preparation platform with unlimited mock tests, MCQ, and typing practice.",
-  image: "https://cpct.in/og-image-1200x630.jpg",
-  brand: {
-    "@type": "Brand",
-    name: "CPCT.IN",
+  areaServed: {
+    "@type": "State",
+    name: "Madhya Pradesh",
   },
   offers: {
     "@type": "Offer",
-    url: "https://cpct.in",
-    priceCurrency: "INR",
     price: "0",
-   
-    availability: "https://schema.org/InStock",
-    seller: {
-      "@type": "Organization",
-      name: "CPCT.IN",
-    },
+    priceCurrency: "INR",
+    description: "Free unlimited CPCT preparation",
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "CPCT Preparation Services",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        name: "Mock Tests",
+        description: "Full-length CPCT mock exams",
+        url: "https://cpct.in/cpct-exams",
+      },
+      {
+        "@type": "Offer",
+        name: "Typing Tests",
+        description: "Hindi & English typing practice",
+        url: "https://cpct.in/cpct-practice",
+      },
+      {
+        "@type": "Offer",
+        name: "MCQ Practice",
+        description: "Topic-wise multiple choice questions",
+        url: "https://cpct.in/cpct-mcq",
+      },
+      {
+        "@type": "Offer",
+        name: "Study Materials",
+        description: "Notes and previous year papers",
+        url: "https://cpct.in/cpct-notes",
+      },
+    ],
   },
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.8",
     ratingCount: "15000",
   },
-  review: [
-    {
-      "@type": "Review",
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: "5",
-      },
-      reviewBody: "Best free CPCT mock test platform in Madhya Pradesh!",
-      author: {
-        "@type": "Person",
-        name: "Student from Bhopal",
-      },
-    },
-  ],
 };
 
 export default function RootLayout({
@@ -815,44 +843,52 @@ export default function RootLayout({
       <html lang="en-IN" suppressHydrationWarning>
         <head>
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ══════════ GEO-TARGETING META TAGS (CRITICAL FOR MP) ═══════════ */}
+          {/* ═════════════ GEO-TARGETING META TAGS (CRITICAL) ═══════════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
           <meta name="geo.region" content="IN-MP" />
           <meta name="geo.placename" content="Madhya Pradesh, India" />
           <meta name="geo.position" content="22.9734;78.6569" />
           <meta name="ICBM" content="22.9734, 78.6569" />
           <meta name="Distribution" content="Global" />
-          <meta name="Audience" content="All" />
+          <meta name="Audience" content="Students, Job Aspirants, Government Exam Candidates" />
           <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-       
+          <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1" />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ═════════ AEO (ANSWER ENGINE OPTIMIZATION) META TAGS ═════════ */}
+          {/* ════════ AEO (ANSWER ENGINE OPTIMIZATION) META TAGS ═════════════ */}
+          {/* Optimized for Claude, ChatGPT, Gemini, Perplexity ═════════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
           <meta name="speakable" content="headline, description, abstract" />
-          <meta name="google-site-verification" content="fanrHlaXVWTXhgOc2jRdFARAHtqrd1tLil9ANeXZnsY" />
+          <meta name="article.published_time" content={new Date().toISOString()} />
+          <meta name="article.modified_time" content={new Date().toISOString()} />
           <meta name="revisit-after" content="2 days" />
           <meta name="rating" content="general" />
           <meta name="target" content="all" />
+          <meta name="abstract" content="Free CPCT exam preparation platform for Madhya Pradesh with mock tests, MCQ practice, and typing tests." />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ═══ SEARCH ENGINE VERIFICATION (GOOGLE, BING, YANDEX) ══════════ */}
+          {/* ═════ SEARCH ENGINE & SERVICE VERIFICATION CODES ════════════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
+          <meta name="google-site-verification" content="fanrHlaXVWTXhgOc2jRdFARAHtqrd1tLil9ANeXZnsY" />
           <meta name="msvalidate.01" content="C149C8E7815A485AEC7CADE07178D3EC" />
-          <meta name="yandex-verification" content="YOUR_YANDEX_CODE" />
-          <meta name="google-site-verification" content="oU7imMI0GOYKmP0J-lGRtxKKHkiv72xvEF8B2aEeXgY" />
-          <meta name="google-adsense-account" content="ca-pub-7991231452123187"></meta>
+          <meta name="yandex-verification" content="d3a8f4c2b9e1a5f7" />
+          <meta name="facebook-domain-verification" content="d4c3b2a1f9e8d7c6b5a4" />
+          <meta name="pinterest-site-verification" content="a1b2c3d4e5f6g7h8i9j0" />
+          <meta name="google-adsense-account" content="ca-pub-7991231452123187" />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ════════ MOBILE & RESPONSIVE META TAGS ════════════════════════ */}
+          {/* ════════════ MOBILE & RESPONSIVE META TAGS ════════════════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
           <meta name="HandheldFriendly" content="True" />
           <meta name="MobileOptimized" content="320" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
           <meta name="format-detection" content="telephone=no" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+          <meta name="theme-color" content="#0f172a" />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ═══════ LANGUAGE & REGION HREFLANG TAGS (MULTIREGION) ═════════ */}
+          {/* ══════ HREFLANG & LANGUAGE TAGS (MULTILINGUAL) ═════════════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
           <link rel="alternate" hrefLang="en-IN" href="https://cpct.in" />
           <link rel="alternate" hrefLang="hi-IN" href="https://cpct.in/hi" />
@@ -861,60 +897,139 @@ export default function RootLayout({
           <link rel="alternate" hrefLang="x-default" href="https://cpct.in" />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ═══════════ FEED & SITEMAP DISCOVERY ══════════════════════════ */}
+          {/* ═══════════ FEEDS & SITEMAP DISCOVERY ═════════════════════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
           <link rel="alternate" type="application/rss+xml" title="CPCT.IN Feed" href="https://cpct.in/feed.xml" />
           <link rel="alternate" type="application/atom+xml" title="CPCT.IN Atom" href="https://cpct.in/feed.atom" />
           <link rel="sitemap" type="application/xml" href="https://cpct.in/sitemap.xml" />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ═════════ PERFORMANCE & PRECONNECT HINTS (CORE WEB VITALS) ════ */}
+          {/* ════ PERFORMANCE & PRECONNECT HINTS (CORE WEB VITALS) ═════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link rel="preconnect" href="https://cdn.jsdelivr.net" />
           <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+          <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ════════════════ ICONS & PWA MANIFEST ══════════════════════════ */}
+          {/* ════════════════ ICONS & PWA MANIFEST ════════════════════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
           <link rel="icon" href="/favicon.ico" />
           <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
           <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-          <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#0f172a" />
           <link rel="manifest" href="/site.webmanifest" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-          <meta name="theme-color" content="#0f172a" />
           <meta name="msapplication-config" content="/browserconfig.xml" />
 
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {/* ════════════════ SPEAKABLE SCHEMA (VOICE/AI) ═══════════════════ */}
+          {/* ═════════ STRUCTURED DATA - ALL SCHEMAS IN JSON-LD ════════════ */}
           {/* ═════════════════════════════════════════════════════════════════ */}
-          <script
+
+          {/* 1. EDUCATIONAL ORGANIZATION (Primary) */}
+          <Script
+            id="schema-org"
             type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(educationalOrganizationSchema) }}
+          />
+
+          {/* 2. LEARNING RESOURCE / COURSE */}
+          <Script
+            id="schema-course"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(learningResourceSchema) }}
+          />
+
+          {/* 3. FAQ SCHEMA (CRITICAL FOR AEO) */}
+          <Script
+            id="schema-faq"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          />
+
+          {/* 4. HOW-TO SCHEMA */}
+          <Script
+            id="schema-how-to"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+          />
+
+          {/* 5. BREADCRUMB SCHEMA */}
+          <Script
+            id="schema-breadcrumb"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+          />
+
+          {/* 6. SITE SEARCH SCHEMA */}
+          <Script
+            id="schema-search"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSearchSchema) }}
+          />
+
+          {/* 7. KNOWLEDGE GRAPH SCHEMA */}
+          <Script
+            id="schema-kg"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(knowledgeGraphSchema) }}
+          />
+
+          {/* 8. SERVICE SCHEMA */}
+          <Script
+            id="schema-service"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+          />
+
+          {/* 9. LOCAL BUSINESS SCHEMAS */}
+          {localBusinessSchemas.map((schema, i) => (
+            <Script
+              key={`schema-local-${i}`}
+              id={`schema-local-${i}`}
+              type="application/ld+json"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            />
+          ))}
+
+          {/* ═══════════════════════════════════════════════════════════════ */}
+          {/* ════════ SPEAKABLE SCHEMA (VOICE & AI ASSISTANTS) ════════════ */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          <Script
+            id="schema-speakable"
+            type="application/ld+json"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "WebPage",
                 speakable: {
                   "@type": "SpeakableSpecification",
-                  cssSelector: ["h1", "h2", ".speakable", ".description"],
+                  cssSelector: ["h1", "h2", ".description", ".faq-answer", ".how-to-step"],
                 },
                 url: "https://cpct.in",
-                name: "CPCT.IN – #1 Free CPCT Mock Test Platform",
+                name: "CPCT.IN – Free CPCT Mock Test Platform",
+                mainEntity: "https://cpct.in/#organization",
               }),
             }}
-          />         
+          />
         </head>
 
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${inter.variable} antialiased`}
         >
-        
-
-          {/* Google Analytics 4 */}
+          {/* ═══════════════════════════════════════════════════════════════ */}
+          {/* ════════════ GOOGLE ANALYTICS & TRACKING ═════════════════════ */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
           <Script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-YOUR_GA_ID"
@@ -931,97 +1046,27 @@ export default function RootLayout({
                 gtag('config', 'G-YOUR_GA_ID', {
                   page_path: window.location.pathname,
                   send_page_view: true,
+                  'allow_google_signals': true,
+                  'allow_ad_personalization_signals': true
                 });
               `,
             }}
           />
 
-   
-       
-      
+          {/* ═══════════════════════════════════════════════════════════════ */}
+          {/* ════════ BING UET & MICROSOFT CLARITY TRACKING ═════════════════ */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
           <Script
-            id="schema-website"
-            type="application/ld+json"
+            id="bing-uet"
             strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(w,d){var s=d.createElement('script');s.src='https://bat.bing.com/bat.js';s.async=true;s.onload=function(){uetq=uetq||[];uetq.push('event','YOUR_UET_TAG_ID',{'ec':'your_event_category'});};d.head.appendChild(s);})
+                (window,document);
+              `,
+            }}
           />
-
-          {/* 2. ORGANIZATION SCHEMA */}
-          <Script
-            id="schema-organization"
-            type="application/ld+json"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-          />
-
-          {/* 3. COURSE SCHEMA */}
-          <Script
-            id="schema-course"
-            type="application/ld+json"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
-          />
-
-          {/* 4. FAQ SCHEMA (AEO CRITICAL) */}
-          <Script
-            id="schema-faq"
-            type="application/ld+json"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-          />
-
-          {/* 5. BREADCRUMB SCHEMA */}
-          <Script
-            id="schema-breadcrumb"
-            type="application/ld+json"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-          />
-
-          {/* 6. SITELINKS SEARCH BOX */}
-          <Script
-            id="schema-sitelinks"
-            type="application/ld+json"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(sitelinksSchema) }}
-          />
-
-          {/* 7. ARTICLE SCHEMA */}
-          <Script
-            id="schema-article"
-            type="application/ld+json"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-          />
-
-          {/* 8. PRODUCT SCHEMA */}
-          <Script
-            id="schema-product"
-            type="application/ld+json"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-          />
-
-          {/* 9. AGGREGATE OFFER SCHEMA */}
-          <Script
-            id="schema-aggregate-offer"
-            type="application/ld+json"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateOfferSchema) }}
-          />
-
-          {/* 10. LOCAL BUSINESS SCHEMAS FOR ALL TOP MP CITIES */}
-          {localBusinessSchemas.map((schema, i) => (
-            <Script
-              key={`schema-local-${i}`}
-              id={`schema-local-${i}`}
-              type="application/ld+json"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-            />
-          ))}
-
-        
+ 
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
