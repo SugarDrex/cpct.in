@@ -450,6 +450,15 @@ function Skeleton() {
 }
 
 // ── Exam Month Card ────────────────────────────────────────────────────────────
+const monthGlowColors = [
+  'hover:shadow-blue-300/50 dark:hover:shadow-blue-800/30',
+  'hover:shadow-emerald-300/50 dark:hover:shadow-emerald-800/30',
+  'hover:shadow-violet-300/50 dark:hover:shadow-violet-800/30',
+  'hover:shadow-amber-300/50 dark:hover:shadow-amber-800/30',
+  'hover:shadow-rose-300/50 dark:hover:shadow-rose-800/30',
+  'hover:shadow-cyan-300/50 dark:hover:shadow-cyan-800/30',
+];
+
 function ExamMonthCard({ month, year, count, index }: { month: { label: string; month: number; exams: Exam[] }; year: number; count: number; index: number }) {
   const href = `/cpct/cpct-new-exam/${month}?year=${year}&month=${month.month}`;
   const iconColors = [
@@ -460,16 +469,8 @@ function ExamMonthCard({ month, year, count, index }: { month: { label: string; 
     'text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/40 dark:border-rose-800',
     'text-cyan-600 bg-cyan-50 border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-800',
   ];
-  const glowColors = [
-    'hover:shadow-blue-300/50 dark:hover:shadow-blue-800/30',
-    'hover:shadow-emerald-300/50 dark:hover:shadow-emerald-800/30',
-    'hover:shadow-violet-300/50 dark:hover:shadow-violet-800/30',
-    'hover:shadow-amber-300/50 dark:hover:shadow-amber-800/30',
-    'hover:shadow-rose-300/50 dark:hover:shadow-rose-800/30',
-    'hover:shadow-cyan-300/50 dark:hover:shadow-cyan-800/30',
-  ];
   const colorClass = iconColors[month.month % iconColors.length];
-  const glowClass = glowColors[month.month % glowColors.length];
+  const glowClass = monthGlowColors[month.month % monthGlowColors.length];
 
   // Check if any exam in this month is recently uploaded
   const hasRecentExam = month.exams.some(exam => isRecentlyUploaded(exam.created_at));
@@ -508,12 +509,14 @@ function ExamMonthCard({ month, year, count, index }: { month: { label: string; 
 
 // ── Topic Card ─────────────────────────────────────────────────────────────────
 function TopicCard({ title, href, icon: Icon, color, index }: { title: string; href: string; icon: React.FC<{ className?: string }>; color: string; index: number }) {
+  // Same cycling glow-shadow treatment used on the CPCT Exams month cards
+  const glowClass = monthGlowColors[index % monthGlowColors.length];
   return (
     <Link
       href={href}
       style={{ animationDelay: `${index * 60}ms` }}
-      className="animate-fade-in-up group flex items-center gap-3 rounded-xl border border-blue-200 dark:border-blue-200 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 shadow-md hover:shadow-xl hover:shadow-blue-200/50 dark:hover:shadow-blue-950/30 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300">
-      <div className={`shrink-0 w-11 h-9 rounded-lg border flex items-center justify-center ${color} group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300`}>
+      className={`animate-fade-in-up group flex items-center gap-3 rounded-xl border border-blue-200 dark:border-blue-200 bg-white dark:bg-gray-900 p-3.5 hover:border-blue-300 dark:hover:border-blue-700 shadow-md hover:shadow-xl ${glowClass} hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300`}>
+      <div className={`shrink-0 w-11 h-9 rounded-lg border flex items-center justify-center ${color} group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
         <Icon className="w-10 h-10" />
       </div>
       <span className="flex-1 text-[13px] font-semibold text-slate-800 dark:text-gray-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{title}</span>
@@ -568,6 +571,21 @@ function PreparationCard() {
       <div className="absolute right-2 bottom-2 text-blue-200 dark:text-blue-900/60 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-500">
         <IconTarget className="w-12 h-12" />
       </div>
+    </div>
+  );
+}
+
+// ── Notification Sidebar Card ────────────────────────────────────────────────────
+function CpctNotification() {
+  return (
+    <div className="rounded-xl border border-amber-200 dark:border-amber-900 bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800 p-4 relative overflow-hidden hover:shadow-lg hover:shadow-amber-100/50 dark:hover:shadow-amber-950/20 transition-shadow duration-500">
+      <div className="flex items-center gap-2 mb-2">
+        <HiOutlineMegaphone className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+        <span className="text-slate-900 dark:text-gray-100 text-sm font-bold">Latest Update</span>
+      </div>
+      <p className="text-[12px] text-slate-500 dark:text-gray-400 leading-relaxed">
+        New CPCT exam papers and typing test paragraphs added — with English, Hindi, Gujarati, Punjabi &amp; Bengali language support.
+      </p>
     </div>
   );
 }
@@ -667,7 +685,7 @@ export default function CpctExamsPage() {
       <div  className="max-w-7xl mx-auto px-4 sm:px-6 -mt-22 mb-8">
      
         <HeroSection />
-        <div className="flex gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Main Content */}
           <main className="flex-1 min-w-0 space-y-6">
             {/* Header row */}<div className="relative overflow-hidden rounded-xl border border-blue-200/30 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 py-3 shadow-lg">
@@ -683,7 +701,7 @@ export default function CpctExamsPage() {
             x: ["20%", "-60%"],
           }}
           transition={{
-            duration: 35,
+            duration: 25,
             repeat: Infinity,
             ease: "linear",
           }}
@@ -762,10 +780,13 @@ export default function CpctExamsPage() {
           </main>
 
           {/* Right Sidebar */}
-          <aside className="hidden lg:block w-60 shrink-0 space-y-4">
-            <StudyResources />
-            <PreparationCard />
-            <AboutCpct />
+          <aside className="w-full lg:w-60 lg:shrink-0 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+              <StudyResources />
+              <PreparationCard />
+              <CpctNotification />
+              <AboutCpct />
+            </div>
           </aside>
         </div>
       </div>
