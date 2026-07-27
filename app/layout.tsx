@@ -874,7 +874,7 @@ export default function RootLayout({
           <meta name="yandex-verification" content="d3a8f4c2b9e1a5f7" />
           <meta name="facebook-domain-verification" content="d4c3b2a1f9e8d7c6b5a4" />
           <meta name="pinterest-site-verification" content="a1b2c3d4e5f6g7h8i9j0" />
-          <meta name="google-adsense-account" content="ca-pub-7991231452123187" />
+         <meta name="google-adsense-account" content="ca-pub-6204613144195396"/>
 
           {/* ═══════════════════════════════════════════════════════════════ */}
           {/* ════════════ MOBILE & RESPONSIVE META TAGS ════════════════════ */}
