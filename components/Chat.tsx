@@ -3,36 +3,75 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiMessageCircle, FiX, FiSend } from "react-icons/fi";
-import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 export default function FloatingContactForm() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggleChat = () => {
     setOpen((prev) => !prev);
+    setStatus("idle");
+    setErrorMessage("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // ✅ Capture form reference BEFORE any await
+    const form = e.currentTarget;
+
     setLoading(true);
+    setStatus("idle");
+    setErrorMessage("");
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const formData = new FormData(form);
 
-    setLoading(false);
-    setOpen(false);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.get("firstName"),
+          lastName: formData.get("lastName") || "",
+          email: formData.get("email"),
+          phone: formData.get("phone") || "",
+          message: formData.get("message"),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatus("success");
+        form.reset(); // ✅ Now safe
+
+        setTimeout(() => {
+          setOpen(false);
+          setStatus("idle");
+        }, 1800);
+      } else {
+        setStatus("error");
+        setErrorMessage(data.error || "Failed to send message.");
+      }
+    } catch (err: any) {
+      setStatus("error");
+      setErrorMessage(err.message || "Network error — please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       {/* Floating Button */}
-      <motion.div
-        className="fixed bottom-4 right-6 z-[9999]"
-        initial={false}
-      >
+      <motion.div className="fixed bottom-4 right-6 z-[9999]" initial={false}>
         <button
           onClick={toggleChat}
-          onDoubleClick={toggleChat}
           className="w-14 h-14 rounded-full bg-[#25D366] dark:bg-white 
           text-white dark:text-black shadow-2xl 
           flex items-center justify-center cursor-pointer 
@@ -63,37 +102,59 @@ export default function FloatingContactForm() {
               className="fixed bottom-16 right-7 z-[9999] 
               w-[320px] bg-white dark:bg-[#111] 
               text-black dark:text-white 
-              rounded-2xl p-6 shadow-2xl border 
-              border-gray-200 dark:border-white/10 py-2"
+              rounded-2xl p-5 shadow-2xl border 
+              border-gray-200 dark:border-white/10"
             >
-              <h3 className="text-lg font-semibold mb-4">
-                Contact Us
-              </h3>
+              <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                <input
-                  required
-                  placeholder="Your Name"
-                  className="border border-gray-300 dark:border-white/20 
-                  rounded-lg px-3 py-2 bg-transparent 
-                  focus:outline-none focus:ring-2 
-                  focus:ring-black dark:focus:ring-white"
-                />
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    required
+                    name="firstName"
+                    placeholder="First Name"
+                    className="border border-gray-300 dark:border-white/20 
+                    rounded-lg px-3 py-2 bg-transparent text-sm
+                    focus:outline-none focus:ring-2 
+                    focus:ring-black dark:focus:ring-white"
+                  />
+                  <input
+                    name="lastName"
+                    placeholder="Last Name"
+                    className="border border-gray-300 dark:border-white/20 
+                    rounded-lg px-3 py-2 bg-transparent text-sm
+                    focus:outline-none focus:ring-2 
+                    focus:ring-black dark:focus:ring-white"
+                  />
+                </div>
+
                 <input
                   required
                   type="email"
+                  name="email"
                   placeholder="Email"
                   className="border border-gray-300 dark:border-white/20 
-                  rounded-lg px-3 py-2 bg-transparent 
+                  rounded-lg px-3 py-2 bg-transparent text-sm
                   focus:outline-none focus:ring-2 
                   focus:ring-black dark:focus:ring-white"
                 />
+
+                <input
+                  name="phone"
+                  placeholder="Phone (optional)"
+                  className="border border-gray-300 dark:border-white/20 
+                  rounded-lg px-3 py-2 bg-transparent text-sm
+                  focus:outline-none focus:ring-2 
+                  focus:ring-black dark:focus:ring-white"
+                />
+
                 <textarea
                   required
+                  name="message"
                   rows={3}
                   placeholder="Message"
                   className="border border-gray-300 dark:border-white/20 
-                  rounded-lg px-3 py-2 bg-transparent resize-none 
+                  rounded-lg px-3 py-2 bg-transparent resize-none text-sm
                   focus:outline-none focus:ring-2 
                   focus:ring-black dark:focus:ring-white"
                 />
@@ -103,54 +164,58 @@ export default function FloatingContactForm() {
                   disabled={loading}
                   className="bg-black dark:bg-white 
                   text-white dark:text-black 
-                  rounded-lg py-2 flex items-center 
+                  rounded-lg py-2.5 flex items-center 
                   justify-center gap-2 cursor-pointer 
-                  hover:opacity-90 transition"
+                  hover:opacity-90 transition disabled:opacity-60 text-sm font-medium"
                 >
                   {loading ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-white dark:border-black border-t-transparent rounded-full animate-spin"></span>
+                      <span className="w-4 h-4 border-2 border-white dark:border-black border-t-transparent rounded-full animate-spin" />
                       Sending...
                     </>
                   ) : (
                     <>
-                      Send <FiSend size={16} />
+                      Send <FiSend size={15} />
                     </>
                   )}
                 </button>
+
+                {status === "success" && (
+                  <p className="text-green-600 text-sm text-center font-medium">
+                    Message sent successfully!
+                  </p>
+                )}
+                {status === "error" && (
+                  <p className="text-red-500 text-sm text-center">
+                    {errorMessage}
+                  </p>
+                )}
               </form>
 
-              
-           <div className="flex justify-center gap-4 mt-5">
+              <div className="flex justify-center gap-4 mt-5">
+                <a
+                  href="https://www.instagram.com/cpct.in?igsh=OGF1Zm0ycTBmcm9r"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 flex items-center justify-center 
+                  rounded-full bg-gradient-to-tr 
+                  from-pink-500 via-red-500 to-yellow-500 
+                  text-white cursor-pointer hover:scale-110 transition"
+                >
+                  <FaInstagram size={14} />
+                </a>
 
-  {/* Instagram */}
-  <a
-    href="https://www.instagram.com/cpct.in?igsh=OGF1Zm0ycTBmcm9r"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-9 h-9 flex items-center justify-center 
-    rounded-full bg-gradient-to-tr 
-    from-pink-500 via-red-500 to-yellow-500 
-    text-white cursor-pointer 
-    hover:scale-110 transition"
-  >
-    <FaInstagram size={14} />
-  </a>
-
-  {/* WhatsApp */}
-  <a
-    href="https://wa.me/919165056489"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-9 h-9 flex items-center justify-center 
-    rounded-full bg-[#25D366] 
-    text-white cursor-pointer 
-    hover:scale-110 transition"
-  >
-    <FaWhatsapp size={14} />
-  </a>
-
-</div>
+                <a
+                  href="https://wa.me/919165056489"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 flex items-center justify-center 
+                  rounded-full bg-[#25D366] 
+                  text-white cursor-pointer hover:scale-110 transition"
+                >
+                  <FaWhatsapp size={14} />
+                </a>
+              </div>
             </motion.div>
           </>
         )}
