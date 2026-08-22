@@ -182,7 +182,7 @@ export default function FloatingContactForm() {
 
                 {status === "success" && (
                   <p className="text-green-600 text-sm text-center font-medium">
-                    Message sent successfully!!
+                    Message sent successfully!
                   </p>
                 )}
                 {status === "error" && (
