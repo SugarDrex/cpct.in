@@ -301,7 +301,7 @@ export default function NotesPage() {
                       setPreviewNote(null)
                       setIsFullScreen(false)
                     }}
-                    className="p-2 bg-red-500 text-white cursor-pointer rounded"
+                    className="p-2 bg-red-300 text-white cursor-pointer rounded-md"
                   >
                     <MdOutlineClose size={18} />
                   </button>
