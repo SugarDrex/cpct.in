@@ -21,7 +21,8 @@ import {
   FiSunrise,
   FiCodesandbox,
 } from "react-icons/fi";
-import { BsFiletypeDoc } from "react-icons/bs";
+import { BsFileEarmarkCode, BsFiletypeDoc } from "react-icons/bs";
+import { File } from "lucide-react";
 
 type UserToken = {
   username: string;
@@ -115,24 +116,25 @@ export default function Dashboard() {
       buttonColor: "text-red-600",
       borderColor: "border-red-200",
     },
-    {
-      title: "Analytics",
-      description: "View comprehensive system analytics",
-      icon: <FiTrendingUp className="w-8 h-8" />,
-      href: "/admin/analytics",
-      color: "from-indigo-600 to-indigo-700",
-      buttonColor: "text-indigo-600",
-      borderColor: "border-indigo-200",
-    },
+     {
+      title: "Paragraph Upload",
+      description: "Upload typing test paragraphs and manage existing ones",
+      icon: <BsFiletypeDoc className="w-8 h-8" />,
+      href: "/admin/superadmin/typing-upload",
+      color: "from-cyan-600 to-cyan-700",
+      buttonColor: "text-cyan-600",
+      borderColor: "border-cyan-200",
+    },  
     {
       title: "Exam Papers Upload",
       description: "Upload exam papers to Supabase database",
-      icon: <BsFiletypeDoc className="w-8 h-8" />,
+      icon: <BsFileEarmarkCode className="w-8 h-8" />,
       href: "/admin/superadmin/upload",
       color: "from-cyan-600 to-cyan-700",
       buttonColor: "text-cyan-600",
       borderColor: "border-cyan-200",
-    },
+    },    
+      
   ];
 
   return (
